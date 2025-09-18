@@ -18,7 +18,7 @@ interface BBCodeEditorProps {
   className?: string;
   maxLength?: number;
   disabled?: boolean;
-  title?: string; // 新增标题属性
+  title?: string; // Added title attributes
 }
 
 interface BBCodeTool {
@@ -31,11 +31,11 @@ interface BBCodeTool {
 const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
   value,
   onChange,
-  placeholder = '在这里输入BBCode内容...',
+  placeholder = 'Enter hereBBCodecontent...',
   className = '',
   maxLength = 60000,
   disabled = false,
-  title, // 新增标题参数
+  title, // Added title parameters
 }) => {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
@@ -45,7 +45,7 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // 防抖验证函数
+  // Anti-shake verification function
   const debouncedValidation = useCallback(async (content: string) => {
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current);
@@ -57,10 +57,10 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
           setValidationLoading(true);
           setValidationError(null);
           
-          // 先使用本地解析器进行基础验证
+          // Use the local parser for basic verification first
           const localResult = parseBBCode(content);
           
-          // 设置本地验证结果，避免重复调用服务器
+          // Set local verification results to avoid repeated calls to the server
           setValidationResult({
             valid: localResult.valid,
             errors: localResult.errors,
@@ -71,7 +71,7 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
           });
         } catch (error) {
           console.error('BBCode validation error:', error);
-          setValidationError('验证失败，请检查网络连接');
+          setValidationError('Verification failed, please check the network connection');
           setValidationResult(null);
         } finally {
           setValidationLoading(false);
@@ -80,10 +80,10 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
         setValidationResult(null);
         setValidationLoading(false);
       }
-    }, 300); // 减少防抖时间
+    }, 300); // Reduce anti-shake time
   }, []);
 
-  // 当内容变化时触发验证
+  // whencontentTrigger verification when changes
   useEffect(() => {
     debouncedValidation(value);
     return () => {
@@ -93,12 +93,12 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
     };
   }, [value, debouncedValidation]);
 
-  // 插入BBCode标签的辅助函数
+  // insertBBCodeHelper functions for tags
   const insertBBCode = useCallback((openTag: string, closeTag: string, defaultContent: string = '') => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
-    // 保存当前焦点状态
+    // Save the current focus status
     const wasActive = document.activeElement === textarea;
     
     const start = textarea.selectionStart;
@@ -112,7 +112,7 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
     
     onChange(newText);
 
-    // 使用requestAnimationFrame确保DOM更新后再设置光标位置
+    // userequestAnimationFramemake sureDOMAfter updating, set the cursor position
     requestAnimationFrame(() => {
       if (textarea && wasActive) {
         try {
@@ -123,138 +123,138 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
             textarea.setSelectionRange(start + openTag.length, start + openTag.length + defaultContent.length);
           }
         } catch (error) {
-          // 忽略可能的焦点设置错误
+          // Ignore possible focus setting errors
           console.debug('Focus restoration failed:', error);
         }
       }
     });
   }, [value, onChange]);
 
-  // BBCode工具栏配置
+  // BBCodeToolbar configuration
   const tools: BBCodeTool[] = [
-    // 基础格式化
+    // Basic formatting
     {
       icon: FaBold,
-      tooltip: '粗体 (Ctrl+B)',
+      tooltip: 'Bold (Ctrl+B)',
       shortcut: 'ctrl+b',
-      action: () => insertBBCode('[b]', '[/b]', '粗体文本'),
+      action: () => insertBBCode('[b]', '[/b]', 'Boldtext'),
     },
     {
       icon: FaItalic,
-      tooltip: '斜体 (Ctrl+I)',
+      tooltip: 'Italic (Ctrl+I)',
       shortcut: 'ctrl+i',
-      action: () => insertBBCode('[i]', '[/i]', '斜体文本'),
+      action: () => insertBBCode('[i]', '[/i]', 'Italictext'),
     },
     {
       icon: FaUnderline,
-      tooltip: '下划线 (Ctrl+U)',
+      tooltip: 'Underline (Ctrl+U)',
       shortcut: 'ctrl+u',
-      action: () => insertBBCode('[u]', '[/u]', '下划线文本'),
+      action: () => insertBBCode('[u]', '[/u]', 'Underlinetext'),
     },
     {
       icon: FaStrikethrough,
-      tooltip: '删除线',
-      action: () => insertBBCode('[strike]', '[/strike]', '删除线文本'),
+      tooltip: 'Delete line',
+      action: () => insertBBCode('[strike]', '[/strike]', 'Delete linetext'),
     },
     {
       icon: FaPalette,
-      tooltip: '颜色',
-      action: () => insertBBCode('[color=red]', '[/color]', '彩色文本'),
+      tooltip: 'color',
+      action: () => insertBBCode('[color=red]', '[/color]', 'Colorful text'),
     },
     {
       icon: FaFont,
-      tooltip: '字体大小',
-      action: () => insertBBCode('[size=100]', '[/size]', '文本'),
+      tooltip: 'Font size',
+      action: () => insertBBCode('[size=100]', '[/size]', 'text'),
     },
     
-    // 内容插入
+    // contentinsert
     {
       icon: FaImage,
-      tooltip: '插入图片',
+      tooltip: 'insertpicture',
       action: () => insertBBCode('[img]', '[/img]', 'https://example.com/image.jpg'),
     },
     {
       icon: FaLink,
-      tooltip: '插入链接',
-      action: () => insertBBCode('[url=', ']链接文本[/url]', 'https://example.com'),
+      tooltip: 'insertLink',
+      action: () => insertBBCode('[url=', ']Linktext[/url]', 'https://example.com'),
     },
     {
       icon: FaUser,
-      tooltip: '用户主页链接',
-      action: () => insertBBCode('[profile=', ']用户名[/profile]', '123456'),
+      tooltip: 'User homepage link',
+      action: () => insertBBCode('[profile=', ']username[/profile]', '123456'),
     },
     {
       icon: FaEnvelope,
-      tooltip: '邮箱链接',
-      action: () => insertBBCode('[email=', ']邮箱链接[/email]', 'example@example.com'),
+      tooltip: 'Email link',
+      action: () => insertBBCode('[email=', ']Email link[/email]', 'example@example.com'),
     },
     {
       icon: FaYoutube,
-      tooltip: 'YouTube视频',
+      tooltip: 'YouTubevideo',
       action: () => insertBBCode('[youtube]', '[/youtube]', 'dQw4w9WgXcQ'),
     },
     {
       icon: FaMusic,
-      tooltip: '音频',
+      tooltip: 'Audio',
       action: () => insertBBCode('[audio]', '[/audio]', 'https://example.com/audio.mp3'),
     },
     {
       icon: FaMapMarked,
-      tooltip: '图片映射',
-      action: () => insertBBCode('[imagemap]\n', '\n10.0 10.0 30.0 20.0 https://example.com 点击访问网站\n50.0 30.0 40.0 25.0 # 这是信息区域\n[/imagemap]', 'https://example.com/image.jpg'),
+      tooltip: 'Picture Mapping',
+      action: () => insertBBCode('[imagemap]\n', '\n10.0 10.0 30.0 20.0 https://example.com Click to visit the website\n50.0 30.0 40.0 25.0 # This is the information area\n[/imagemap]', 'https://example.com/image.jpg'),
     },
     
-    // 结构化内容
+    // Structuredcontent
     {
       icon: FaQuoteLeft,
-      tooltip: '引用',
-      action: () => insertBBCode('[quote]', '[/quote]', '引用内容'),
+      tooltip: 'Quote',
+      action: () => insertBBCode('[quote]', '[/quote]', 'Quotecontent'),
     },
     {
       icon: FaCode,
-      tooltip: '代码块',
-      action: () => insertBBCode('[code]', '[/code]', '代码内容'),
+      tooltip: 'Code block',
+      action: () => insertBBCode('[code]', '[/code]', 'Codecontent'),
     },
     {
       icon: FaList,
-      tooltip: '列表',
-      action: () => insertBBCode('[list]\n[*]', '\n[*]项目2\n[/list]', '项目1'),
+      tooltip: 'List',
+      action: () => insertBBCode('[list]\n[*]', '\n[*]project2\n[/list]', 'project1'),
     },
     {
       icon: FaBox,
-      tooltip: '折叠框',
-      action: () => insertBBCode('[box=标题]', '[/box]', '折叠内容'),
+      tooltip: 'Folding frame',
+      action: () => insertBBCode('[box=title]', '[/box]', 'foldcontent'),
     },
     {
       icon: FaMask,
-      tooltip: '剧透条',
-      action: () => insertBBCode('[spoiler]', '[/spoiler]', '剧透内容'),
+      tooltip: 'Spoiler bar',
+      action: () => insertBBCode('[spoiler]', '[/spoiler]', 'Spoilercontent'),
     },
     {
       icon: FaAlignCenter,
-      tooltip: '居中对齐',
-      action: () => insertBBCode('[centre]', '[/centre]', '居中文本'),
+      tooltip: 'Align center',
+      action: () => insertBBCode('[centre]', '[/centre]', 'Centertext'),
     },
     {
       icon: FaHeading,
-      tooltip: '标题',
-      action: () => insertBBCode('[heading]', '[/heading]', '标题文本'),
+      tooltip: 'title',
+      action: () => insertBBCode('[heading]', '[/heading]', 'titletext'),
     },
     {
       icon: FaExclamationTriangle,
-      tooltip: '通知框',
-      action: () => insertBBCode('[notice]', '[/notice]', '重要通知'),
+      tooltip: 'Notification box',
+      action: () => insertBBCode('[notice]', '[/notice]', 'Important notice'),
     },
   ];
 
-  // 工具栏按钮点击处理
+  // Toolbar button click processing
   const handleToolClick = useCallback((e: React.MouseEvent, action: () => void) => {
     e.preventDefault();
     e.stopPropagation();
     action();
   }, []);
 
-  // 键盘快捷键处理
+  // Keyboard shortcut key processing
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.ctrlKey || e.metaKey) {
       const tool = tools.find(t => t.shortcut === `ctrl+${e.key.toLowerCase()}`);
@@ -265,19 +265,19 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
     }
   }, [tools]);
 
-  // 颜色选择器
+  // colorSelector
   const insertColor = useCallback((color: string) => {
-    insertBBCode(`[color=${color}]`, '[/color]', '彩色文本');
+    insertBBCode(`[color=${color}]`, '[/color]', 'Colorful text');
   }, [insertBBCode]);
 
-  // 字体大小选择器
+  // Font sizeSelector
   const insertSize = useCallback((size: number) => {
-    insertBBCode(`[size=${size}]`, '[/size]', `${size}px文本`);
+    insertBBCode(`[size=${size}]`, '[/size]', `${size}pxtext`);
   }, [insertBBCode]);
 
   return (
     <div className={`${className}`}>
-      {/* 标题栏 */}
+      {/* titlecolumn */}
       {title && (
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -286,12 +286,12 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
         </div>
       )}
       
-      {/* 编辑器容器 */}
+      {/* Editor Container */}
       <div className="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
-        {/* 工具栏 */}
+        {/* Toolbar */}
       <div className="flex items-center justify-between p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
         <div className="flex items-center gap-1 flex-wrap">
-          {/* 基础格式化工具 */}
+          {/* Basic formattingtool */}
           <div className="flex items-center gap-1">
             {tools.slice(0, 6).map((tool, index) => (
               <button
@@ -307,10 +307,10 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
             ))}
           </div>
           
-          {/* 分隔线 */}
+          {/* Dividing line */}
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
           
-          {/* 内容插入工具 */}
+          {/* contentinserttool */}
           <div className="flex items-center gap-1">
             {tools.slice(6, 13).map((tool, index) => (
               <button
@@ -326,10 +326,10 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
             ))}
           </div>
           
-          {/* 分隔线 */}
+          {/* Dividing line */}
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
           
-          {/* 结构化内容工具 */}
+          {/* Structuredcontenttool */}
           <div className="flex items-center gap-1">
             {tools.slice(13).map((tool, index) => (
               <button
@@ -345,10 +345,10 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
             ))}
           </div>
           
-          {/* 分隔线 */}
+          {/* Dividing line */}
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
           
-          {/* 快速颜色选择 */}
+          {/* fastcolorchoose */}
           <div className="flex items-center gap-1">
             {['red', 'blue', 'green', 'purple', 'orange'].map(color => (
               <button
@@ -358,30 +358,30 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
                 disabled={disabled}
                 className="w-6 h-6 rounded border border-gray-300 dark:border-gray-600 hover:scale-110 transition-transform disabled:cursor-not-allowed"
                 style={{ backgroundColor: color }}
-                title={`${color}色文本`}
+                title={`${color}colortext`}
               />
             ))}
           </div>
           
-          {/* 分隔线 */}
+          {/* Dividing line */}
           <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
           
-          {/* 字体大小 */}
+          {/* Font size */}
           <select
             onChange={(e) => e.target.value && insertSize(parseInt(e.target.value))}
             disabled={disabled}
             className="text-xs px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50"
             defaultValue=""
           >
-            <option value="" disabled>字体大小</option>
-            <option value="50">极小 (50)</option>
-            <option value="85">小 (85)</option>
-            <option value="100">普通 (100)</option>
-            <option value="150">大 (150)</option>
+            <option value="" disabled>Font size</option>
+            <option value="50">Extremely small (50)</option>
+            <option value="85">Small (85)</option>
+            <option value="100">ordinary (100)</option>
+            <option value="150">big (150)</option>
           </select>
         </div>
 
-        {/* 预览切换和字数统计 */}
+        {/* Preview toggle and word count */}
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500 dark:text-gray-400">
             {value.length}/{maxLength}
@@ -392,10 +392,10 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
             onClick={(e) => handleToolClick(e, () => setIsHelpModalOpen(true))}
             disabled={disabled}
             className="flex items-center gap-1 px-2 py-1 text-xs hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="BBCode帮助"
+            title="BBCodehelp"
           >
             <FaQuestionCircle className="w-3 h-3" />
-            <span className="hidden sm:inline">帮助</span>
+            <span className="hidden sm:inline">help</span>
           </button>
           
           <button
@@ -407,27 +407,27 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
             {isPreviewMode ? (
               <>
                 <FaEyeSlash className="w-3 h-3" />
-                <span className="hidden sm:inline">编辑</span>
+                <span className="hidden sm:inline">edit</span>
               </>
             ) : (
               <>
                 <FaEye className="w-3 h-3" />
-                <span className="hidden sm:inline">预览</span>
+                <span className="hidden sm:inline">Preview</span>
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* 编辑器内容区域 */}
+      {/* editDevicecontentarea */}
       <div className="relative">
         {isPreviewMode ? (
-          /* 预览模式 */
+          /* Previewmodel */
           <div className="p-4 min-h-[300px] h-[50vh] overflow-y-auto">
             {validationLoading ? (
               <div className="flex items-center justify-center py-8">
                 <LoadingSpinner size="sm" />
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">生成预览中...</span>
+                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">generatePreviewmiddle...</span>
               </div>
             ) : validationError ? (
               <div className="text-center py-8 text-red-500 dark:text-red-400 text-sm">
@@ -440,12 +440,12 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
               />
             ) : (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
-                {value.trim() ? '无法生成预览' : '输入内容以查看预览'}
+                {value.trim() ? 'CannotgeneratePreview' : 'entercontentTo viewPreview'}
               </div>
             )}
           </div>
         ) : (
-          /* 编辑模式 */
+          /* editmodel */
           <textarea
             ref={textareaRef}
             value={value}
@@ -459,13 +459,13 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
           />
         )}
 
-        {/* 验证结果指示器 */}
+        {/* Verification result indicator */}
         {!isPreviewMode && (
           <div className="absolute top-2 right-2 flex items-center gap-2">
             {validationLoading && (
               <div className="flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-xs">
                 <LoadingSpinner size="sm" />
-                <span>验证中</span>
+                <span>Verification</span>
               </div>
             )}
             
@@ -475,18 +475,18 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
                   ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
                   : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
               }`}>
-                {validationResult.valid ? '✓ 语法正确' : `✗ ${validationResult.errors.length}个错误`}
+                {validationResult.valid ? '✓ Correct syntax' : `✗ ${validationResult.errors.length}An error`}
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* 验证错误列表 */}
+      {/* Verification errorList */}
       {validationResult && !validationResult.valid && validationResult.errors.length > 0 && (
         <div className="border-t border-gray-200 dark:border-gray-700 p-3 bg-red-50 dark:bg-red-900/10">
           <div className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
-            BBCode语法错误:
+            BBCodeSyntax error:
           </div>
           <ul className="list-disc list-inside space-y-1">
             {validationResult.errors.map((error, index) => (
@@ -498,29 +498,29 @@ const BBCodeEditor: React.FC<BBCodeEditorProps> = ({
         </div>
       )}
 
-      {/* 帮助文本 - 更紧凑的设计 */}
+      {/* helptext - More compact design */}
       <div className="border-t border-gray-200 dark:border-gray-700 px-2 py-1 bg-gray-50 dark:bg-gray-700/30">
         <details className="text-xs text-gray-600 dark:text-gray-400">
           <summary className="cursor-pointer hover:text-gray-800 dark:hover:text-gray-200 py-1">
-            BBCode帮助
+            BBCodehelp
           </summary>
           <div className="mt-1 pb-1 grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-0.5 text-xs">
-            <div><strong>[b]粗体[/b]</strong></div>
-            <div><em>[i]斜体[/i]</em></div>
-            <div><u>[u]下划线[/u]</u></div>
-            <div><del>[s]删除线[/s]</del></div>
-            <div>[color=red]彩色[/color]</div>
-            <div>[size=16]大小[/size]</div>
-            <div>[url=链接]文本[/url]</div>
-            <div>[img]图片URL[/img]</div>
-            <div>[quote]引用[/quote]</div>
-            <div>[code]代码[/code]</div>
-            <div className="md:col-span-1 col-span-2">[list][*]项目1[*]项目2[/list]</div>
+            <div><strong>[b]Bold[/b]</strong></div>
+            <div><em>[i]Italic[/i]</em></div>
+            <div><u>[u]Underline[/u]</u></div>
+            <div><del>[s]Delete line[/s]</del></div>
+            <div>[color=red]color[/color]</div>
+            <div>[size=16]bigSmall[/size]</div>
+            <div>[url=Link]text[/url]</div>
+            <div>[img]pictureURL[/img]</div>
+            <div>[quote]Quote[/quote]</div>
+            <div>[code]Code[/code]</div>
+            <div className="md:col-span-1 col-span-2">[list][*]project1[*]project2[/list]</div>
           </div>
         </details>
       </div>
 
-      {/* BBCode帮助模态框 */}
+      {/* BBCodehelpModal Box */}
       <BBCodeHelpModal
         isOpen={isHelpModalOpen}
         onClose={() => setIsHelpModalOpen(false)}

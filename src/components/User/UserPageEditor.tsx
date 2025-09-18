@@ -29,33 +29,33 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
   const [hasChanges, setHasChanges] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // 检查是否有权限编辑
+  // Check if you have permissions to edit
   const canEdit = currentUser?.id === user.id;
 
-  // 加载用户页面内容
+  // Load user page content
   useEffect(() => {
     if (canEdit) {
       setLoading(true);
       setError(null);
       
-      // 直接从用户对象获取页面内容
+      // Get page content directly from user objects
       const initialContent = user.page?.raw || '';
       setContent(initialContent);
       setOriginalContent(initialContent);
       setHasChanges(false);
       setLoading(false);
     } else {
-      setError('您没有权限编辑此用户的页面');
+      setError('You do not have permission to edit this user's page');
       setLoading(false);
     }
   }, [user, canEdit]);
 
-  // 监听内容变化
+  // Listening content changes
   useEffect(() => {
     setHasChanges(content !== originalContent);
   }, [content, originalContent]);
 
-  // 保存用户页面
+  // Save the user page
   const handleSave = async () => {
     if (!canEdit || saving) return;
 
@@ -68,7 +68,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
       setOriginalContent(content);
       setHasChanges(false);
       setError(null);
-      setSuccessMessage('个人页面已保存成功！');
+      setSuccessMessage('The personal page has been saved successfully!');
 
       if (onSaved) {
         onSaved({
@@ -77,7 +77,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
         });
       }
 
-      // 延迟关闭以显示成功消息
+      // Delayed closing to display success message
       setTimeout(() => {
         if (onClose) {
           onClose();
@@ -85,7 +85,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
       }, 1500);
     } catch (err: any) {
       console.error('Failed to save user page:', err);
-      const errorMessage = err.response?.data?.error || '保存失败，请重试';
+      const errorMessage = err.response?.data?.error || 'Saving failed, please try again';
       setError(errorMessage);
       setSuccessMessage(null);
     } finally {
@@ -93,10 +93,10 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
     }
   };
 
-  // 取消编辑
+  // Cancel Edit
   const handleCancel = () => {
     if (hasChanges) {
-      if (window.confirm('您有未保存的更改，确定要放弃编辑吗？')) {
+      if (window.confirm('You have unsaved changes, are you sure you want to give up editing?')) {
         setContent(originalContent);
         setHasChanges(false);
         if (onClose) {
@@ -110,7 +110,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
     }
   };
 
-  // 快捷键处理
+  // Shortcut key processing
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -136,7 +136,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
       <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 ${className}`}>
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
-          <span className="ml-3 text-gray-600 dark:text-gray-400">加载编辑器中...</span>
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Loading in the editor...</span>
         </div>
       </div>
     );
@@ -148,7 +148,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
         <div className="text-center py-12">
           <FaEdit className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
-            无法编辑此页面
+            This page cannot be edited
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             {error}
@@ -158,7 +158,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
               onClick={onClose}
               className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
             >
-              关闭
+              closure
             </button>
           )}
         </div>
@@ -168,16 +168,16 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
 
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden ${className}`}>
-      {/* 头部 */}
+      {/* head */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
         <div className="flex items-center gap-3">
           <FaEdit className="w-5 h-5 text-pink-500" />
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              编辑个人页面
+              Edit Player page
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              为 {user.username} 编辑个人介绍
+              for {user.username} Editor for About Me
             </p>
           </div>
         </div>
@@ -185,7 +185,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
         <div className="flex items-center gap-2">
           {hasChanges && (
             <span className="text-xs text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded">
-              有未保存的更改
+              There are unsaved changes
             </span>
           )}
           
@@ -193,20 +193,20 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
             onClick={handleCancel}
             disabled={saving}
             className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="取消编辑 (Esc)"
+            title="Cancel Edit (Esc)"
           >
             <FaTimes className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           </button>
         </div>
       </div>
 
-      {/* 编辑器 */}
+      {/* Editor */}
       <div className="p-4">
         <BBCodeEditor
-          title="个人介绍"
+          title="About Me"
           value={content}
           onChange={setContent}
-          placeholder={`为 ${user.username} 编写个人介绍...\n\n你可以使用BBCode格式化文本，比如：\n[b]粗体文本[/b]\n[i]斜体文本[/i]\n[color=red]彩色文本[/color]\n\n点击工具栏按钮或使用快捷键来快速插入格式。`}
+          placeholder={`for ${user.username} Write your About Me...\n\nYou can useBBCodeFormat text, such as:\n[b]Bold text[/b]\n[i]Italic text[/i]\n[color=red]Colorful text[/color]\n\nClick the toolbar button or use shortcut keys to quickly insert the format.`}
           disabled={saving}
           className="min-h-[400px]"
         />
@@ -228,14 +228,14 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
         )}
       </div>
 
-      {/* 底部操作栏 */}
+      {/* Bottom Action Bar */}
       <div className="flex items-center justify-between p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/30">
         <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-          <span>字数: {content.length}/60000</span>
+          <span>Word count: {content.length}/60000</span>
           <span>•</span>
-          <span>支持BBCode格式</span>
+          <span>supportBBCodeFormat</span>
           <span>•</span>
-          <span>Ctrl+S 保存</span>
+          <span>Ctrl+S save</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -244,7 +244,7 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
             disabled={saving}
             className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            取消
+            Cancel
           </button>
           
           <button
@@ -255,12 +255,12 @@ const UserPageEditor: React.FC<UserPageEditorProps> = ({
             {saving ? (
               <>
                 <LoadingSpinner size="sm" />
-                <span>保存中...</span>
+                <span>savemiddle...</span>
               </>
             ) : (
               <>
                 <FaSave className="w-4 h-4" />
-                <span>保存</span>
+                <span>save</span>
               </>
             )}
           </button>

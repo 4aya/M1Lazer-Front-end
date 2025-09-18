@@ -24,7 +24,7 @@ const EditableCover: React.FC<EditableCoverProps> = ({
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // 当 coverUrl prop 变化时，更新本地状态
+  // when coverUrl prop Update local status when changes
   useEffect(() => {
     setCurrentCoverUrl(coverUrl);
     setImageError(false);
@@ -63,7 +63,7 @@ const EditableCover: React.FC<EditableCoverProps> = ({
               )}
               <img
                 src={currentCoverUrl}
-                alt={`${username}的头图`}
+                alt={`${username}Headline picture`}
                 className={`w-full h-full object-cover transition-opacity duration-200 ${
                   isLoading ? 'opacity-0' : 'opacity-100'
                 }`}
@@ -75,7 +75,7 @@ const EditableCover: React.FC<EditableCoverProps> = ({
             <div className="w-full h-full flex items-center justify-center text-white bg-gradient-to-r from-pink-400 to-teal-400">
               <div className="text-center">
                 <div className="text-6xl mb-2">🎨</div>
-                <p className="text-lg font-medium">暂无头图</p>
+                <p className="text-lg font-medium">Headless picture</p>
               </div>
             </div>
           )}
@@ -88,7 +88,7 @@ const EditableCover: React.FC<EditableCoverProps> = ({
           >
             <div className="text-white text-center">
               <FiEdit2 className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">更换头图</span>
+              <span className="text-sm font-medium">Replace the head image</span>
             </div>
           </button>
         )}

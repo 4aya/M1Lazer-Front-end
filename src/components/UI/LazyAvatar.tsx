@@ -17,11 +17,11 @@ const LazyAvatar: React.FC<LazyAvatarProps> = ({
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isInView, setIsInView] = useState(false);
-  // hasError 状态未被使用，移除以消除 TS 警告
+  // hasError The status is not used, remove to eliminate TS warn
   const [imageSrc, setImageSrc] = useState<string | undefined>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // 尺寸映射
+  // Size Mapping
   const sizeClasses = {
     sm: 'w-8 h-8',
     md: 'w-10 h-10',
@@ -52,7 +52,7 @@ const LazyAvatar: React.FC<LazyAvatarProps> = ({
   useEffect(() => {
     if (!isInView) return;
 
-    // 延迟加载头像，确保排行榜内容先显示
+    // Delay loading of avatars to ensure that the ranking content is displayed first
     const timer = setTimeout(() => {
       if (src) {
         const img = new Image();
@@ -69,7 +69,7 @@ const LazyAvatar: React.FC<LazyAvatarProps> = ({
         setImageSrc(fallback);
         setIsLoaded(true);
       }
-    }, 100); // 延迟100ms加载头像
+    }, 100); // Delay100msLoad avatar
 
     return () => clearTimeout(timer);
   }, [isInView, src, fallback]);
@@ -79,14 +79,14 @@ const LazyAvatar: React.FC<LazyAvatarProps> = ({
       ref={containerRef}
       className={`${sizeClasses[size]} ${className} relative overflow-hidden rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 transition-colors duration-200`}
     >
-      {/* 占位符背景 - 只在图片未加载时显示 */}
+      {/* Placeholder background - Only displayed when the image is not loaded */}
       {!isLoaded && (
         <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
           <div className="w-4 h-4 bg-gray-300 dark:bg-gray-600 rounded-full animate-pulse" />
         </div>
       )}
       
-      {/* 实际图片 */}
+      {/* Actual pictures */}
       {imageSrc && (
         <img
           src={imageSrc}

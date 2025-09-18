@@ -17,67 +17,67 @@ const BBCodeHelpModal: React.FC<BBCodeHelpModalProps> = ({ isOpen, onClose }) =>
 
   const bbcodeTags = [
     {
-      category: '文本格式',
+      category: 'Text format',
       tags: [
-        { tag: '[b]粗体[/b]', description: '粗体文本', example: '**粗体**' },
-        { tag: '[i]斜体[/i]', description: '斜体文本', example: '*斜体*' },
-        { tag: '[u]下划线[/u]', description: '下划线文本', example: '下划线文本' },
-        { tag: '[strike]删除线[/strike]', description: '删除线文本', example: '~~删除线~~' },
-        { tag: '[spoiler]剧透[/spoiler]', description: '剧透条，鼠标悬停显示', example: '███████' },
+        { tag: '[b]Bold[/b]', description: 'Boldtext', example: '**Bold**' },
+        { tag: '[i]Italic[/i]', description: 'Italictext', example: '*Italic*' },
+        { tag: '[u]Underline[/u]', description: 'Underlinetext', example: 'Underlinetext' },
+        { tag: '[strike]Delete line[/strike]', description: 'Delete linetext', example: '~~Delete line~~' },
+        { tag: '[spoiler]Spoiler[/spoiler]', description: 'Spoilerbar, mouse hover display', example: '███████' },
       ]
     },
     {
-      category: '颜色和大小',
+      category: 'Color and size',
       tags: [
-        { tag: '[color=red]红色[/color]', description: '彩色文本', example: '红色文本' },
-        { tag: '[color=#ff0000]红色[/color]', description: '十六进制颜色', example: '红色文本' },
-        { tag: '[size=150]大字[/size]', description: '字体大小 (50, 85, 100, 150)', example: '大字' },
+        { tag: '[color=red]red[/color]', description: 'Colorful text', example: 'redtext' },
+        { tag: '[color=#ff0000]red[/color]', description: 'Hexadecimal color', example: 'redtext' },
+        { tag: '[size=150]Large characters[/size]', description: 'Font size (50, 85, 100, 150)', example: 'Large characters' },
       ]
     },
     {
-      category: '排版',
+      category: 'typesetting',
       tags: [
-        { tag: '[centre]居中[/centre]', description: '居中对齐', example: '居中文本' },
-        { tag: '[heading]标题[/heading]', description: '大标题', example: '# 标题' },
-        { tag: '[quote]引用[/quote]', description: '引用块', example: '> 引用内容' },
-        { tag: '[quote="作者"]引用[/quote]', description: '带作者的引用', example: '> 作者: 引用内容' },
+        { tag: '[centre]Center[/centre]', description: 'CenterAlign', example: 'Centertext' },
+        { tag: '[heading]title[/heading]', description: 'bigtitle', example: '# title' },
+        { tag: '[quote]Quote[/quote]', description: 'Quotepiece', example: '> Quotecontent' },
+        { tag: '[quote="author"]Quote[/quote]', description: 'bringauthorofQuote', example: '> author: Quotecontent' },
       ]
     },
     {
-      category: '列表',
+      category: 'List',
       tags: [
-        { tag: '[list]\n[*]项目1\n[*]项目2\n[/list]', description: '无序列表', example: '• 项目1\n• 项目2' },
-        { tag: '[list=1]\n[*]项目1\n[*]项目2\n[/list]', description: '有序列表', example: '1. 项目1\n2. 项目2' },
+        { tag: '[list]\n[*]project1\n[*]project2\n[/list]', description: 'DisorderList', example: '• project1\n• project2' },
+        { tag: '[list=1]\n[*]project1\n[*]project2\n[/list]', description: 'OrderlyList', example: '1. project1\n2. project2' },
       ]
     },
     {
-      category: '代码',
+      category: 'Code',
       tags: [
-        { tag: '[c]行内代码[/c]', description: '行内代码', example: '`代码`' },
-        { tag: '[code]\n代码块\n[/code]', description: '代码块', example: '```\n代码块\n```' },
+        { tag: '[c]Inside the lineCode[/c]', description: 'Inside the lineCode', example: '`Code`' },
+        { tag: '[code]\nCodepiece\n[/code]', description: 'Codepiece', example: '```\nCodepiece\n```' },
       ]
     },
     {
-      category: '链接和媒体',
+      category: 'Links and Media',
       tags: [
-        { tag: '[url=链接]文本[/url]', description: '链接', example: '链接文本' },
-        { tag: '[profile=123456]用户[/profile]', description: '用户主页链接', example: '用户链接' },
-        { tag: '[email=邮箱]邮箱[/email]', description: '邮箱链接', example: '邮箱链接' },
-        { tag: '[img]图片URL[/img]', description: '插入图片', example: '[图片]' },
-        { tag: '[youtube]视频ID[/youtube]', description: 'YouTube视频', example: '[视频]' },
-        { tag: '[audio]音频URL[/audio]', description: '音频播放器', example: '[音频]' },
+        { tag: '[url=Link]text[/url]', description: 'Link', example: 'Linktext' },
+        { tag: '[profile=123456]user[/profile]', description: 'userHome pageLink', example: 'userLink' },
+        { tag: '[email=Mail]Mail[/email]', description: 'MailLink', example: 'MailLink' },
+        { tag: '[img]pictureURL[/img]', description: 'insertpicture', example: '[picture]' },
+        { tag: '[youtube]videoID[/youtube]', description: 'YouTubevideo', example: '[video]' },
+        { tag: '[audio]AudioURL[/audio]', description: 'AudioPlayer', example: '[Audio]' },
       ]
     },
     {
-      category: '交互元素',
+      category: 'Interactive elements',
       tags: [
-        { tag: '[box=标题]内容[/box]', description: '折叠框', example: '▼ 标题' },
-        { tag: '[spoilerbox]内容[/spoilerbox]', description: '剧透框', example: '▼ SPOILER' },
-        { tag: '[notice]通知[/notice]', description: '通知框', example: '⚠️ 重要通知' },
+        { tag: '[box=title]content[/box]', description: 'Folding frame', example: '▼ title' },
+        { tag: '[spoilerbox]content[/spoilerbox]', description: 'Spoilerbox', example: '▼ SPOILER' },
+        { tag: '[notice]notify[/notice]', description: 'notifybox', example: '⚠️ importantnotify' },
         { 
-          tag: '[imagemap]\n图片URL\n10.0 10.0 30.0 20.0 https://example.com 链接标题\n25.0 40.0 50.0 30.0 # 无链接区域\n[/imagemap]', 
-          description: '图片映射 - 在图片上创建可点击区域。格式：X Y 宽度 高度 链接 标题（百分比坐标）', 
-          example: '[交互图片]' 
+          tag: '[imagemap]\npictureURL\n10.0 10.0 30.0 20.0 https://example.com Linktitle\n25.0 40.0 50.0 30.0 # noneLinkarea\n[/imagemap]', 
+          description: 'pictureMapping - existpictureCreate on clickablearea. Format:X Y width high Link title(Percent coordinates)', 
+          example: '[Interactionpicture]' 
         },
       ]
     },
@@ -89,10 +89,10 @@ const BBCodeHelpModal: React.FC<BBCodeHelpModalProps> = ({ isOpen, onClose }) =>
       onClick={handleBackdropClick}
     >
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        {/* 头部 */}
+        {/* head */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            BBCode 标签帮助
+            BBCode Tag Help
           </h2>
           <button
             onClick={onClose}
@@ -102,11 +102,11 @@ const BBCodeHelpModal: React.FC<BBCodeHelpModalProps> = ({ isOpen, onClose }) =>
           </button>
         </div>
 
-        {/* 内容 */}
+        {/* content */}
         <div className="p-6 overflow-y-auto flex-1">
           <div className="space-y-6">
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              BBCode 是一种轻量级标记语言，用于格式化文本。您可以使用以下标签来美化您的个人介绍：
+              BBCode is a lightweight markup language for formattingtext. You can use the following tags to beautify you of your About Me:
             </div>
 
             {bbcodeTags.map((category, categoryIndex) => (
@@ -126,7 +126,7 @@ const BBCodeHelpModal: React.FC<BBCodeHelpModalProps> = ({ isOpen, onClose }) =>
                         </div>
                       </div>
                       <div className="text-sm text-gray-700 dark:text-gray-300">
-                        <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">效果预览:</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-500 mb-1">Effect preview:</div>
                         <div className="whitespace-pre-line">{tag.example}</div>
                       </div>
                     </div>
@@ -137,26 +137,26 @@ const BBCodeHelpModal: React.FC<BBCodeHelpModalProps> = ({ isOpen, onClose }) =>
 
             <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
               <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-                提示
+                hint
               </h4>
               <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                <li>• 标签可以嵌套使用，如 [b][i]粗斜体[/i][/b]</li>
-                <li>• 标签必须正确配对，开始和结束标签要对应</li>
-                <li>• 某些标签如 [color] 和 [size] 需要参数</li>
-                <li>• 可以使用工具栏按钮快速插入标签</li>
-                <li>• 使用预览功能查看最终效果</li>
+                <li>• Tags can be used in nesting, such as [b][i]thickItalic[/i][/b]</li>
+                <li>• The tags must be paired correctly, and the start and end tags must correspond to</li>
+                <li>• Some tags such as [color] and [size] Required parameters</li>
+                <li>• You can quickly insert labels using toolbar buttons</li>
+                <li>• Use the preview function to view the final effect</li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* 底部 */}
+        {/* bottom */}
         <div className="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-osu-pink hover:bg-pink-600 text-white rounded-lg transition-colors"
           >
-            关闭
+            closure
           </button>
         </div>
       </div>

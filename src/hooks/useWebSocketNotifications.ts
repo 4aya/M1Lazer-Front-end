@@ -10,7 +10,7 @@ import type {
 } from '../types';
 import { showCustomToast } from '../components/CustomToast';
 
-// 生成唯一通知 ID 的函数
+// Generate a unique notification ID Functions of
 let notificationIdCounter = 0;
 const generateUniqueNotificationId = (): number => {
   return Date.now() * 10000 + (++notificationIdCounter % 10000);
@@ -23,38 +23,38 @@ interface UseWebSocketNotificationsProps {
   onNewNotification?: (notification: APINotification) => void;
 }
 
-// ---------------- 全局单例状态，防止重复建立多个 WebSocket 连接 ----------------
-let globalWsRef: WebSocket | null = null; // 共享连接
-let globalConnecting = false; // 连接中标记
-let globalIsConnected = false; // 全局连接状态
-let globalConnectionError: string | null = null; // 全局连接错误
+// ---------------- Global singleton state to prevent repeated establishment of multiple WebSocket connect ----------------
+let globalWsRef: WebSocket | null = null; // sharedconnect
+let globalConnecting = false; // connectmiddlemark
+let globalIsConnected = false; // Globalconnectstate
+let globalConnectionError: string | null = null; // Globalconnectmistake
 const globalMessageListeners = new Set<(m: ChatMessage) => void>();
 const globalNotificationListeners = new Set<(n: APINotification) => void>();
-const globalConnectionStateListeners = new Set<(connected: boolean, error: string | null) => void>(); // 连接状态监听器
-let globalEndpointCache: string | null = null; // 端点缓存
+const globalConnectionStateListeners = new Set<(connected: boolean, error: string | null) => void>(); // connectstateListener
+let globalEndpointCache: string | null = null; // Endpoint Cache
 
-// 分发函数
+// Distribution functions
 const dispatchChatMessage = (msg: ChatMessage) => {
   if (globalMessageListeners.size === 0) {
     messageBuffer.push(msg);
     return;
   }
-  globalMessageListeners.forEach(fn => { try { fn(msg); } catch (e) { console.error('分发聊天消息给监听器失败', e); } });
+  globalMessageListeners.forEach(fn => { try { fn(msg); } catch (e) { console.error('Failed to distribute chat messages to listeners', e); } });
 };
 const dispatchNotification = (n: APINotification) => {
   if (globalNotificationListeners.size === 0) {
     notificationBuffer.push(n);
     return;
   }
-  globalNotificationListeners.forEach(fn => { try { fn(n); } catch (e) { console.error('分发通知给监听器失败', e); } });
+  globalNotificationListeners.forEach(fn => { try { fn(n); } catch (e) { console.error('Distributing notification to listener failed', e); } });
 };
 const dispatchConnectionState = (connected: boolean, error: string | null) => {
   globalIsConnected = connected;
   globalConnectionError = error;
-  globalConnectionStateListeners.forEach(fn => { try { fn(connected, error); } catch (e) { console.error('分发连接状态给监听器失败', e); } });
+  globalConnectionStateListeners.forEach(fn => { try { fn(connected, error); } catch (e) { console.error('distributionconnectstateGiveListenerfail', e); } });
 };
 
-// 缓冲队列（在监听器尚未挂载时暂存）
+// Buffer queue (staged when the listener is not mounted)
 const messageBuffer: ChatMessage[] = [];
 const notificationBuffer: APINotification[] = [];
 
@@ -73,16 +73,16 @@ export const useWebSocketNotifications = ({
   const reconnectDelayBase = 1000;
   const endpointCacheRef = useRef<string | null>(null);
   const lastConnectAttemptRef = useRef<number>(0);
-  const connectionThrottleMs = 2000; // 2秒内不重复连接
+  const connectionThrottleMs = 2000; // 2No repeat within secondsconnect
 
-  // 获取WebSocket端点（带缓存）
+  // GetWebSocketEndpoint (with cache)
   const getWebSocketEndpoint = useCallback(async (): Promise<string | null> => {
     if (!isAuthenticated) {
       endpointCacheRef.current = null;
       globalEndpointCache = null;
       return null;
     }
-    // 先用全局缓存
+    // Use global cache first
     if (globalEndpointCache) return globalEndpointCache;
     if (endpointCacheRef.current) return endpointCacheRef.current;
     try {
@@ -96,60 +96,60 @@ export const useWebSocketNotifications = ({
     }
   }, [isAuthenticated]);
 
-  // 发送消息到WebSocket
+  // Send a message toWebSocket
   const sendMessage = useCallback((message: SocketMessage) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify(message));
     }
   }, []);
 
-  // 处理WebSocket消息
+  // deal withWebSocketinformation
   const handleMessage = useCallback((event: MessageEvent) => {
     try {
       const message: SocketMessage = JSON.parse(event.data);
-      console.log('WebSocket收到原始消息:', message);
+      console.log('WebSocketReceived originalinformation:', message);
       
-  // 处理各种聊天消息事件
+  // deal withVarious chatsinformationevent
       if (message.event === 'chat.message.new' || 
           message.event === 'new_message' || 
           message.event === 'message') {
         const chatEvent = message as ChatEvent;
-        console.log('聊天事件数据:', chatEvent.data);
+        console.log('Chat event data:', chatEvent.data);
         
         if (chatEvent.data?.messages) {
-          console.log('处理消息数组:', chatEvent.data.messages);
+          console.log('deal withinformationArray:', chatEvent.data.messages);
           chatEvent.data.messages.forEach(msg => {
-            // 过滤自己的消息
+            // Filter your owninformation
             if (msg.sender_id && currentUser && msg.sender_id === currentUser.id) {
-              console.log(`✓ 过滤自己的聊天消息: ${msg.message_id}, 发送者ID: ${msg.sender_id}`);
+              console.log(`✓ Filter your ownchatinformation: ${msg.message_id}, SenderID: ${msg.sender_id}`);
               return;
             }
-            console.log('发送他人消息到回调:', msg);
+            console.log('Send to othersinformationTo callback:', msg);
             dispatchChatMessage(msg);
           });
         } else if ((chatEvent.data as any)?.message) {
-          // 可能是单个消息而不是数组
+          // Probably a singleinformationInsteadArray
           const msg = (chatEvent.data as any).message as ChatMessage;
-          // 过滤自己的消息
+          // Filter your owninformation
           if (msg.sender_id && currentUser && msg.sender_id === currentUser.id) {
-            console.log(`✓ 过滤自己的单个聊天消息: ${msg.message_id}, 发送者ID: ${msg.sender_id}`);
+            console.log(`✓ Filter your ownsinglechatinformation: ${msg.message_id}, SenderID: ${msg.sender_id}`);
             return;
           }
-          console.log('处理他人单个消息:', msg);
+          console.log('deal withOthers are singleinformation:', msg);
           dispatchChatMessage(msg);
         } else if (chatEvent.data && typeof chatEvent.data === 'object') {
-          // 可能消息数据直接在data中
+          // possibleinformationDirect dataexistdatamiddle
           const msg = chatEvent.data as ChatMessage;
-          // 过滤自己的消息
+          // Filter your owninformation
           if (msg.sender_id && currentUser && msg.sender_id === currentUser.id) {
-            console.log(`✓ 过滤自己的直接消息数据: ${msg.message_id}, 发送者ID: ${msg.sender_id}`);
+            console.log(`✓ Filter your own directinformationdata: ${msg.message_id}, SenderID: ${msg.sender_id}`);
             return;
           }
-          console.log('处理他人直接消息数据:', msg);
+          console.log('deal withOthers are directinformationdata:', msg);
           dispatchChatMessage(msg);
         }
       }
-      // 处理直接的消息格式（服务器直接发送ChatMessage格式的数据）
+      // deal withDirectinformationFormat(Send directly to the serverChatMessageFormat data)
       else if (message.data && 
                typeof message.data === 'object' && 
                'message_id' in message.data && 
@@ -157,8 +157,8 @@ export const useWebSocketNotifications = ({
                'content' in message.data && 
                'sender_id' in message.data && 
                'timestamp' in message.data) {
-        // 服务器直接发送ChatMessage格式的消息
-        console.log('处理直接ChatMessage格式:', message.data);
+        // Send directly to the serverChatMessageFormatofinformation
+        console.log('deal withdirectChatMessageFormat:', message.data);
         const chatMessage: ChatMessage = {
           message_id: message.data.message_id as number,
           channel_id: message.data.channel_id as number,
@@ -170,22 +170,22 @@ export const useWebSocketNotifications = ({
           uuid: message.data.uuid as string | undefined
         };
         
-        // 过滤自己的消息
+        // Filter your owninformation
         if (chatMessage.sender_id && currentUser && chatMessage.sender_id === currentUser.id) {
-          console.log(`✓ 过滤自己的直接ChatMessage: ${chatMessage.message_id}, 发送者ID: ${chatMessage.sender_id}`);
+          console.log(`✓ Filter your own directChatMessage: ${chatMessage.message_id}, SenderID: ${chatMessage.sender_id}`);
           return;
         }
         
   dispatchChatMessage(chatMessage);
       }
-      // 如果消息本身就是ChatMessage格式（没有嵌套在data中）
+      // ifinformationIt's itselfChatMessageFormat(No nestingexistdatamiddle)
       else if ('message_id' in message && 
                'channel_id' in message && 
                'content' in message && 
                'sender_id' in message && 
                'timestamp' in message) {
-        // 消息直接是ChatMessage格式
-        console.log('处理直接消息格式（无嵌套）:', message);
+        // informationdirectyesChatMessageFormat
+        console.log('deal withdirectinformationFormat(No nesting):', message);
         const chatMessage: ChatMessage = {
           message_id: (message as any).message_id,
           channel_id: (message as any).channel_id,
@@ -197,22 +197,22 @@ export const useWebSocketNotifications = ({
           uuid: (message as any).uuid
         };
         
-        // 过滤自己的消息
+        // Filter your owninformation
         if (chatMessage.sender_id && currentUser && chatMessage.sender_id === currentUser.id) {
-          console.log(`✓ 过滤自己的无嵌套消息: ${chatMessage.message_id}, 发送者ID: ${chatMessage.sender_id}`);
+          console.log(`✓ Filter your ownNo nestinginformation: ${chatMessage.message_id}, SenderID: ${chatMessage.sender_id}`);
           return;
         }
         
   dispatchChatMessage(chatMessage);
       }
       
-      // 处理新通知
+      // deal withNew notice
       else if (message.event === 'new_private_notification') {
         const notificationEvent = message as NotificationEvent;
         if (notificationEvent.data) {
-          // 检查是否是自己的消息，如果是则不显示通知
+          // examineyesnoyesOwnofinformation,ifyesIt will not be displayednotify
           if (notificationEvent.data.source_user_id && currentUser && notificationEvent.data.source_user_id === currentUser.id) {
-            console.log(`✓ 过滤自己的私人通知: ${notificationEvent.data.source_user_id}, 当前用户ID: ${currentUser.id}`);
+            console.log(`✓ Filter your own private notifications: ${notificationEvent.data.source_user_id}, Current userID: ${currentUser.id}`);
             return;
           }
 
@@ -229,12 +229,12 @@ export const useWebSocketNotifications = ({
           
           dispatchNotification(notification);
           
-          // 显示自定义通知提示
+          // Show custom notification prompts
           const notificationTitle = getNotificationTitle(notification);
           if (notificationTitle) {
             showCustomToast({
               title: notificationTitle,
-              message: '您有新的通知',
+              message: 'You have new notifications',
               sourceUserId: notification.source_user_id,
               type: 'default'
             });
@@ -242,66 +242,66 @@ export const useWebSocketNotifications = ({
         }
       }
       
-      // 处理新的通知事件（包括私聊通知）
+      // deal withnewofnotifyevent(includePrivate chatnotify)
       else if (message.event === 'new') {
-        console.log('处理新通知事件:', message);
+        console.log('deal withNew noticeevent:', message);
         
         if (message.data && typeof message.data === 'object') {
           const data = message.data as any;
           
-          // 根据频道类型创建相应的通知
+          // Create corresponding notifications based on channel type
           if (data.category === 'channel' && data.name === 'channel_message') {
             const channelType = data.details?.type?.toLowerCase();
-            console.log(`检测到频道通知，类型: ${channelType}`, data);
+            console.log(`Channel notification detected, type: ${channelType}`, data);
             
             let notificationName = 'channel_message';
-            let defaultTitle = '频道消息';
+            let defaultTitle = 'Channelinformation';
             
-            // 根据频道类型设置通知名称和默认标题
+            // Set notification name and default title according to channel type
             switch (channelType) {
               case 'pm':
                 notificationName = 'channel_message';
-                defaultTitle = '私聊消息';
+                defaultTitle = 'Private chatinformation';
                 break;
               case 'team':
                 notificationName = 'channel_team';
-                defaultTitle = '团队消息';
+                defaultTitle = 'teaminformation';
                 break;
               case 'public':
                 notificationName = 'channel_public';
-                defaultTitle = '公共频道';
+                defaultTitle = 'Public Channel';
                 break;
               case 'private':
                 notificationName = 'channel_private';
-                defaultTitle = '私有频道';
+                defaultTitle = 'Private Channel';
                 break;
               case 'multiplayer':
                 notificationName = 'channel_multiplayer';
-                defaultTitle = '多人游戏';
+                defaultTitle = 'Multiplayer Game';
                 break;
               case 'spectator':
                 notificationName = 'channel_spectator';
-                defaultTitle = '观战频道';
+                defaultTitle = 'Watch Channel';
                 break;
               case 'temporary':
                 notificationName = 'channel_temporary';
-                defaultTitle = '临时频道';
+                defaultTitle = 'Temporary Channel';
                 break;
               case 'group':
                 notificationName = 'channel_group';
-                defaultTitle = '群组频道';
+                defaultTitle = 'Group Channel';
                 break;
               case 'system':
                 notificationName = 'channel_system';
-                defaultTitle = '系统频道';
+                defaultTitle = 'System Channel';
                 break;
               case 'announce':
                 notificationName = 'channel_announce';
-                defaultTitle = '公告频道';
+                defaultTitle = 'Announcement Channel';
                 break;
               default:
                 notificationName = 'channel_message';
-                defaultTitle = '频道消息';
+                defaultTitle = 'Channelinformation';
                 break;
             }
             
@@ -320,18 +320,18 @@ export const useWebSocketNotifications = ({
               }
             };
             
-            console.log(`创建${defaultTitle}通知对象:`, notification, '根据source_user_id判断是不是自己消息 - source_user_id:', notification.source_user_id);
+            console.log(`create${defaultTitle}Notify the object:`, notification, 'according tosource_user_idDetermine whether it is yourselfinformation - source_user_id:', notification.source_user_id);
             
-            // 检查是否是自己的消息，如果是则不创建通知
+            // examineyesnoyesOwnofinformation,ifyesThen nocreatenotify
             if (notification.source_user_id && currentUser && notification.source_user_id === currentUser.id) {
-              console.log(`✓ 在WebSocket层过滤自己的消息通知: ${notification.id}, 发送者ID: ${notification.source_user_id}, 当前用户ID: ${currentUser.id}`);
-              return; // 直接返回，不调用 onNewNotification
+              console.log(`✓ existWebSocketlayerFilter your owninformationnotify: ${notification.id}, SenderID: ${notification.source_user_id}, Current userID: ${currentUser.id}`);
+              return; // Return directly, without calling onNewNotification
             }
             
-            console.log(`✓ 准备发送他人的消息通知: ${notification.id}`);
+            console.log(`✓ PrepareSend to othersofinformationnotify: ${notification.id}`);
             dispatchNotification(notification);
             
-            // 显示自定义通知提示
+            // Show custom notification prompts
             const notificationTitle = getNotificationTitle(notification);
             if (notificationTitle) {
               const toastType = channelType === 'pm' ? 'pm' : 
@@ -341,44 +341,44 @@ export const useWebSocketNotifications = ({
               let toastMessage = '';
               switch (channelType) {
                 case 'pm':
-                  // 显示实际的消息内容
+                  // Show actualofinformationcontent
                   const messageContent = data.details?.title as string;
-                  if (messageContent && messageContent.length > 0 && messageContent !== '来自用户') {
-                    // 如果消息被截断，显示提示
+                  if (messageContent && messageContent.length > 0 && messageContent !== 'From the user') {
+                    // ifinformationTrunked, display prompt
                     if (messageContent.length >= 36) {
-                      toastMessage = `${messageContent}... (可能有更多内容)`;
+                      toastMessage = `${messageContent}... (There may be more content)`;
                     } else {
                       toastMessage = messageContent;
                     }
                   } else {
-                    toastMessage = '发送了一条私聊消息';
+                    toastMessage = 'Sent onestripPrivate chatinformation';
                   }
                   break;
                 case 'team':
                   const teamMessage = data.details?.title as string;
-                  toastMessage = teamMessage || '在团队频道发送了消息';
+                  toastMessage = teamMessage || 'existTeam ChannelSentinformation';
                   break;
                 case 'public':
                   const publicMessage = data.details?.title as string;
-                  toastMessage = publicMessage || '在公共频道发送了消息';
+                  toastMessage = publicMessage || 'existPublic ChannelSentinformation';
                   break;
                 default:
                   const generalMessage = data.details?.title as string;
-                  toastMessage = generalMessage || '发送了一条消息';
+                  toastMessage = generalMessage || 'Sent onestripinformation';
                   break;
               }
               
               showCustomToast({
-                title: channelType === 'pm' ? '新私聊消息' : notificationTitle,
+                title: channelType === 'pm' ? 'newPrivate chatinformation' : notificationTitle,
                 message: toastMessage,
                 sourceUserId: notification.source_user_id,
                 type: toastType
               });
             }
           }
-          // 其他类型的通知
+          // Other types of notifications
           else {
-            console.log('检测到其他类型通知:', data);
+            console.log('Other types of notifications detected:', data);
             
             const notification: APINotification = {
               id: generateUniqueNotificationId(),
@@ -391,22 +391,22 @@ export const useWebSocketNotifications = ({
               details: data.details || {}
             };
             
-            console.log('创建通用通知对象:', notification);
+            console.log('createGeneralNotify the object:', notification);
             
-            // 检查是否是自己的消息，如果是则不显示通知
+            // examineyesnoyesOwnofinformation,ifyesIt will not be displayednotify
             if (notification.source_user_id && currentUser && notification.source_user_id === currentUser.id) {
-              console.log(`✓ 过滤自己的通用通知: ${notification.id}, 发送者ID: ${notification.source_user_id}`);
+              console.log(`✓ Filter your own general notifications: ${notification.id}, SenderID: ${notification.source_user_id}`);
               return;
             }
             
             dispatchNotification(notification);
             
-            // 显示自定义通用通知提示
+            // Show custom universal notification prompts
             const notificationTitle = getNotificationTitle(notification);
             if (notificationTitle) {
               showCustomToast({
                 title: notificationTitle,
-                message: '您有新的通知',
+                message: 'You have new notifications',
                 sourceUserId: notification.source_user_id,
                 type: 'default'
               });
@@ -415,7 +415,7 @@ export const useWebSocketNotifications = ({
         }
       }
       
-      // 处理错误消息
+      // deal withmistakeinformation
       if (message.error) {
         console.error('WebSocket error:', message.error);
         setConnectionError(message.error);
@@ -426,18 +426,18 @@ export const useWebSocketNotifications = ({
     }
   }, [onNewMessage, onNewNotification, currentUser]);
 
-  // 重新绑定处理函数（单例复用）
+  // Rebinddeal withfunction(Single caseReuse)
   useEffect(() => {
     if (globalWsRef) {
-      console.log('[WebSocket] 重新绑定 onmessage 处理函数 (依赖更新, 单例)');
+      console.log('[WebSocket] Rebind onmessage deal withfunction (Depend on updates, Single case)');
       globalWsRef.onmessage = handleMessage;
       wsRef.current = globalWsRef;
     }
   }, [handleMessage]);
 
-  // 注册监听器（组件层）
+  // Register Listener (Component Layer)
   useEffect(() => {
-    // 注册连接状态监听器
+    // registerconnectstateListener
     const connectionStateListener = (connected: boolean, error: string | null) => {
       setIsConnected(connected);
       setConnectionError(error);
@@ -450,93 +450,93 @@ export const useWebSocketNotifications = ({
     if (onNewNotification) {
       globalNotificationListeners.add(onNewNotification);
     }
-    // 回放缓冲（只在新增监听器时执行一次）
+    // Replay buffering(OnlyexistnewincreaseListenerExecute once)
     if (onNewMessage && messageBuffer.length) {
-      console.log(`[WebSocket] 回放缓冲消息 ${messageBuffer.length} 条`);
+      console.log(`[WebSocket] Replay bufferinginformation ${messageBuffer.length} strip`);
       messageBuffer.splice(0).forEach(m => { try { onNewMessage(m); } catch {} });
     }
     if (onNewNotification && notificationBuffer.length) {
-      console.log(`[WebSocket] 回放缓冲通知 ${notificationBuffer.length} 条`);
+      console.log(`[WebSocket] Replay buffer notifications ${notificationBuffer.length} strip`);
       notificationBuffer.splice(0).forEach(n => { try { onNewNotification(n); } catch {} });
     }
     return () => {
       globalConnectionStateListeners.delete(connectionStateListener);
       if (onNewMessage) globalMessageListeners.delete(onNewMessage);
       if (onNewNotification) globalNotificationListeners.delete(onNewNotification);
-      // 不再在每次监听器清理时立即关闭连接，避免由于组件重渲染导致的闪断。
-      // 连接关闭交由 disconnect()（认证失效或真正卸载）管理。
+      // no longerexistClose immediately every time the listener is cleanedconnect,Avoid component re-renderingofFlash break.
+      // connectClose and hand over disconnect()(Certification invalid or real uninstall) Management.
     };
   }, [onNewMessage, onNewNotification]);
 
-  // 获取通知标题
+  // Getnotifytitle
   const getNotificationTitle = (notification: APINotification): string => {
     switch (notification.name) {
       case 'team_application_store':
-        return `${notification.details.title} 申请加入团队`;
+        return `${notification.details.title} Apply to join the team`;
       case 'team_application_accept':
-        return `您的团队申请已被接受`;
+        return `Your team application has been accepted`;
       case 'team_application_reject':
-        return `您的团队申请已被拒绝`;
+        return `Your team application has been denied`;
       case 'channel_message':
-        // 根据类型显示不同的标题
+        // according toTypes are displayed differentlyoftitle
         if (notification.details?.type === 'pm') {
-          return `新私聊消息: ${notification.details.title || '来自用户'}`;
+          return `newPrivate chatinformation: ${notification.details.title || 'From the user'}`;
         } else if (notification.details?.type === 'team') {
-          return `新团队消息: ${notification.details.title || '团队频道'}`;
+          return `newteaminformation: ${notification.details.title || 'Team Channel'}`;
         }
-        return `新私聊消息`;
+        return `newPrivate chatinformation`;
       case 'channel_team':
-        return `新团队消息: ${notification.details?.title || '团队频道'}`;
+        return `newteaminformation: ${notification.details?.title || 'Team Channel'}`;
       case 'channel_public':
-        return `新公共频道消息: ${notification.details?.title || '公共频道'}`;
+        return `newPublic Channelinformation: ${notification.details?.title || 'Public Channel'}`;
       case 'channel_private':
-        return `新私有频道消息: ${notification.details?.title || '私有频道'}`;
+        return `newPrivate Channelinformation: ${notification.details?.title || 'Private Channel'}`;
       case 'channel_multiplayer':
-        return `新多人游戏消息: ${notification.details?.title || '多人游戏'}`;
+        return `newMultiplayer Gameinformation: ${notification.details?.title || 'Multiplayer Game'}`;
       case 'channel_spectator':
-        return `新观战频道消息: ${notification.details?.title || '观战频道'}`;
+        return `newWatch Channelinformation: ${notification.details?.title || 'Watch Channel'}`;
       case 'channel_temporary':
-        return `新临时频道消息: ${notification.details?.title || '临时频道'}`;
+        return `newTemporary Channelinformation: ${notification.details?.title || 'Temporary Channel'}`;
       case 'channel_group':
-        return `新群组消息: ${notification.details?.title || '群组频道'}`;
+        return `newGroupsinformation: ${notification.details?.title || 'Group Channel'}`;
       case 'channel_system':
-        return `新系统消息: ${notification.details?.title || '系统频道'}`;
+        return `newsysteminformation: ${notification.details?.title || 'System Channel'}`;
       case 'channel_announce':
-        return `新公告: ${notification.details?.title || '公告频道'}`;
+        return `New announcement: ${notification.details?.title || 'Announcement Channel'}`;
       default:
-        // 尝试从details中获取更有意义的标题
+        // Try fromdetailsmiddleGetMore meaningfuloftitle
         if (notification.details?.title) {
-          return `新通知: ${notification.details.title}`;
+          return `New notice: ${notification.details.title}`;
         }
-        return '新通知';
+        return 'New notice';
     }
   };
 
-  // WebSocket连接
+  // WebSocketconnect
   const connect = useCallback(async () => {
   if (!isAuthenticated) return;
 
-    // 节流机制：避免频繁连接
+    // Throttle mechanism: Avoid frequentconnect
     const now = Date.now();
   if (now - lastConnectAttemptRef.current < connectionThrottleMs) {
-      console.log('连接请求过于频繁，已跳过');
+      console.log('connectRequests are too frequent and have been skipped');
       return;
     }
     lastConnectAttemptRef.current = now;
 
-    // 若全局连接已存在并且未关闭，复用
+    // likeGlobalconnectSavedexistAnd not closed, reused
     if (globalWsRef && (globalWsRef.readyState === WebSocket.OPEN || globalWsRef.readyState === WebSocket.CONNECTING)) {
-      console.log('[WebSocket] 复用已有全局连接');
+      console.log('[WebSocket] ReusealreadyhaveGlobalconnect');
       wsRef.current = globalWsRef;
       if (globalWsRef.readyState === WebSocket.OPEN) {
-        // 同步当前连接状态到本地状态
+        // Synchronize the currentconnectstateGo to the local areastate
         setIsConnected(globalIsConnected);
         setConnectionError(globalConnectionError);
       }
       return;
     }
     if (globalConnecting) {
-      console.log('[WebSocket] 已在建立连接中，跳过新建');
+      console.log('[WebSocket] alreadyexistEstablishconnectmiddle,jump overnewestablish');
       return;
     }
     globalConnecting = true;
@@ -550,19 +550,19 @@ export const useWebSocketNotifications = ({
     try {
       dispatchConnectionState(false, null);
       
-      // 构建WebSocket URL，添加认证参数
+      // BuildWebSocket URL, add authentication parameters
       const token = localStorage.getItem('access_token');
       if (!token) {
         dispatchConnectionState(false, 'No access token available');
         return;
       }
 
-      // 确保endpoint是完整的WebSocket URL
+      // make sureendpointIt's completeWebSocket URL
       let wsUrl: string;
       if (endpoint.startsWith('ws://') || endpoint.startsWith('wss://')) {
         wsUrl = `${endpoint}?access_token=${encodeURIComponent(token)}`;
       } else {
-        // 如果是相对路径，构建完整的WebSocket URL
+        // ifyesRelative path,BuildwholeofWebSocket URL
         const baseUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
         const host = window.location.host;
         wsUrl = `${baseUrl}${host}${endpoint}?access_token=${encodeURIComponent(token)}`;
@@ -571,25 +571,25 @@ export const useWebSocketNotifications = ({
   globalWsRef = ws;
       
       ws.onopen = () => {
-        console.log('WebSocket connected (单例)');
+        console.log('WebSocket connected (Single case)');
         dispatchConnectionState(true, null);
         reconnectAttemptsRef.current = 0;
         globalConnecting = false;
         
-        // 发送启动消息
+        // Send Startinformation
         ws.send(JSON.stringify({
           event: 'chat.start'
         }));
       };  ws.onmessage = handleMessage;
 
       ws.onclose = (event) => {
-        console.log('WebSocket disconnected (单例):', event.code, event.reason);
+        console.log('WebSocket disconnected (Single case):', event.code, event.reason);
         dispatchConnectionState(false, null);
         if (wsRef.current === ws) wsRef.current = null;
         if (globalWsRef === ws) globalWsRef = null;
         globalConnecting = false;
         
-        // 自动重连
+        // Automatic reconnection
         if (isAuthenticated && (globalMessageListeners.size > 0 || globalNotificationListeners.size > 0) && reconnectAttemptsRef.current < maxReconnectAttempts) {
           const delay = reconnectDelayBase * Math.pow(2, reconnectAttemptsRef.current);
           reconnectAttemptsRef.current++;
@@ -605,7 +605,7 @@ export const useWebSocketNotifications = ({
       };
 
       ws.onerror = (error) => {
-        console.error('WebSocket error (单例):', error);
+        console.error('WebSocket error (Single case):', error);
         console.log('WebSocket URL:', wsUrl);
         console.log('Endpoint:', endpoint);
         dispatchConnectionState(false, `WebSocket connection error: ${endpoint}`);
@@ -620,13 +620,13 @@ export const useWebSocketNotifications = ({
     }
   }, [isAuthenticated, getWebSocketEndpoint, handleMessage]);
 
-  // 断开连接
+  // disconnectconnect
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
-    // 只有当没有剩余监听器时才真正关闭全局连接
+    // OnlyhaveWhen nothaveRemainingListenerIt's really closedGlobalconnect
     const shouldClose = globalMessageListeners.size === 0 && globalNotificationListeners.size === 0;
     if (shouldClose && globalWsRef) {
       try {
@@ -645,7 +645,7 @@ export const useWebSocketNotifications = ({
     dispatchConnectionState(false, null);
     reconnectAttemptsRef.current = 0;
     
-    // 清理缓存
+    // Clean up the cache
     if (shouldClose) {
       endpointCacheRef.current = null;
       globalEndpointCache = null;
@@ -653,7 +653,7 @@ export const useWebSocketNotifications = ({
     }
   }, []);
 
-  // 管理连接状态
+  // manageconnectstate
   useEffect(() => {
     if (isAuthenticated) {
       connect();
@@ -665,7 +665,7 @@ export const useWebSocketNotifications = ({
     };
   }, [isAuthenticated]);
 
-  // 页面可见性变化时重连
+  // Reconnect when page visibility changes
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible' && isAuthenticated && !isConnected) {

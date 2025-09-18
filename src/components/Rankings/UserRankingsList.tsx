@@ -17,8 +17,8 @@ const UserRankingsList: React.FC<Props> = ({ rankings, currentPage, selectedMode
         <div className="bg-gray-100 dark:bg-gray-700 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
           <FiAward className="text-4xl text-gray-400 dark:text-gray-500" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">暂无排行榜数据</h3>
-        <p className="text-gray-500 dark:text-gray-400">当前筛选条件下没有找到数据</p>
+        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No ranking data yet.</h3>
+        <p className="text-gray-500 dark:text-gray-400">No data was found under the current filter conditions.</p>
       </div>
     );
   }

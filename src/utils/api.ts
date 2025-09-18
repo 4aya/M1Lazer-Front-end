@@ -9,7 +9,7 @@ export const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: false, // 确保不发送cookies避免CORS问题
+  withCredentials: false, // Make sure not to sendcookiesavoidCORSquestion
 });
 
 // Request interceptor to add auth token
@@ -70,8 +70,8 @@ export const authAPI = {
   register: async (username: string, email: string, password: string) => {
     console.log('Register attempt with:', { username, email }); // Debug log
     
-    // 使用 URLSearchParams 来确保正确的 application/x-www-form-urlencoded 格式
-    // 后端期望的字段名格式是 user[fieldname]
+    // use URLSearchParams To ensure the correct application/x-www-form-urlencoded Format
+    // Backend expectationsofField nameFormatyes user[fieldname]
     const formData = new URLSearchParams();
     formData.append('user[username]', username);
     formData.append('user[user_email]', email);
@@ -127,72 +127,72 @@ export const userAPI = {
     return response.data;
   },
 
-  // 获取用户头像URL
+  // Get user profile pictureURL
   getAvatarUrl: (userId: number, bustCache: boolean = false) => {
-    // 根据osu_lazer_api-main的实现，构建头像URL
-    // 如果用户有自定义头像，会返回完整URL；否则返回默认头像
+    // according toosu_lazer_api-mainImplementation, build avatarURL
+    // If the user has a custom avatar, the full image will be returnedURL; Otherwise, return to the default avatar
     const baseUrl = `${API_BASE_URL}/users/${userId}/avatar`;
-    // 在需要时添加时间戳破坏缓存
+    // Add timestamp to corrupt cache if needed
     return bustCache ? `${baseUrl}?t=${Date.now()}` : baseUrl;
   },
 
-  // 上传用户头像
+  // Upload user avatar
   uploadAvatar: async (imageFile: File | Blob) => {
-    console.log('开始上传头像，文件类型:', imageFile.type, '文件大小:', imageFile.size);
+    console.log('Start uploading avatar, file type:', imageFile.type, 'File size:', imageFile.size);
     
     const formData = new FormData();
-    // 根据blob类型确定文件扩展名
+    // according toblobType determines file extension
     const isJpeg = imageFile.type === 'image/jpeg';
     const fileName = isJpeg ? 'avatar.jpg' : 'avatar.png';
     formData.append('content', imageFile, fileName);
     
-    // 验证FormData内容
-    console.log('FormData内容:');
+    // verifyFormDatacontent
+    console.log('FormDatacontent:');
     for (const [key, value] of formData.entries()) {
       console.log(key, value);
       if (value instanceof Blob) {
-        console.log(`  类型: ${value.type}, 大小: ${value.size}`);
+        console.log(`  type: ${value.type}, size: ${value.size}`);
       }
     }
 
-    // 获取token
+    // Gettoken
     const token = localStorage.getItem('access_token');
     if (!token) {
-      throw new Error('未找到访问令牌，请重新登录');
+      throw new Error('The access token was not found, please log in again');
     }
 
-    console.log('准备发送请求到:', `${API_BASE_URL}/api/private/avatar/upload`);
+    console.log('Ready to send a request to:', `${API_BASE_URL}/api/private/avatar/upload`);
 
-    // 直接使用fetch来避免axios的content-type处理问题
+    // directusefetchComeavoidaxiosofcontent-typedeal withquestion
     const response = await fetch(`${API_BASE_URL}/api/private/avatar/upload`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        // 不设置Content-Type，让浏览器自动设置
+        // Not setContent-Type, let the browser automatically set it
       },
       body: formData,
     });
 
-    console.log('响应状态:', response.status, response.statusText);
+    console.log('Response status:', response.status, response.statusText);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
-      console.error('上传失败响应:', errorData);
+      console.error('Upload failure response:', errorData);
       throw new Error(errorData?.detail || errorData?.message || `HTTP ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('上传响应:', result);
+    console.log('Upload response:', result);
     return result;
   },
 
-  // 修改用户名
+  // Modify username
   rename: async (newUsername: string) => {
-    console.log('重命名用户名:', newUsername);
+    console.log('Rename the username:', newUsername);
     
     const token = localStorage.getItem('access_token');
     if (!token) {
-      throw new Error('未找到访问令牌');
+      throw new Error('Access token not found');
     }
 
     const response = await fetch(`${API_BASE_URL}/api/private/rename`, {
@@ -211,53 +211,53 @@ export const userAPI = {
       } catch {
         errorData = await response.text();
       }
-      console.error('重命名失败响应:', errorData);
+      console.error('Rename failed response:', errorData);
       throw new Error(errorData?.detail || errorData?.message || `HTTP ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('重命名响应:', result);
+    console.log('Rename the response:', result);
     return result;
   },
 
-  // 上传用户头图
+  // Upload user header image
   uploadCover: async (imageFile: File | Blob) => {
-    console.log('开始上传头图，文件类型:', imageFile.type, '文件大小:', imageFile.size);
+    console.log('Start uploading the header image,documenttype:', imageFile.type, 'File size:', imageFile.size);
     
     const formData = new FormData();
-    // 根据blob类型确定文件扩展名
+    // according toblobType determines file extension
     const isJpeg = imageFile.type === 'image/jpeg';
     const fileName = isJpeg ? 'cover.jpg' : 'cover.png';
     formData.append('content', imageFile, fileName);
     
-    // 验证FormData内容
-    console.log('FormData内容:');
+    // verifyFormDatacontent
+    console.log('FormDatacontent:');
     for (const [key, value] of formData.entries()) {
       console.log(key, value);
       if (value instanceof Blob) {
-        console.log(`  类型: ${value.type}, 大小: ${value.size}`);
+        console.log(`  type: ${value.type}, size: ${value.size}`);
       }
     }
 
-    // 获取token
+    // Gettoken
     const token = localStorage.getItem('access_token');
     if (!token) {
-      throw new Error('未找到访问令牌');
+      throw new Error('Access token not found');
     }
 
-    console.log('准备发送请求到:', `${API_BASE_URL}/api/private/cover/upload`);
+    console.log('Ready to send a request to:', `${API_BASE_URL}/api/private/cover/upload`);
 
-    // 直接使用fetch来避免axios的content-type处理问题
+    // directusefetchComeavoidaxiosofcontent-typedeal withquestion
     const response = await fetch(`${API_BASE_URL}/api/private/cover/upload`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
-        // 不设置Content-Type，让浏览器自动设置
+        // Not setContent-Type, let the browser automatically set it
       },
       body: formData,
     });
 
-    console.log('响应状态:', response.status, response.statusText);
+    console.log('Response status:', response.status, response.statusText);
 
     if (!response.ok) {
       let errorData;
@@ -266,22 +266,22 @@ export const userAPI = {
       } catch {
         errorData = await response.text();
       }
-      console.error('上传失败响应:', errorData);
+      console.error('Upload failure response:', errorData);
       throw new Error(errorData?.detail || errorData?.message || `HTTP ${response.status}`);
     }
 
     const result = await response.json();
-    console.log('上传响应:', result);
+    console.log('Upload response:', result);
     return result;
   },
 
-  // 获取用户最近活动
+  // GetUser recent activities
   getRecentActivity: async (
     userId: number,
     limit: number = 6,
     offset: number = 0
   ) => {
-    console.log('获取用户最近活动:', { userId, limit, offset });
+    console.log('GetUser recent activities:', { userId, limit, offset });
     
     const params = new URLSearchParams();
     params.append('limit', limit.toString());
@@ -292,25 +292,25 @@ export const userAPI = {
     return response.data;
   },
 
-  // 获取用户页面内容（仅用于编辑时获取最新内容，显示时使用用户对象中的page字段）
+  // GetUser Pagecontent(For editing onlyGetup to datecontent,When displayeduseIn user objectofpageField)
   getUserPage: async (userId: number) => {
-    console.log('获取用户页面内容（编辑用）:', { userId });
+    console.log('GetUser Pagecontent(Editor):', { userId });
     const response = await api.get(`/api/v2/users/${userId}/page`);
     return response.data;
   },
 
-  // 更新用户页面内容
+  // EvennewUser Pagecontent
   updateUserPage: async (userId: number, content: string) => {
-    console.log('更新用户页面内容:', { userId, contentLength: content.length });
+    console.log('EvennewUser Pagecontent:', { userId, contentLength: content.length });
     const response = await api.put(`/api/v2/users/${userId}/page`, {
       body: content
     });
     return response.data;
   },
 
-  // 验证BBCode内容
+  // verifyBBCodecontent
   validateBBCode: async (content: string) => {
-    console.log('验证BBCode内容:', { contentLength: content.length });
+    console.log('verifyBBCodecontent:', { contentLength: content.length });
     const response = await api.post('/api/v2/me/validate-bbcode', {
       content: content
     });
@@ -318,53 +318,53 @@ export const userAPI = {
   },
 };
 
-// Friends API functions - osu! 使用单向关注制
+// Friends API functions - osu! useunidirectionalfocus onsystem
 export const friendsAPI = {
-  // 获取好友列表
+  // GetFriends list
   getFriends: async () => {
     const response = await api.get('/api/v2/friends');
     return response.data;
   },
 
-  // 添加好友（单向关注）
+  // Add friends (one-way follow)
   addFriend: async (targetUserId: number) => {
     const response = await api.post(`/api/v2/friends?target=${targetUserId}`);
     return response.data;
   },
 
-  // 删除好友关系
+  // Delete a friend relationship
   removeFriend: async (targetUserId: number) => {
     const response = await api.delete(`/api/v2/friends/${targetUserId}`);
     return response.data;
   },
 
-  // 获取屏蔽列表
+  // GetBlock list
   getBlocks: async () => {
     const response = await api.get('/api/v2/blocks');
     return response.data;
   },
 
-  // 屏蔽用户
+  // Block users
   blockUser: async (targetUserId: number) => {
     const response = await api.post(`/api/v2/blocks?target=${targetUserId}`);
     return response.data;
   },
 
-  // 取消屏蔽
+  // Unblock
   unblockUser: async (targetUserId: number) => {
     const response = await api.delete(`/api/v2/blocks/${targetUserId}`);
     return response.data;
   },
 
-  // 检查与指定用户的关系状态
+  // Check and specify usersofRelationship status
   checkRelationship: async (targetUserId: number) => {
     try {
-      // 使用新的专用 API 端点来获取关系状态
+      // usenewofdedicated API EndpointComeGetRelationship status
       const response = await api.get(`/api/private/relationship/check/${targetUserId}`);
       return response.data;
     } catch (error) {
-      console.error('检查用户关系失败:', error);
-      // 如果新 API 不可用，回退到原来的方法
+      console.error('Failed to check user relationship:', error);
+      // If new API Not available,Rewind to originalComeofmethod
       try {
         const [friends, blocks] = await Promise.all([
           friendsAPI.getFriends(),
@@ -375,42 +375,42 @@ export const friendsAPI = {
         const isBlocked = blocks.some((block: { target_id: number }) => block.target_id === targetUserId);
         const isMutual = friends.some((friend: { target_id: number; mutual?: boolean }) => friend.target_id === targetUserId && friend.mutual === true);
         
-        // 在 osu! 的好友系统中：
-        // 1. isFriend = true 且 mutual = true: 双向关注，对方关注了我
-        // 2. isFriend = true 且 mutual = false: 单向关注，我关注了对方，对方没关注我
-        // 3. isFriend = false: 我没有关注对方，无法直接判断对方是否关注了我
+        // exist osu! ofIn the friend system:
+        // 1. isFriend = true and mutual = true: Pay attention to me in both directions.
+        // 2. isFriend = true and mutual = false: One-way follower, I followed the other party, but the other party didn't follow me
+        // 3. isFriend = false: I didn't follow the other person, and I couldn't directly judge whether the other person was following me
         let followsMe = false;
         
         if (isFriend) {
-          // 我们关注了对方，mutual 字段可以告诉我们是否双向
+          // We followed each other,mutual Fields can tell us whether it is bidirectional
           followsMe = isMutual;
         } else {
-          // 我们没有关注对方，暂时无法确定对方是否关注了我们
-          // 在实际使用中，这种情况下 UI 应该显示"关注"而不是"回关"
+          // We did not follow each other, and we cannot be sure whether the other party has followed us for the time being
+          // existactualusemiddle,In this case UI Should be displayed"focus on"Instead"Back to the clearance"
           followsMe = false;
         }
         
-        // 返回与新 API 格式一致的字段
+        // Return with new API FormatConsistentofFields
         return {
-          is_following: isFriend,   // 我是否关注对方
-          isBlocked: isBlocked,     // 是否屏蔽
-          mutual: isMutual,         // 是否互相关注
-          is_followed: followsMe    // 对方是否关注我
+          is_following: isFriend,   // Iyesnofocus onother side
+          isBlocked: isBlocked,     // Whether to block
+          mutual: isMutual,         // yesnoeach otherfocus on
+          is_followed: followsMe    // other sideyesnofocus onI
         };
       } catch (fallbackError) {
-        console.error('备用方法也失败:', fallbackError);
-        // 返回与新 API 格式一致的默认值
+        console.error('The backup method also failed:', fallbackError);
+        // Return with new API FormatConsistentofdefault value
         return {
-          is_following: false,  // 我是否关注对方
-          isBlocked: false,     // 是否屏蔽
-          mutual: false,        // 是否互相关注
-          is_followed: false    // 对方是否关注我
+          is_following: false,  // Iyesnofocus onother side
+          isBlocked: false,     // Whether to block
+          mutual: false,        // yesnoeach otherfocus on
+          is_followed: false    // other sideyesnofocus onI
         };
       }
     }
   },
 
-  // 获取用户的关注者列表
+  // Getuseroffocus onList of persons
   getUserFollowers: async (userId: number) => {
     const response = await api.get(`/api/v2/relationship/followers/${userId}`);
     return response.data;
@@ -418,7 +418,7 @@ export const friendsAPI = {
 
 
 
-  // 获取用户详情
+  // GetuserDetails
   getUser: async (userId: number) => {
     const response = await api.get(`/api/v2/users/${userId}`);
     return response.data;
@@ -438,13 +438,13 @@ export const handleApiError = (error: unknown) => {
   } else if (err.message) {
     toast.error(err.message);
   } else {
-    toast.error('发生意外错误');
+    toast.error('An unexpected error occurred');
   }
 };
 
 // Rankings API functions
 export const rankingsAPI = {
-  // 获取用户排行榜
+  // GetuserRanking list
   getUserRankings: async (
     ruleset: string, 
     type: 'performance' | 'score', 
@@ -459,7 +459,7 @@ export const rankingsAPI = {
     return response.data;
   },
 
-  // 获取地区排行榜
+  // GetRegional rankings
   getCountryRankings: async (ruleset: string, page: number = 1) => {
     const params = new URLSearchParams();
     params.append('page', page.toString());
@@ -468,7 +468,7 @@ export const rankingsAPI = {
     return response.data;
   },
 
-  // 获取战队排行榜
+  // GetTeam ranking list
   getTeamRankings: async (
     ruleset: string, 
     sort: 'performance' | 'score', 
@@ -484,13 +484,13 @@ export const rankingsAPI = {
 
 // Teams API functions
 export const teamsAPI = {
-  // 获取战队详情
+  // GetTeam details
   getTeam: async (teamId: number) => {
     const response = await api.get(`/api/private/team/${teamId}`);
     return response.data;
   },
 
-  // 创建战队
+  // Create a team
   createTeam: async (teamData: FormData) => {
     const response = await api.post('/api/private/team', teamData, {
       headers: {
@@ -500,7 +500,7 @@ export const teamsAPI = {
     return response.data;
   },
 
-  // 修改战队
+  // Modify the team
   updateTeam: async (teamId: number, teamData: FormData) => {
     const response = await api.patch(`/api/private/team/${teamId}`, teamData, {
       headers: {
@@ -510,31 +510,31 @@ export const teamsAPI = {
     return response.data;
   },
 
-  // 删除战队
+  // Delete the team
   deleteTeam: async (teamId: number) => {
     const response = await api.delete(`/api/private/team/${teamId}`);
     return response.data;
   },
 
-  // 请求加入战队
+  // Request to join the battle team
   requestJoinTeam: async (teamId: number) => {
     const response = await api.post(`/api/private/team/${teamId}/request`);
     return response.data;
   },
 
-  // 接受加入请求
+  // Accept joining request
   acceptJoinRequest: async (teamId: number, userId: number) => {
     const response = await api.post(`/api/private/team/${teamId}/${userId}/request`);
     return response.data;
   },
 
-  // 拒绝加入请求
+  // Reject join request
   rejectJoinRequest: async (teamId: number, userId: number) => {
     const response = await api.delete(`/api/private/team/${teamId}/${userId}/request`);
     return response.data;
   },
 
-  // 踢出成员 / 退出战队
+  // Kick out members / Exit the team
   removeMember: async (teamId: number, userId: number) => {
     const response = await api.delete(`/api/private/team/${teamId}/${userId}`);
     return response.data;
@@ -558,13 +558,13 @@ export const statsAPI = {
 
 // Chat API functions
 export const chatAPI = {
-  // 获取频道列表
+  // GetChannel List
   getChannels: async () => {
     const response = await api.get('/api/v2/chat/channels');
     return response.data;
   },
 
-  // 获取频道消息
+  // GetChannel Message
   getChannelMessages: async (channelId: string | number, limit: number = 50, since: number = 0, until?: number) => {
     const params = new URLSearchParams();
     params.append('limit', limit.toString());
@@ -577,7 +577,7 @@ export const chatAPI = {
     return response.data;
   },
 
-  // 发送消息
+  // Send a message
   sendMessage: async (channelId: string | number, message: string, isAction: boolean = false, uuid?: string) => {
     const formData = new URLSearchParams();
     formData.append('message', message);
@@ -594,7 +594,7 @@ export const chatAPI = {
     return response.data;
   },
 
-  // 标记消息为已读
+  // Mark the message as read
   markAsRead: async (channelId: string | number, messageId: number) => {
     const response = await api.put(`/api/v2/chat/channels/${channelId}/mark-as-read/${messageId}`, {}, {
       headers: {
@@ -604,7 +604,7 @@ export const chatAPI = {
     return response.data;
   },
 
-  // 创建新的私聊
+  // createnewofPrivate chat
   createPrivateMessage: async (targetId: number, message: string, isAction: boolean = false, uuid?: string) => {
     const formData = new URLSearchParams();
     formData.append('target_id', targetId.toString());
@@ -622,25 +622,25 @@ export const chatAPI = {
     return response.data;
   },
 
-  // 加入频道
+  // Join the channel
   joinChannel: async (channelId: string | number) => {
     const response = await api.post(`/api/v2/chat/channels/${channelId}/join`);
     return response.data;
   },
 
-  // 离开频道
+  // Leave the channel
   leaveChannel: async (channelId: string | number) => {
     const response = await api.post(`/api/v2/chat/channels/${channelId}/leave`);
     return response.data;
   },
 
-  // 获取私聊频道（如果存在）
+  // GetPrivate chatChannel (if savedexist)
   getPrivateChannel: async (targetUserId: number) => {
     try {
       const response = await api.get(`/api/v2/chat/private/${targetUserId}`);
       return response.data;
     } catch (error: any) {
-      // 如果私聊频道不存在，返回null
+      // ifPrivate chatThe channel does not existexist,returnnull
       if (error.response?.status === 404) {
         return null;
       }
@@ -648,7 +648,7 @@ export const chatAPI = {
     }
   },
 
-  // 保持连接活跃
+  // Stay connected active
   keepAlive: async (historySince?: number, since?: number) => {
     const params = new URLSearchParams();
     if (historySince !== undefined) {
@@ -665,13 +665,13 @@ export const chatAPI = {
 
 // Notifications API functions
 export const notificationsAPI = {
-  // 获取通知列表和WebSocket端点
+  // GetNotification list andWebSocketEndpoint
   getNotifications: async () => {
     const response = await api.get('/api/v2/notifications');
     return response.data;
   },
 
-  // 标记单条通知为已读 (后端需要 {identities:[...]} 结构, 204 无内容)
+  // Mark a single notification as read (Backend needs {identities:[...]} structure, 204 nonecontent)
   markAsRead: async (notificationId: number) => {
     await api.post('/api/v2/notifications/mark-read', {
       identities: [{ id: notificationId }],
@@ -681,10 +681,10 @@ export const notificationsAPI = {
     });
   },
 
-  // 批量标记通知为已读（后端 _IdentityReq 仅支持 id/object_id/category，object_type 被定义为 int 会与字符串冲突，故不发送）
+  // Batch mark notifications are read (backend _IdentityReq Supported only id/object_id/category,object_type Defined as int Will conflict with strings,Therefore, it is not sent)
   markMultipleAsRead: async (identities: Array<{ id?: number; object_id?: number; category?: string; object_type?: string }>) => {
     if (!identities || identities.length === 0) return;
-    // 过滤/转换字段，去掉 object_type，object_id 确保为 number
+    // filter/ConvertFields,Remove object_type,object_id Make sure to number
     const safeIdentities = identities.map(i => ({
       ...(i.id !== undefined ? { id: i.id } : {}),
       ...(i.object_id !== undefined ? { object_id: Number(i.object_id) } : {}),
@@ -698,37 +698,37 @@ export const notificationsAPI = {
     });
   },
 
-  // 获取未读通知数量
+  // GetNumber of unread notifications
   getUnreadCount: async () => {
     const response = await api.get('/api/v2/notifications/unread-count');
     return response.data;
   },
 
-  // 获取团队加入请求通知
+  // GetTeam join request notification
   getTeamRequests: async () => {
     const response = await api.get('/api/private/team-requests');
     return response.data;
   },
 
-  // 通过 object_id 分组去重通知
+  // pass object_id Group deduplication notification
   getGroupedNotifications: async () => {
     const response = await api.get('/api/v2/notifications');
     const notifications = response.data.notifications || [];
     
-    // 使用 object_id 进行分组和去重
+    // use object_id Grouping and deduplication
     const groupedMap = new Map<string, typeof notifications[0]>();
     
     notifications.forEach((notification: any) => {
       const key = `${notification.object_type}-${notification.object_id}`;
       
-      // 如果已存在相同 object_id 的通知，保留时间最新的
+      // If already savedexistsame object_id ofnotify,Retention timeup to dateof
       if (!groupedMap.has(key) || 
           new Date(notification.created_at) > new Date(groupedMap.get(key)!.created_at)) {
         groupedMap.set(key, notification);
       }
     });
     
-    // 返回去重后的通知，按时间倒序排序
+    // returnAfter removing the heavyofnotify,Sort by reverse order of time
     const deduplicatedNotifications = Array.from(groupedMap.values())
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     

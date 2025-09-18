@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiSun, FiMoon, FiUser, FiLogOut, FiHome, FiTrendingUp, FiMusic, FiBell, FiUsers, FiMessageCircle, FiMenu, FiX, FiSettings, FiServer } from 'react-icons/fi';
+import { FiSun, FiMoon, FiUser, FiLogOut, FiHome, FiTrendingUp, FiMusic, FiBell, FiUsers, FiMessageCircle, FiMenu, FiX, FiSettings } from 'react-icons/fi';
 import { useTheme } from '../../hooks/useTheme';
 import { useAuth } from '../../hooks/useAuth';
 import { useNotificationContext } from '../../contexts/NotificationContext';
@@ -9,7 +9,7 @@ import UserDropdown from '../UI/UserDropdown';
 import Avatar from '../UI/Avatar';
 import type { NavItem } from '../../types';
 
-// 将 NavItem 组件提取并使用 memo 优化，防止不必要的重新渲染
+// Will NavItem Component extraction and use memo Optimize to prevent unnecessary re-rendering
 const NavItem = memo<{ item: NavItem }>(({ item }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [forceShowText, setForceShowText] = useState(false);
@@ -18,17 +18,17 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
   const IconComponent = item.icon;
   const isActive = location.pathname === item.path;
   
-  // 文字显示逻辑：活跃时强制显示，或者悬停时显示
+  // Text display logic: Forced display when active, or hover
   const shouldShowText = isActive || forceShowText || isHovered;
   
-  // 检测是否是路由切换导致的状态变化
+  // Detect whether it is a state change caused by routing switching
   const isRouteChange = prevIsActiveRef.current !== undefined && 
                        prevIsActiveRef.current !== isActive;
   
-  // 更新前一个活跃状态的引用
+  // Update the reference to the previous active state
   useEffect(() => {
     prevIsActiveRef.current = isActive;
-    // 如果变为活跃状态，强制显示文本
+    // If active, force text to be displayed
     if (isActive) {
       setForceShowText(true);
     } else {
@@ -36,7 +36,7 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
     }
   }, [isActive]);
 
-  // 使用 useCallback 防止函数重新创建导致重新渲染
+  // use useCallback Prevent function recreation resulting in rerendering
   const handleMouseEnter = useCallback(() => {
     setIsHovered(true);
   }, []);
@@ -66,11 +66,7 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
     >
       <Link
         to={item.path}
-        className={`relative flex items-center rounded-xl font-medium text-sm transition-all duration-200 group overflow-hidden ${
-          isActive
-            ? 'text-white bg-osu-pink shadow-lg shadow-osu-pink/25'
-            : 'text-gray-600 dark:text-gray-300 hover:text-osu-pink dark:hover:text-osu-pink hover:bg-gray-50 dark:hover:bg-gray-800/50'
-        }`}
+        className={`nav-link relative flex items-center rounded-xl font-medium text-sm transition-all duration-200 group overflow-hidden ${isActive ? 'active' : ''}`}
         style={{ 
           paddingLeft: '12px',
           paddingRight: shouldShowText ? '16px' : '12px',
@@ -78,7 +74,7 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
           paddingBottom: '8px'
         }}
       >
-        {/* 图标 */}
+        {/* icon */}
         {IconComponent && (
           <motion.div
             animate={{ 
@@ -91,7 +87,7 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
           </motion.div>
         )}
         
-        {/* 文字伸缩效果 */}
+        {/* Text retractable effect */}
         <motion.div
           className="overflow-hidden flex items-center"
           animate={{ 
@@ -99,7 +95,7 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
             marginLeft: shouldShowText ? 8 : 0,
           }}
           transition={{ 
-            // 路由切换时不播放动画，只有悬停时才播放动画
+            // No animation is played during route switching, only animation is played during hovering
             duration: isRouteChange ? 0 : 0.3,
             ease: [0.4, 0, 0.2, 1]
           }}
@@ -111,7 +107,7 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
               x: shouldShowText ? 0 : -10
             }}
             transition={{ 
-              // 路由切换时不播放动画，只有悬停时才播放动画
+              // No animation is played during route switching, only animation is played during hovering
               duration: isRouteChange ? 0 : 0.25,
               delay: shouldShowText && !isActive && isHovered ? 0.1 : 0
             }}
@@ -120,21 +116,12 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
           </motion.span>
         </motion.div>
 
-        {/* 活跃状态指示器 */}
+        {/* Active status indicator */}
         {isActive && (
           <motion.div 
             className="absolute bottom-0 left-2 right-2 h-0.5 bg-white/50 rounded-full"
             layoutId="activeTabIndicator"
             transition={{ type: "spring", stiffness: 500, damping: 30 }}
-          />
-        )}
-
-        {/* 悬停效果背景 */}
-        {!isActive && (
-          <motion.div
-            className="absolute inset-0 rounded-xl bg-osu-pink/10"
-            animate={{ opacity: isHovered ? 1 : 0 }}
-            transition={{ duration: 0.2 }}
           />
         )}
       </Link>
@@ -144,27 +131,26 @@ const NavItem = memo<{ item: NavItem }>(({ item }) => {
 
 NavItem.displayName = 'NavItem';
 
-// 手机端菜单下拉组件
+// Mobile menu pull-down component
 const MobileMenuDropdown = memo<{ 
   items: NavItem[];
-  helpItems: NavItem[];
   isAuthenticated: boolean;
-}>(({ items, helpItems, isAuthenticated }) => {
+}>(({ items, isAuthenticated }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
-  // 关闭下拉菜单
+  // Close the drop-down menu
   const handleClose = useCallback(() => {
     setIsOpen(false);
   }, []);
 
-  // 切换下拉菜单
+  // Switch the drop-down menu
   const handleToggle = useCallback(() => {
     setIsOpen(prev => !prev);
   }, []);
 
-  // 点击外部关闭
+  // Click External Close
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -178,14 +164,14 @@ const MobileMenuDropdown = memo<{
     };
   }, []);
 
-  // 路由变化时关闭菜单
+  // Close the menu when routing changes
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
 
   return (
     <div className="relative" ref={dropdownRef}>
-      {/* 菜单按钮 */}
+      {/* Menu Buttons */}
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
@@ -205,7 +191,7 @@ const MobileMenuDropdown = memo<{
         </motion.div>
       </motion.button>
 
-      {/* 下拉菜单 */}
+      {/* Pull-down menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -233,9 +219,8 @@ const MobileMenuDropdown = memo<{
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05)'
             }}
           >
-            {/* 菜单项 */}
+            {/* Menu Items */}
             <div className="py-1">
-              {/* 主要导航项 */}
               {items.map((item) => {
                 const IconComponent = item.icon;
                 const isActive = location.pathname === item.path;
@@ -263,42 +248,8 @@ const MobileMenuDropdown = memo<{
                   </Link>
                 );
               })}
-
-              {/* 帮助项分隔符和内容 */}
-              {helpItems.length > 0 && (
-                <>
-                  <div className="border-t border-gray-200/50 dark:border-gray-700/50 my-1" />
-                  {helpItems.map((item) => {
-                    const IconComponent = item.icon;
-                    const isActive = location.pathname === item.path;
-                    
-                    return (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        onClick={handleClose}
-                        className={`flex items-center px-4 py-3 text-sm font-medium transition-all duration-200 ${
-                          isActive
-                            ? 'text-osu-pink bg-osu-pink/10'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-osu-pink'
-                        }`}
-                      >
-                        {IconComponent && <IconComponent size={16} className="mr-3" />}
-                        <span>{item.title}</span>
-                        {isActive && (
-                          <motion.div 
-                            className="ml-auto w-2 h-2 bg-osu-pink rounded-full"
-                            layoutId="mobileDropdownActiveIndicator"
-                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                          />
-                        )}
-                      </Link>
-                    );
-                  })}
-                </>
-              )}
               
-              {/* 设置按钮 - 仅在已登录时显示 */}
+              {/* Settings button - Shown only when logged in */}
               {isAuthenticated && (
                 <>
                   <div className="border-t border-gray-200/50 dark:border-gray-700/50 my-1" />
@@ -312,7 +263,7 @@ const MobileMenuDropdown = memo<{
                     }`}
                   >
                     <FiSettings size={16} className="mr-3" />
-                    <span>设置</span>
+                    <span>Profile Settings</span>
                     {location.pathname === '/settings' && (
                       <motion.div 
                         className="ml-auto w-2 h-2 bg-osu-pink rounded-full"
@@ -325,7 +276,7 @@ const MobileMenuDropdown = memo<{
               )}
             </div>
 
-            {/* 装饰性渐变 */}
+            {/* Decorative gradient */}
             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-osu-pink/5 via-transparent to-osu-blue/5 pointer-events-none" />
           </motion.div>
         )}
@@ -339,37 +290,46 @@ MobileMenuDropdown.displayName = 'MobileMenuDropdown';
 const Navbar: React.FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
-  // 通过全局通知上下文获取统一的 unreadCount
-  let unreadCount = { total: 0, team_requests: 0, private_messages: 0, friend_requests: 0 } as any;
+
+  // ---- type-safe unreadCount ----
+  type UnreadCount = {
+    total: number;
+    team_requests: number;
+    private_messages: number;
+    friend_requests: number;
+  };
+
+  let unreadCount: UnreadCount = { total: 0, team_requests: 0, private_messages: 0, friend_requests: 0 };
   let isConnected = false;
   let chatConnected = false;
   try {
     const ctx = useNotificationContext();
-    unreadCount = ctx.unreadCount;
+    unreadCount = ctx.unreadCount as UnreadCount;
     isConnected = ctx.isConnected;
     chatConnected = ctx.chatConnected;
-  } catch (e) {
-    // 如果 Provider 尚未包裹，不影响其它功能
+  } catch {
+    // if Provider Not yet packaged, does not affect other functions
   }
   
-  // 综合连接状态：通知和聊天都需要连接
+  // Comprehensive connection status: notifications and chats require connection
   const isFullyConnected = isConnected && chatConnected;
-  //const location = useLocation();
+
+  // ---- NEW: scroll-aware nav state ----
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const navItems: NavItem[] = React.useMemo(() => [
-    // 核心功能
-    { path: '/', title: '主页', icon: FiHome },
-    { path: '/rankings', title: '排行榜', icon: FiTrendingUp, requireAuth: true },
-    { path: '/beatmaps', title: '谱面', icon: FiMusic, requireAuth: true },
-    { path: '/teams', title: '战队', icon: FiUsers, requireAuth: true },
-    // 用户功能
-    { path: '/messages', title: '消息', icon: FiMessageCircle, requireAuth: true },
-    { path: '/profile', title: '个人资料', icon: FiUser, requireAuth: true },
-  ], []);
-
-  // 独立的帮助链接
-  const helpItems: NavItem[] = React.useMemo(() => [
-    { path: '/how-to-join', title: '加入服务器', icon: FiServer },
+    { path: '/', title: 'Home page', icon: FiHome },
+    { path: '/rankings', title: 'Leaderboard', icon: FiTrendingUp, requireAuth: true },
+    { path: 'https://catboy.best/search', title: 'Beatmaps', icon: FiMusic, requireAuth: true },
+    { path: '/teams', title: 'Teams', icon: FiUsers, requireAuth: true },
+    { path: '/messages', title: 'Chat', icon: FiMessageCircle, requireAuth: true },
+    { path: '/profile', title: 'Your Profile', icon: FiUser, requireAuth: true },
   ], []);
 
   const filteredNavItems = React.useMemo(() => 
@@ -378,7 +338,7 @@ const Navbar: React.FC = () => {
     ), [navItems, isAuthenticated]
   );
 
-  // 使用 useCallback 优化回调函数
+  // use useCallback Optimize callback function
   const handleThemeToggle = useCallback(() => {
     toggleTheme();
   }, [toggleTheme]);
@@ -390,9 +350,15 @@ const Navbar: React.FC = () => {
   return (
     <>
       {/* Desktop Navigation - Top */}
-      <nav className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+      <nav
+        className={`hidden md:block fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b transition-all duration-200 ${
+          scrolled
+            ? 'bg-white/80 dark:bg-gray-900/80 shadow-md border-gray-200/70 dark:border-gray-700/70'
+            : 'bg-white/90 dark:bg-gray-900/90 shadow-sm border-gray-200/50 dark:border-gray-700/50'
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          {/* 使用 grid 布局来确保三个区域的平衡 */}
+          {/* use grid Layout to ensure balance of three areas */}
           <div className="grid grid-cols-3 items-center h-16">
             {/* Logo - Left */}
             <div className="flex items-center justify-start">
@@ -405,7 +371,7 @@ const Navbar: React.FC = () => {
                   <div className="relative">
                     <img 
                       src="/image/logos/logo.svg" 
-                      alt="GuSou Logo" 
+                      alt="M1Lazer Logo" 
                       className="w-9 h-9 object-contain"
                     />
                     <motion.div 
@@ -415,34 +381,19 @@ const Navbar: React.FC = () => {
                       transition={{ duration: 0.2 }}
                     />
                   </div>
-                  <span className="text-xl font-bold text-osu-pink">
-                    咕哦！
+                  <span className="text-xl font-bold gradient-text">
+                    M1Lazer
                   </span>
                 </Link>
               </motion.div>
             </div>
 
-            {/* Navigation Links - Center (真正居中) */}
+            {/* Navigation Links - Center (Really centered) */}
             <div className="flex items-center justify-center">
-              <div className="flex items-center">
-                {/* 主要导航项 */}
-                <div className="flex items-center space-x-1">
-                  {filteredNavItems.map((item) => (
-                    <NavItem key={item.path} item={item} />
-                  ))}
-                </div>
-                
-                {/* 分隔符 */}
-                {filteredNavItems.length > 0 && helpItems.length > 0 && (
-                  <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-3"></div>
-                )}
-                
-                {/* 帮助项 */}
-                <div className="flex items-center space-x-1">
-                  {helpItems.map((item) => (
-                    <NavItem key={item.path} item={item} />
-                  ))}
-                </div>
+              <div className="flex items-center space-x-1">
+                {filteredNavItems.map((item) => (
+                  <NavItem key={item.path} item={item} />
+                ))}
               </div>
             </div>
 
@@ -461,7 +412,6 @@ const Navbar: React.FC = () => {
                         : 'text-gray-400 dark:text-gray-500'
                       }
                     `}
-                    /* title={isFullyConnected ? '实时通知已连接' : '实时通知未连接'} */
                   >
                     <FiBell size={18} />
                     {unreadCount.total > 0 && (
@@ -473,11 +423,6 @@ const Navbar: React.FC = () => {
                         {unreadCount.total > 99 ? '99+' : unreadCount.total}
                       </motion.div>
                     )}
-                    {/* WebSocket连接状态指示器 */}
-                    {/* <div className={`
-                      absolute bottom-0 right-0 w-2 h-2 rounded-full
-                      ${isFullyConnected ? 'bg-green-500' : 'bg-red-500'}
-                    `} /> */}
                   </motion.button>
                 </Link>
               )}
@@ -511,7 +456,7 @@ const Navbar: React.FC = () => {
                       to="/login"
                       className="px-5 py-2.5 text-sm font-medium text-osu-blue hover:text-osu-blue/80 border border-osu-blue/30 hover:border-osu-blue/50 rounded-xl hover:bg-osu-blue/5 transition-all duration-200"
                     >
-                      登录
+                      Log in
                     </Link>
                   </motion.div>
                   <motion.div
@@ -522,7 +467,7 @@ const Navbar: React.FC = () => {
                       to="/register"
                       className="px-5 py-2.5 text-sm font-medium text-white bg-osu-pink hover:bg-osu-pink/90 rounded-xl shadow-lg shadow-osu-pink/25 hover:shadow-osu-pink/35 transition-all duration-200"
                     >
-                      注册
+                      register
                     </Link>
                   </motion.div>
                 </div>
@@ -533,7 +478,13 @@ const Navbar: React.FC = () => {
       </nav>
 
       {/* Mobile Header - Top */}
-      <nav className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 shadow-sm">
+      <nav
+        className={`md:hidden fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b transition-all duration-200 ${
+          scrolled
+            ? 'bg-white/80 dark:bg-gray-900/80 shadow-md border-gray-200/70 dark:border-gray-700/70'
+            : 'bg-white/90 dark:bg-gray-900/90 shadow-sm border-gray-200/50 dark:border-gray-700/50'
+        }`}
+      >
         <div className="flex items-center justify-between px-4 py-3">
           {/* Logo */}
           <motion.div
@@ -544,7 +495,7 @@ const Navbar: React.FC = () => {
               <div className="relative">
                 <img 
                   src="/image/logos/logo.svg" 
-                  alt="GuSou Logo" 
+                  alt="M1Lazer Logo" 
                   className="w-8 h-8 object-contain"
                 />
                 <motion.div 
@@ -554,8 +505,8 @@ const Navbar: React.FC = () => {
                   transition={{ duration: 0.2 }}
                 />
               </div>
-              <span className="text-lg font-bold text-osu-pink">
-                咕哦！
+              <span className="text-lg font-bold gradient-text">
+                M1Lazer
               </span>
             </Link>
           </motion.div>
@@ -586,7 +537,7 @@ const Navbar: React.FC = () => {
                       {unreadCount.total > 9 ? '9+' : unreadCount.total}
                     </motion.div>
                   )}
-                  {/* WebSocket连接状态指示器 */}
+                  {/* WebSocketConnection status indicator */}
                   <div className={`
                     absolute bottom-0 right-0 w-1.5 h-1.5 rounded-full
                     ${isFullyConnected ? 'bg-green-500' : 'bg-red-500'}
@@ -649,7 +600,7 @@ const Navbar: React.FC = () => {
                   to="/login"
                   className="px-4 py-2 text-sm font-medium text-osu-pink hover:text-osu-pink/80 bg-osu-pink/10 hover:bg-osu-pink/15 rounded-xl transition-all duration-200"
                 >
-                  登录
+                  Log in
                 </Link>
               </motion.div>
             )}
@@ -657,7 +608,6 @@ const Navbar: React.FC = () => {
             {/* Mobile menu dropdown */}
             <MobileMenuDropdown 
               items={filteredNavItems}
-              helpItems={helpItems}
               isAuthenticated={isAuthenticated}
             />
           </div>

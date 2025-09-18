@@ -32,15 +32,15 @@ const LoginForm: React.FC = () => {
         <div className="w-12 h-12 mx-auto flex items-center justify-center mb-2">
           <img src="/image/logos/logo.svg" alt="Logo" className="w-12 h-12 object-contain" />
         </div>
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">登录</h2>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">登录到你的 咕哦！ 账户</p>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">Log in</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Log into your M1Lazer Account</p>
       </div>
 
       <div className="sm:bg-white sm:dark:bg-gray-800 sm:py-4 sm:px-6 sm:shadow-sm sm:rounded-lg sm:border sm:border-gray-200 sm:dark:border-gray-700 py-2">
         <form className="space-y-3" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              用户名
+              Username
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -52,7 +52,7 @@ const LoginForm: React.FC = () => {
                 type="text"
                 required
                 className="w-full px-3 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-osu-pink focus:border-transparent"
-                placeholder="输入用户名"
+                placeholder="Enter Username"
                 value={formData.username}
                 onChange={handleInputChange}
                 disabled={isLoading}
@@ -62,7 +62,7 @@ const LoginForm: React.FC = () => {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              密码
+              Password
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -74,7 +74,7 @@ const LoginForm: React.FC = () => {
                 type={showPassword ? 'text' : 'password'}
                 required
                 className="w-full px-3 py-2 pl-10 pr-10 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-osu-pink focus:border-transparent"
-                placeholder="输入密码"
+                placeholder="Enter Password"
                 value={formData.password}
                 onChange={handleInputChange}
                 disabled={isLoading}
@@ -99,15 +99,15 @@ const LoginForm: React.FC = () => {
               disabled={isLoading || !formData.username || !formData.password}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-osu-pink hover:bg-osu-pink/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-osu-pink disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
-              {isLoading ? <LoadingSpinner size="sm" /> : '登录'}
+              {isLoading ? <LoadingSpinner size="sm" /> : 'Log in'}
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              还没有账户？{' '}
+              No account yet?{' '}
               <Link to="/register" className="font-medium text-osu-pink hover:text-osu-pink/80 dark:text-osu-pink dark:hover:text-osu-pink/80">
-                立即注册
+                Register now here!
               </Link>
             </p>
           </div>
@@ -116,7 +116,24 @@ const LoginForm: React.FC = () => {
 
       <div className="text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          登录即表示你同意我们的服务条款和隐私政策
+          By using our service, you agree to our{' '}
+            <a
+              href="https://m1pposu.dev/docs/terms-of-service"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a
+              href="https://m1pposu.dev/docs/privacy-policy"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </a>.
         </p>
       </div>
     </div>

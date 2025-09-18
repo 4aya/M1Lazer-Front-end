@@ -9,40 +9,40 @@ interface UserRecentActivityProps {
   className?: string;
 }
 
-// 时间格式化函数
+// Time formatting function
 const formatTimeAgo = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) {
-    return '刚刚';
+    return 'just';
   } else if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60);
-    return `${minutes}分钟前`;
+    return `${minutes}Minutes ago`;
   } else if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600);
-    return `${hours}小时前`;
+    return `${hours}Hour ago`;
   } else if (diffInSeconds < 2592000) {
     const days = Math.floor(diffInSeconds / 86400);
-    return `${days}天前`;
+    return `${days}Day ago`;
   } else if (diffInSeconds < 31536000) {
     const months = Math.floor(diffInSeconds / 2592000);
-    return `${months}个月前`;
+    return `${months}Months ago`;
   } else {
     const years = Math.floor(diffInSeconds / 31536000);
-    return `${years}年前`;
+    return `${years}Years ago`;
   }
 };
 
-// 成就图标组件
+// Achievement Icon Component
 const AchievementIcon: React.FC<{ slug: string; alt: string; className?: string }> = ({ slug, alt, className = "w-6 h-6" }) => {
   const [imgSrc, setImgSrc] = useState(`/image/achievement_images/${slug}@2x.png`);
   const [hasError, setHasError] = useState(false);
 
   const handleError = () => {
     if (!hasError) {
-      // 尝试普通版本
+      // Try the normal version
       setImgSrc(`/image/achievement_images/${slug}.png`);
       setHasError(true);
     }
@@ -58,7 +58,7 @@ const AchievementIcon: React.FC<{ slug: string; alt: string; className?: string 
   );
 };
 
-// 评级图标映射
+// Rating icon mapping
 const getRankIcon = (rank: string) => {
   const rankImageMap: Record<string, string> = {
     'SS': '/image/grades/GradeSmall-SS.svg',
@@ -72,7 +72,7 @@ const getRankIcon = (rank: string) => {
   return rankImageMap[rank] || rankImageMap['F'];
 };
 
-// 活动类型图标映射
+// Activity type icon mapping
 const getActivityIcon = (type: string) => {
   const iconClass = "w-3 h-3";
   switch (type) {
@@ -100,13 +100,13 @@ const getActivityIcon = (type: string) => {
   }
 };
 
-// 获取活动描述
+// Get the activity description
 const getActivityDescription = (activity: UserActivity) => {
   switch (activity.type) {
     case 'rank':
       return (
         <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <span className="text-xs sm:text-sm">在</span>
+          <span className="text-xs sm:text-sm">exist</span>
           <a 
             href={activity.beatmap?.url}
             target="_blank"
@@ -116,7 +116,7 @@ const getActivityDescription = (activity: UserActivity) => {
           >
             {activity.beatmap?.title}
           </a>
-          <span className="text-xs sm:text-sm">中获得了</span>
+          <span className="text-xs sm:text-sm">Obtained in</span>
           {activity.scorerank && (
             <img 
               src={getRankIcon(activity.scorerank || 'C')} 
@@ -124,10 +124,10 @@ const getActivityDescription = (activity: UserActivity) => {
               className="w-5 h-5"
             />
           )}
-          <span className="text-xs sm:text-sm">评级</span>
+          <span className="text-xs sm:text-sm">Rating</span>
           {activity.rank && (
             <>
-              <span className="text-xs sm:text-sm">排名第</span>
+              <span className="text-xs sm:text-sm">Ranked No. 1</span>
               <span className="font-bold text-yellow-600 dark:text-yellow-400 text-xs sm:text-sm">#{activity.rank}</span>
             </>
           )}
@@ -136,7 +136,7 @@ const getActivityDescription = (activity: UserActivity) => {
     case 'rank_lost':
       return (
         <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <span className="text-xs sm:text-sm">在</span>
+          <span className="text-xs sm:text-sm">exist</span>
           <a 
             href={activity.beatmap?.url}
             target="_blank"
@@ -146,13 +146,13 @@ const getActivityDescription = (activity: UserActivity) => {
           >
             {activity.beatmap?.title}
           </a>
-          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">中失去了第一名</span>
+          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Lost first place</span>
         </div>
       );
     case 'achievement':
       return (
         <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <span className="text-xs sm:text-sm">获得了成就</span>
+          <span className="text-xs sm:text-sm">Achievements</span>
           {activity.achievement && (
             <>
               <AchievementIcon 
@@ -176,7 +176,7 @@ const getActivityDescription = (activity: UserActivity) => {
     case 'beatmapset_upload':
       return (
         <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <span className="text-xs sm:text-sm">上传了谱面</span>
+          <span className="text-xs sm:text-sm">Uploaded the score</span>
           {activity.beatmap && (
             <a 
               href={activity.beatmap.url}
@@ -193,7 +193,7 @@ const getActivityDescription = (activity: UserActivity) => {
     case 'beatmapset_approve':
       return (
         <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
-          <span className="text-xs sm:text-sm">谱面被ranked：</span>
+          <span className="text-xs sm:text-sm">Spectrumranked:</span>
           {activity.beatmap && (
             <a 
               href={activity.beatmap.url}
@@ -208,15 +208,15 @@ const getActivityDescription = (activity: UserActivity) => {
         </div>
       );
     case 'username_change':
-      return <span className="text-xs sm:text-sm">更改了用户名</span>;
+      return <span className="text-xs sm:text-sm">Change username</span>;
     case 'user_support_again':
-      return <span className="text-xs sm:text-sm">再次成为了Supporter</span>;
+      return <span className="text-xs sm:text-sm">Become a Supporter</span>;
     case 'user_support_first':
-      return <span className="text-xs sm:text-sm">首次成为了Supporter</span>;
+      return <span className="text-xs sm:text-sm">Become for the first time Supporter</span>;
     case 'user_support_gift':
-      return <span className="text-xs sm:text-sm">获得了Supporter赠送</span>;
+      return <span className="text-xs sm:text-sm">ObtainedSupporterGift</span>;
     default:
-      return <span className="text-xs sm:text-sm">进行了活动</span>;
+      return <span className="text-xs sm:text-sm">Activity carried out</span>;
   }
 };
 
@@ -241,9 +241,9 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
 
       const response = await userAPI.getRecentActivity(userId, 6, currentOffset);
       
-      // 假设 API 返回一个数组，没有 has_more 字段时，判断返回的数据是否小于请求的数量
+      // Assumptions API Return an array, no has_more In the field, determine whether the returned data is less than the requested number
       const newActivities = Array.isArray(response) ? response : [];
-      const hasMoreData = newActivities.length === 6; // 如果返回的数量等于请求的数量，可能还有更多
+      const hasMoreData = newActivities.length === 6; // If the number returned is equal to the number of requests, there may be more
 
       if (reset) {
         setActivities(newActivities);
@@ -256,7 +256,7 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
       setHasMore(hasMoreData);
     } catch (err) {
       console.error('Failed to load user activities:', err);
-      setError('加载用户活动失败');
+      setError('Failed to load user activity');
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -283,7 +283,7 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
           <div className="flex items-center gap-3">
             <div className="w-1 h-6 bg-osu-pink rounded-full"></div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              最近活动
+              Recent Events
             </h3>
           </div>
         </div>
@@ -299,7 +299,7 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
           <div className="flex items-center gap-3">
             <div className="w-1 h-6 bg-osu-pink rounded-full"></div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-              最近活动
+              Recent Events
             </h3>
           </div>
         </div>
@@ -316,14 +316,14 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
         <div className="flex items-center gap-3">
           <div className="w-1 h-6 bg-osu-pink rounded-full"></div>
           <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            最近活动
+            Recent Events
           </h3>
         </div>
       </div>
       
       {activities.length === 0 ? (
         <div className="text-center text-gray-500 dark:text-gray-400 py-6 text-sm">
-          暂无最近活动
+          None yet.
         </div>
       ) : (
         <div className="space-y-2">
@@ -340,7 +340,7 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
                 <div className="text-gray-900 dark:text-gray-100">
                   {getActivityDescription(activity)}
                 </div>
-                {/* 手机端时间显示在描述下方 */}
+                {/* Mobile time displayexistDescription below */}
                 <div className="flex items-center gap-2 mt-1 sm:hidden">
                   {activity.mode && (
                     <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
@@ -353,7 +353,7 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
                 </div>
               </div>
 
-              {/* 桌面端时间显示在右侧 */}
+              {/* Desktop time displayexistRight side */}
               <div className="flex-shrink-0 items-center gap-2 hidden sm:flex">
                 {activity.mode && (
                   <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
@@ -377,10 +377,10 @@ const UserRecentActivity: React.FC<UserRecentActivityProps> = ({ userId, classNa
                 {loadingMore ? (
                   <>
                     <LoadingSpinner size="sm" />
-                    <span>加载中...</span>
+                    <span>loading...</span>
                   </>
                 ) : (
-                  <span>加载更多</span>
+                  <span>Load more</span>
                 )}
               </button>
             </div>

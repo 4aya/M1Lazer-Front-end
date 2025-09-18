@@ -25,7 +25,7 @@ import {
   FloatingFocusManager,
 } from "@floating-ui/react";
 
-/** ===================== 类型定义 ===================== */
+/** ===================== Type definition ===================== */
 export type FriendshipStatus = {
   isFriend: boolean;
   isBlocked: boolean;
@@ -42,7 +42,7 @@ interface FriendActionsProps {
   onUnblock: () => void | Promise<void>;
   followerCount?: number;
   className?: string;
-  /** 是否是自己（为 true 禁用所有操作） */
+  /** Is it yourself (for true Disable all operations) */
   isSelf?: boolean;
 }
 
@@ -54,7 +54,7 @@ type MenuItemType = {
   className?: string;
 };
 
-/** ===================== 主组件 ===================== */
+/** ===================== Main component ===================== */
 const FriendActions: React.FC<FriendActionsProps> = ({
   status,
   onAdd,
@@ -69,19 +69,19 @@ const FriendActions: React.FC<FriendActionsProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isActionLoading, setIsActionLoading] = useState(false);
 
-  // Floating UI 配置
+  // Floating UI Configuration
   const { refs, floatingStyles, context } = useFloating({
-    open: isOpen && !isActionLoading, // 在执行操作时不打开菜单
+    open: isOpen && !isActionLoading, // Don't open the menu while performing an action
     onOpenChange: (open) => {
-      if (!isActionLoading) { // 只有在没有操作进行时才允许状态改变
+      if (!isActionLoading) { // The state change is allowed only when no operation is in progress
         setIsOpen(open);
       }
     },
-    placement: "bottom-start", // 恢复 bottom-start
-    strategy: "absolute", // 改回 absolute 定位策略
-    //transform: false, // 禁用 transform，使用原生定位
+    placement: "bottom-start", // recover bottom-start
+    strategy: "absolute", // Change back absolute Positioning Strategy
+    //transform: false, // Disabled transform, use native positioning
     middleware: [
-      offset({ mainAxis: 12, crossAxis: 0 }), // 增加主轴偏移确保在下方
+      offset({ mainAxis: 12, crossAxis: 0 }), // Increase spindle offset to ensure it is below
       flip({
         fallbackAxisSideDirection: "start",
         padding: 5,
@@ -103,16 +103,16 @@ const FriendActions: React.FC<FriendActionsProps> = ({
     role,
   ]);
 
-  // osu! 单向好友系统菜单配置
+  // osu! One-way friend systemmenuConfiguration
   const menuItems: MenuItemType[] = useMemo(() => {
     if (isSelf) return [];
 
-    // 已屏蔽状态
+    // Blocked
     if (isBlocked) {
       return [
         {
           key: "unblock",
-          label: "取消屏蔽",
+          label: "Unblock",
           icon: (
             <span className="relative flex items-center justify-center w-4 h-4">
               <FiShieldOff className="w-4 h-4" />
@@ -125,22 +125,22 @@ const FriendActions: React.FC<FriendActionsProps> = ({
       ];
     }
     
-    // 已关注状态 (我关注了对方)
+    // Status already paid attention (I've followed the other person)
     if (isFriend) {
       const items = [
         {
           key: "remove",
-          label: isMutual ? "取消互相关注" : "取消关注",
+          label: isMutual ? "Cancel mutual attention" : "Unfollow",
           icon: (
             <span className="relative flex items-center justify-center w-4 h-4">
               {isMutual ? (
-                // 互相关注 - 双人图标 + 心形
+                // Pay attention to each other - Two person icon + Heart shape
                 <>
                   <FiUsers className="w-4 h-4 text-pink-500" />
                   <FiHeart className="absolute -top-0.5 -right-0.5 w-2 h-2 text-pink-400 fill-current" />
                 </>
               ) : (
-                // 单向关注 - 用户图标 + 减号
+                // One-way attention - User icon + minus sign
                 <>
                   <FiUser className="w-4 h-4" />
                   <FiUserMinus className="absolute -top-0.5 -right-0.5 w-2 h-2 text-orange-500" />
@@ -155,10 +155,10 @@ const FriendActions: React.FC<FriendActionsProps> = ({
         },
       ];
 
-      // 添加屏蔽选项
+      // Add blocking option
       items.push({
         key: "block",
-        label: "屏蔽用户",
+        label: "Block users",
         icon: (
           <span className="relative flex items-center justify-center w-4 h-4">
             <FiShield className="w-4 h-4" />
@@ -172,21 +172,21 @@ const FriendActions: React.FC<FriendActionsProps> = ({
       return items;
     }
     
-    // 未关注状态
+    // Not followed status
     const items = [
       {
         key: "add",
-        label: followsMe ? "回关 (互相关注)" : "关注",
+        label: followsMe ? "Back to the clearance (Pay attention to each other)" : "focus on",
         icon: (
           <span className="relative flex items-center justify-center w-4 h-4">
             {followsMe ? (
-              // 对方关注了我，我可以回关
+              // other sidefocus onI canBack to the clearance
               <>
                 <FiUsers className="w-4 h-4 text-blue-500" />
                 <FiHeart className="absolute -top-0.5 -right-0.5 w-2 h-2 text-blue-400" />
               </>
             ) : (
-              // 普通关注
+              // ordinaryfocus on
               <>
                 <FiUser className="w-4 h-4" />
                 <FiUserPlus className="absolute -top-0.5 -right-0.5 w-2 h-2 text-green-500" />
@@ -201,10 +201,10 @@ const FriendActions: React.FC<FriendActionsProps> = ({
       },
     ];
 
-    // 添加屏蔽选项
+    // Add blocking option
     items.push({
       key: "block",
-      label: "屏蔽用户",
+      label: "Block users",
       icon: (
         <span className="relative flex items-center justify-center w-4 h-4">
           <FiShield className="w-4 h-4" />
@@ -218,7 +218,7 @@ const FriendActions: React.FC<FriendActionsProps> = ({
     return items;
   }, [isSelf, isBlocked, isFriend, isMutual, followsMe, onAdd, onRemove, onBlock, onUnblock]);
 
-  // 获取主按钮的图标 - osu! 单向好友系统
+  // Get the main button icon - osu! One-way friend system
   const getMainIcon = () => {
     if (loading) {
       return <FiLoader className="w-4 h-4 animate-spin text-blue-500" />;
@@ -244,7 +244,7 @@ const FriendActions: React.FC<FriendActionsProps> = ({
 
     if (isFriend) {
       if (isMutual) {
-        // 互相关注 - 双人图标 + 粉色心形 + 脉冲效果
+        // Pay attention to each other - Two person icon + pinkHeart shape + Pulse effect
         return (
           <span className="relative flex items-center justify-center">
             <FiUsers className="w-4 h-4 text-pink-500" />
@@ -252,7 +252,7 @@ const FriendActions: React.FC<FriendActionsProps> = ({
           </span>
         );
       } else {
-        // 单向关注 - 用户图标 + 蓝色勾选
+        // One-way attention - User icon + Blue check
         return (
           <span className="relative flex items-center justify-center">
             <FiUser className="w-4 h-4 text-blue-500" />
@@ -263,7 +263,7 @@ const FriendActions: React.FC<FriendActionsProps> = ({
     }
 
     if (followsMe) {
-      // 对方关注了我 - 橙色双人图标 + 心形提示
+      // other sidefocus onGet me - orange colorTwo person icon + Heart shapehint
       return (
         <span className="relative flex items-center justify-center">
           <FiUsers className="w-4 h-4 text-orange-500" />
@@ -272,7 +272,7 @@ const FriendActions: React.FC<FriendActionsProps> = ({
       );
     }
 
-    // 未关注 - 默认用户图标
+    // not yetfocus on - defaultUser icon
     return (
       <span className="relative flex items-center justify-center">
         <FaUserFriends className="w-4 h-4 text-gray-600" />
@@ -280,25 +280,25 @@ const FriendActions: React.FC<FriendActionsProps> = ({
     );
   };
 
-  // 获取按钮状态文本 - osu! 单向好友系统
+  // Get button status text - osu! One-way friend system
   const getButtonStatusText = () => {
-    if (isSelf) return "自己的资料";
-    if (isBlocked) return "已屏蔽该用户";
+    if (isSelf) return "Your own information";
+    if (isBlocked) return "This user has been blocked";
     if (isFriend) {
       if (isMutual) {
-        return "互相关注 - 你们相互关注";
+        return "Pay attention to each other - You guys each otherfocus on";
       } else {
-        return "已关注 - 你关注了此用户";
+        return "alreadyfocus on - youfocus onThis user";
       }
     }
-    if (followsMe) return "关注你的用户 - 对方关注了你";
-    return "未关注 - 点击查看关注选项";
+    if (followsMe) return "focus onyouUsers - other sidefocus onIt'syou";
+    return "not yetfocus on - Click to viewfocus onOptions";
   };
 
-  // 是否显示下拉箭头
+  // Whether to display the drop-down arrow
   const showDropdownArrow = !isSelf && !loading && !isActionLoading && menuItems.length > 0;
 
-  // 如果是自己或没有菜单项，只显示按钮
+  // If it is yourself or there are no menu items, only buttons are displayed
   if (isSelf || loading || menuItems.length === 0) {
     return (
       <div className={`relative inline-flex ${className}`}>
@@ -352,7 +352,7 @@ const FriendActions: React.FC<FriendActionsProps> = ({
           ${showDropdownArrow ? 'pr-4' : ''}
         `}
       >
-        {/* 图标和数字 */}
+        {/* Icons and numbers */}
         <div className="flex items-center gap-2">
           {(loading || isActionLoading) ? (
             <FiLoader className="w-4 h-4 animate-spin text-blue-500" />
@@ -362,7 +362,7 @@ const FriendActions: React.FC<FriendActionsProps> = ({
           <span>{followerCount}</span>
         </div>
 
-        {/* 下拉箭头 - 只在有菜单项时显示 */}
+        {/* Pull down arrow - Shown only when there are menu items */}
         {showDropdownArrow && (
           <motion.div
             className="ml-1"
@@ -386,14 +386,14 @@ const FriendActions: React.FC<FriendActionsProps> = ({
         )}
       </motion.button>
 
-      {/* 弹出菜单 */}
+      {/* Popup menu */}
       {isOpen && !isActionLoading && (
         <FloatingFocusManager context={context} modal={false}>
           <motion.div
             ref={refs.setFloating}
             style={{
               ...floatingStyles,
-              transform: `${floatingStyles.transform || ''} translateY(8px)`, // 强制向下偏移
+              transform: `${floatingStyles.transform || ''} translateY(8px)`, // Force downward offset
             }}
             {...getFloatingProps()}
             initial={{ opacity: 0, scale: 0.95, y: -5 }}
@@ -406,12 +406,12 @@ const FriendActions: React.FC<FriendActionsProps> = ({
               <button
                 key={item.key}
                 onClick={async () => {
-                  // 防止重复点击
+                  // Prevent repeated clicks
                   if (isActionLoading) return;
                   
                   try {
                     setIsActionLoading(true);
-                    setIsOpen(false); // 立即关闭菜单
+                    setIsOpen(false); // Close the menu now
                     await item.action();
                   } catch (error) {
                     console.error("Action failed:", error);

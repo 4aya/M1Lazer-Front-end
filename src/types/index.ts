@@ -1,10 +1,10 @@
-// Game modes - 主要模式和子模式
+// Game modes - Main mode and sub-mode
 export type GameMode = 'osu' | 'taiko' | 'fruits' | 'mania' | 'osurx' | 'osuap' | 'taikorx' | 'fruitsrx';
 
-// 主模式类型
+// Main mode type
 export type MainGameMode = 'osu' | 'taiko' | 'fruits' | 'mania';
 
-// 模式分组配置
+// Mode grouping configuration
 export const GAME_MODE_GROUPS: Record<MainGameMode, GameMode[]> = {
   osu: ['osu', 'osurx', 'osuap'],
   taiko: ['taiko', 'taikorx'],
@@ -12,7 +12,7 @@ export const GAME_MODE_GROUPS: Record<MainGameMode, GameMode[]> = {
   mania: ['mania']
 };
 
-// 模式显示名称（更新版本）
+// Mode display name (updated version)
 export const GAME_MODE_NAMES: Record<GameMode, string> = {
   osu: 'Standard',
   osurx: 'Relax',
@@ -241,7 +241,7 @@ export interface NavItem {
 // Theme types
 export type Theme = 'light' | 'dark';
 
-// 主模式图标类名
+// Main mode icon class name
 export const MAIN_MODE_ICONS: Record<MainGameMode, string> = {
   osu: 'fa-extra-mode-osu',
   taiko: 'fa-extra-mode-taiko',
@@ -342,7 +342,7 @@ export interface ChatChannel {
   recent_messages: ChatMessage[];
   users: number[];
   message_length_limit: number;
-  // 可选的用户信息，用于私聊频道
+  // Optional user information for private chat channels
   user_info?: {
     id: number;
     username: string;
@@ -439,7 +439,7 @@ export interface NotificationEvent extends SocketMessage {
   };
 }
 
-// 好友关系类型
+// Friendship type
 export interface FriendRelation {
   target_id: number;
   relation_type: 'friend' | 'block';
@@ -447,19 +447,19 @@ export interface FriendRelation {
   target?: User;
 }
 
-// 私聊频道创建响应
+// Private chat channel creation response
 export interface PrivateMessageResponse {
   channel: ChatChannel;
   message: ChatMessage;
 }
 
-// 用户搜索响应
+// User search response
 export interface UserSearchResponse {
   users: User[];
   total: number;
 }
 
-// 用户最近活动类型
+// User recent activity type
 export interface UserActivity {
   id: number;
   createdAt: string;
@@ -494,25 +494,25 @@ export interface UserActivity {
   };
 }
 
-// 用户最近活动响应
+// Response to the user's recent activity
 export interface UserRecentActivityResponse {
   activities: UserActivity[];
   has_more: boolean;
   total: number;
 }
 
-// 用户页面内容
+// User page content
 export interface UserPage {
   html: string;
   raw: string;
 }
 
-// BBCode验证请求
+// BBCodeVerification request
 export interface BBCodeValidationRequest {
   content: string;
 }
 
-// BBCode验证响应
+// BBCodeVerify the response
 export interface BBCodeValidationResponse {
   valid: boolean;
   errors: string[];
@@ -522,12 +522,12 @@ export interface BBCodeValidationResponse {
   };
 }
 
-// 用户页面更新请求
+// User page update request
 export interface UserPageUpdateRequest {
   body: string;
 }
 
-// 用户页面更新响应
+// User page update response
 export interface UserPageUpdateResponse {
   html: string;
 }

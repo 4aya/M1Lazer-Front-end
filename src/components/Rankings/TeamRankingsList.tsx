@@ -26,7 +26,7 @@ const TeamRankingsList: React.FC<Props> = ({
   const [teams, setTeams] = useState<Record<number, Team>>({});
   const [loadingTeams, setLoadingTeams] = useState<Set<number>>(new Set());
 
-  // 加载战队详情
+  // Loading team details
   const loadTeamDetail = async (teamId: number) => {
     if (teams[teamId] || loadingTeams.has(teamId)) return;
 
@@ -37,7 +37,7 @@ const TeamRankingsList: React.FC<Props> = ({
       setTeams(prev => ({ ...prev, [teamId]: response.team }));
     } catch (error) {
       handleApiError(error);
-      console.error(`加载战队 ${teamId} 详情失败:`, error);
+      console.error(`Loading team ${teamId} Details failed:`, error);
     } finally {
       setLoadingTeams(prev => {
         const newSet = new Set(prev);
@@ -47,7 +47,7 @@ const TeamRankingsList: React.FC<Props> = ({
     }
   };
 
-  // 当排行榜数据改变时，加载所有战队详情
+  // Load all team details when ranking data changes
   useEffect(() => {
     if (!rankings?.ranking?.length) return;
 
@@ -61,8 +61,8 @@ const TeamRankingsList: React.FC<Props> = ({
         <div className="bg-gray-100 dark:bg-gray-700 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
           <FiUsers className="text-4xl text-gray-400 dark:text-gray-500" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">暂无战队排行榜数据</h3>
-        <p className="text-gray-500 dark:text-gray-400">当前筛选条件下没有找到数据</p>
+        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No team ranking data yet.</h3>
+        <p className="text-gray-500 dark:text-gray-400">No data was found for the current team.</p>
       </div>
     );
   }

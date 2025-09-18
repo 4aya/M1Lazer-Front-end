@@ -129,14 +129,14 @@ const UserDropdown: React.FC<UserDropdownProps> = memo(({ user, onLogout }) => {
               <DropdownItem
                 to="/profile"
                 icon={FiUser}
-                label="个人资料"
+                label="Your Profile"
                 onClick={handleMenuItemClick}
               />
               
               <DropdownItem
                 to="/settings"
                 icon={FiSettings}
-                label="设置"
+                label="Profile Settings"
                 onClick={handleMenuItemClick}
               />
             </div>
@@ -148,7 +148,7 @@ const UserDropdown: React.FC<UserDropdownProps> = memo(({ user, onLogout }) => {
                 className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-300 transition-all duration-200"
               >
                 <FiLogOut size={16} className="mr-3" />
-                退出登录
+                Log out
               </button>
             </div>
 

@@ -19,7 +19,7 @@ const UserPage: React.FC = () => {
       .then(setUser)
       .catch((err: unknown) => {
         const message = (err as { response?: { data?: { detail?: string } } }).response?.data?.detail;
-        setError(message || '获取用户信息失败');
+        setError(message || 'Failed to obtain user information');
         setUser(null);
       })
       .finally(() => setLoading(false));
@@ -37,8 +37,8 @@ const UserPage: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
         <div className="text-6xl mb-4">😕</div>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">用户未找到</h2>
-        <p className="text-gray-600">{error || '请检查用户 ID 或用户名是否正确'}</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">User not found</h2>
+        <p className="text-gray-600">{error || 'Please check the user ID Or is the username correct'}</p>
       </div>
     );
   }

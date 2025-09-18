@@ -13,22 +13,22 @@ interface Props {
 }
 
 const TeamDetailUserCard: React.FC<Props> = ({ ranking, selectedMode, rankingType }) => {
-  // 过滤掉默认封面URL
+  // Filter out the default coverURL
   const rawCoverUrl = ranking.user.cover_url || ranking.user.cover?.url;
   const defaultCoverUrls = [
     'https://assets-ppy.g0v0.top/user-profile-covers/default.jpeg',
     'https://assets.ppy.sh/user-profile-covers/default.jpeg',
-    // 其他可能的默认URL变体
+    // Other possible defaultsURLVariants
   ];
   const coverUrl = rawCoverUrl && !defaultCoverUrls.includes(rawCoverUrl) ? rawCoverUrl : undefined;
 
-  // 根据是否有背景图片决定渲染方式
+  // Determine the rendering method based on whether there is a background image
   if (!coverUrl) {
-    // 没有背景图片时，使用普通 div 和默认背景
+    // When there is no background image, use normal div and default background
     return (
       <div className="relative overflow-hidden transition-colors duration-200 sm:bg-white sm:dark:bg-gray-800 sm:hover:bg-gray-50 sm:dark:hover:bg-gray-800/50">
         <div className="relative flex items-center gap-3 sm:gap-4 px-4 py-3">
-          {/* 用户头像 */}
+          {/* User profile picture */}
           <Link to={`/users/${ranking.user.id}`} className="flex-shrink-0">
             <LazyAvatar
               src={ranking.user.avatar_url}
@@ -38,7 +38,7 @@ const TeamDetailUserCard: React.FC<Props> = ({ ranking, selectedMode, rankingTyp
             />
           </Link>
 
-          {/* 用户信息 */}
+          {/* User Information */}
           <div className="flex-1 min-w-0">
             <Link
               to={`/users/${ranking.user.id}`}
@@ -61,7 +61,7 @@ const TeamDetailUserCard: React.FC<Props> = ({ ranking, selectedMode, rankingTyp
             </div>
           </div>
 
-          {/* 分数显示 */}
+          {/* Score display */}
           <div className="text-right flex-shrink-0">
             <div className="text-base sm:text-lg font-bold" style={{ color: GAME_MODE_COLORS[selectedMode] }}>
               {rankingType === 'performance'
@@ -74,17 +74,17 @@ const TeamDetailUserCard: React.FC<Props> = ({ ranking, selectedMode, rankingTyp
     );
   }
 
-  // 有背景图片时，使用 LazyBackgroundImage
+  // When there is a background picture, use LazyBackgroundImage
   return (
     <LazyBackgroundImage 
       src={coverUrl} 
       className="overflow-hidden transition-colors duration-200 sm:hover:bg-gray-50 sm:dark:hover:bg-gray-800/50"
     >
-      {/* 背景遮罩层 */}
+      {/* Background mask layer */}
       <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/85 to-white/80 dark:from-gray-900/90 dark:via-gray-900/85 dark:to-gray-900/80 sm:hover:from-white/85 sm:hover:via-white/80 sm:hover:to-white/75 sm:dark:hover:from-gray-900/85 sm:dark:hover:via-gray-900/80 sm:dark:hover:to-gray-900/75 transition-all duration-300" />
       
       <div className="relative flex items-center gap-3 sm:gap-4 px-4 py-3">
-        {/* 用户头像 */}
+        {/* User profile picture */}
         <Link to={`/users/${ranking.user.id}`} className="flex-shrink-0">
           <LazyAvatar
             src={ranking.user.avatar_url}
@@ -94,7 +94,7 @@ const TeamDetailUserCard: React.FC<Props> = ({ ranking, selectedMode, rankingTyp
           />
         </Link>
 
-        {/* 用户信息 */}
+        {/* User Information */}
         <div className="flex-1 min-w-0">
           <Link
             to={`/users/${ranking.user.id}`}
@@ -117,7 +117,7 @@ const TeamDetailUserCard: React.FC<Props> = ({ ranking, selectedMode, rankingTyp
           </div>
         </div>
 
-        {/* 分数显示 */}
+        {/* Score display */}
         <div className="text-right flex-shrink-0">
           <div className="text-base sm:text-lg font-bold" style={{ color: GAME_MODE_COLORS[selectedMode] }}>
             {rankingType === 'performance'

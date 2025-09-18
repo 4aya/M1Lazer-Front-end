@@ -23,7 +23,7 @@ interface AvatarProps {
   onAvatarUpdate?: (newAvatarUrl: string) => void;
 }
 
-/** 关键点一：把图片独立成 memo 组件，避免 hover 状态变更导致重新渲染 */
+/** Key point 1: Make pictures independent memo Components, avoid hover State changes cause re-rendering */
 const ImageBlock = React.memo(function ImageBlock({
   src,
   alt,
@@ -45,7 +45,7 @@ const ImageBlock = React.memo(function ImageBlock({
         <div className={`absolute inset-0 bg-gray-300 dark:bg-gray-700 animate-pulse ${radiusClass}`} />
       )}
       <img
-        /** 关键点二：不给 <img> 设置任何会触发重算的 key；hover 时 props 不变、就不会重建节点 */
+        /** Key point 2: Not given <img> Set any recalculation that triggers key;hover hour props No nodes will not be rebuilt if they are not changed */
         src={src}
         alt={alt}
         loading="lazy"
@@ -104,11 +104,11 @@ const Avatar: React.FC<AvatarProps> = ({
   } as const;
 
   const radius = shape === 'circle' ? 'rounded-full' : 'rounded-2xl';
-  // 只有在明确设置 editable=true 或者未设置 editable 且是当前用户时才显示上传功能
+  // Only if explicitly set editable=true Or not set editable And it's the current userhourOnly the upload function is displayed
   const shouldShowUpload = editable === true || (editable !== false && isSelf);
 
   useEffect(() => {
-    debugLog('Avatar组件状态:', {
+    debugLog('AvatarComponent status:', {
       shouldShowUpload,
       editable,
       isCurrentUser,
@@ -127,7 +127,7 @@ const Avatar: React.FC<AvatarProps> = ({
     };
     setImageError(false);
     setIsLoading(true);
-    setRetryCount(0); // 重置重试计数
+    setRetryCount(0); // Reset the retry count
     setCurrentImageUrl(getImageUrl());
   }, [userId, username, avatarUrl]);
 
@@ -135,68 +135,68 @@ const Avatar: React.FC<AvatarProps> = ({
   const fallbackLetter = (username || '?').charAt(0).toUpperCase();
 
   const handleImageLoad = () => {
-    debugLog('图片加载成功:', currentImageUrl);
+    debugLog('The picture loaded successfully:', currentImageUrl);
     setIsLoading(false);
   };
 
   const handleImageError = () => {
-    debugLog('图片加载失败:', currentImageUrl);
+    debugLog('Image loading failed:', currentImageUrl);
     
-    // 如果是API生成的头像URL且重试次数少于3次，则重试
+    // in the case ofAPIGenerated avatarURLAnd the number of retry times is less than3Time, try again
     if (userId && currentImageUrl.includes(`/users/${userId}/avatar`) && retryCount < 3) {
-      debugLog(`头像加载失败，${1000 * (retryCount + 1)}ms后重试第${retryCount + 1}次`);
+      debugLog(`The avatar failed to load,${1000 * (retryCount + 1)}msTry again${retryCount + 1}Second-rate`);
       setTimeout(() => {
         setRetryCount(prev => prev + 1);
-        const retryUrl = userAPI.getAvatarUrl(userId, true); // 破坏缓存重试
+        const retryUrl = userAPI.getAvatarUrl(userId, true); // Destroy cache and try again
         setCurrentImageUrl(retryUrl);
         setIsLoading(true);
-      }, 1000 * (retryCount + 1)); // 递增延迟：1s, 2s, 3s
+      }, 1000 * (retryCount + 1)); // Incremental delay:1s, 2s, 3s
       return;
     }
     
-    // 如果不是API头像URL或已达到重试上限，尝试加载默认图片
+    // If notAPIavatarURLOr the retry limit has been reached, try to load the default image
     if (currentImageUrl !== '/default.jpg') {
-      debugLog('尝试加载默认图片');
+      debugLog('Try to load the default image');
       setCurrentImageUrl('/default.jpg');
       setImageError(false);
       setIsLoading(true);
-      setRetryCount(0); // 重置重试计数
+      setRetryCount(0); // Reset the retry count
     } else {
-      debugLog('默认图片也加载失败，显示字母');
+      debugLog('The default image also fails to load, and the letters are displayed');
       setImageError(true);
       setIsLoading(false);
-      setRetryCount(0); // 重置重试计数
+      setRetryCount(0); // Reset the retry count
     }
   };
 
   const handleUploadSuccess = (newAvatarUrl: string) => {
     debugLog('Avatar upload success:', newAvatarUrl);
     
-    // 重置重试计数和错误状态
+    // Reset the retry countand error status
     setRetryCount(0);
     setImageError(false);
     setIsLoading(false);
     
-    // 立即更新本地显示的头像URL（带时间戳破坏缓存）
+    // Update local display nowofavatarURL(bringhourStampDestroy cache)
     const urlWithTimestamp = `${newAvatarUrl}${newAvatarUrl.includes('?') ? '&' : '?'}t=${Date.now()}`;
     setCurrentImageUrl(urlWithTimestamp);
     
-    // 延迟执行用户信息刷新，给服务器一些时间处理头像
+    // DelayPerform user information refresh and give the server somehourIntermediate processingavatar
     setTimeout(() => {
-      debugLog('延迟刷新用户信息和头像缓存');
-      // 如果有userId，使用API重新获取头像URL（破坏缓存）
+      debugLog('DelayRefresh user information andavatarcache');
+      // If there isuserId,useAPIRe-acquireavatarURL(Destroy the cache)
       if (userId) {
-        const refreshedUrl = userAPI.getAvatarUrl(userId, true); // 破坏缓存
+        const refreshedUrl = userAPI.getAvatarUrl(userId, true); // Destroy cache
         setCurrentImageUrl(refreshedUrl);
       }
       onAvatarUpdate?.(newAvatarUrl);
-    }, 2000); // 延迟2秒
+    }, 2000); // Delay2Second
   };
 
   const handleAvatarClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    debugLog('Avatar点击事件触发', {
+    debugLog('AvatarClick event triggers', {
       shouldShowUpload,
       editable,
       isCurrentUser,
@@ -208,7 +208,7 @@ const Avatar: React.FC<AvatarProps> = ({
     }
   };
 
-  /** 关键点三：overlay 的内容用 useMemo（避免重复创建），并用 framer-motion 控制显隐动画 */
+  /** Key point three:overlay Use the content of useMemo(avoid repeated creation) and use framer-motion Control the animation of the visible and hidden */
   const Overlay = useMemo(
     () => (
       <AnimatePresence initial={false}>
@@ -216,7 +216,7 @@ const Avatar: React.FC<AvatarProps> = ({
           <motion.div
             key="overlay"
             className={`absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center ${radius} z-10 will-change-[opacity,transform]`}
-            /** 不抢事件，让容器来处理点击/hover */
+            /** Don't grab events, let the container handle clicks/hover */
             style={{ pointerEvents: 'none' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -228,7 +228,7 @@ const Avatar: React.FC<AvatarProps> = ({
             />
             {showUploadHint && (size === 'lg' || size === 'xl' || size === '2xl') && (
               <span className={`text-white text-xs ${hoverOverlaySizes[size]} text-center px-1 leading-tight`}>
-                点击上传
+                Click to upload
               </span>
             )}
           </motion.div>
@@ -250,12 +250,12 @@ const Avatar: React.FC<AvatarProps> = ({
         ]
           .filter(Boolean)
           .join(' ')}
-        style={{ display: 'inline-block', transform: 'translateZ(0)' }} // 关键点四：强制合成层，减少抖动
+        style={{ display: 'inline-block', transform: 'translateZ(0)' }} // Key point 4: Force synthetic layer to reduce jitter
         onClick={shouldShowUpload ? handleAvatarClick : undefined}
         onMouseEnter={
           shouldShowUpload
             ? () => {
-                debugLog('鼠标进入头像区域');
+                debugLog('Mouse entryavatararea');
                 setIsHovering(true);
               }
             : undefined
@@ -263,12 +263,12 @@ const Avatar: React.FC<AvatarProps> = ({
         onMouseLeave={
           shouldShowUpload
             ? () => {
-                debugLog('鼠标离开头像区域');
+                debugLog('Mouse leaveavatararea');
                 setIsHovering(false);
               }
             : undefined
         }
-        title={shouldShowUpload ? '点击上传头像' : `${username}的头像`}
+        title={shouldShowUpload ? 'Click to uploadavatar' : `${username}ofavatar`}
         role={shouldShowUpload ? 'button' : 'img'}
         tabIndex={shouldShowUpload ? 0 : -1}
         onKeyDown={
@@ -282,11 +282,11 @@ const Avatar: React.FC<AvatarProps> = ({
             : undefined
         }
       >
-        {/* 图片渲染与 hover 状态解耦：hover 时 ImageBlock 的 props 不变，不会重建或触发加载 */}
+        {/* Image rendering and hover State decoupling:hover hour ImageBlock of props Unchanged, no rebuilding or triggering loading */}
         {shouldShowImage ? (
           <ImageBlock
             src={currentImageUrl}
-            alt={`${username}的头像`}
+            alt={`${username}ofavatar`}
             radiusClass={radius}
             isLoading={isLoading}
             onLoad={handleImageLoad}
@@ -298,7 +298,7 @@ const Avatar: React.FC<AvatarProps> = ({
           </div>
         )}
 
-        {/* 使用 framer-motion 渐隐渐现的悬浮层，不会影响 <img> 的生命周期 */}
+        {/* use framer-motion Gradually disappearingofSuspension layer will not affect <img> oflife cycle */}
         {Overlay}
       </div>
 

@@ -26,7 +26,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 防止背景滚动
+  // Prevent background scrolling
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -34,28 +34,28 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
     };
   }, []);
 
-  // 处理文件选择
+  // Process file selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     processFile(file);
   };
 
-  // 处理文件（统一的文件处理逻辑）
+  // Processing files (unified file processing logic)
   const processFile = (file: File) => {
-    // 验证文件类型
+    // Verify file type
     if (!['image/png', 'image/jpeg', 'image/gif'].includes(file.type)) {
-      toast.error('只支持 PNG、JPEG、GIF 格式的图片');
+      toast.error('Only supported PNG,JPEG,GIF Format picture');
       return;
     }
 
-    // 验证文件大小 (10MB)
+    // Verify file size (10MB)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('文件大小不能超过 10MB');
+      toast.error('File size cannot exceed 10MB');
       return;
     }
 
-    // 读取文件
+    // Read the file
     const reader = new FileReader();
     reader.onload = (e) => {
       setImgSrc(e.target?.result as string);
@@ -65,7 +65,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
     reader.readAsDataURL(file);
   };
 
-  // 拖拽事件处理
+  // Drag and drop event processing
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragOver(true);
@@ -86,39 +86,39 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
     }
   };
 
-  // 处理裁剪完成
+  // Processing and cutting complete
   const handleCropComplete = async (croppedFile: File) => {
     if (!userId) {
-      toast.error('用户 ID 不存在');
+      toast.error('user ID Does not exist');
       return;
     }
 
     setIsUploading(true);
     try {
       const response = await userAPI.uploadCover(croppedFile);
-      toast.success('头图上传成功');
+      toast.success('The header image is uploaded successfully');
       onUploadSuccess(response.cover_url);
       onClose();
     } catch (error: any) {
-      console.error('头图上传失败:', error);
+      console.error('The upload of the header image failed:', error);
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
-        toast.error('头图上传失败，请重试');
+        toast.error('The upload of the header image failed, please try again');
       }
     } finally {
       setIsUploading(false);
     }
   };
 
-  // 处理裁剪取消
+  // Handle crop cancel
   const handleCropCancel = () => {
     setStep('select');
     setImgSrc('');
     setOriginalFileName('');
   };
 
-  // （保留占位：可能未来需要添加“重新开始”按钮，此处移除未使用的 resetUpload 函数以消除 TS 警告）
+  // (Reserve placeholder: Maybe it needs to be added in the future“restart”button, remove unused resetUpload Function to eliminate TS warn)
 
   return createPortal(
     <div
@@ -146,10 +146,10 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
         className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden"
         style={{ minHeight: '400px' }}
       >
-        {/* 头部 */}
+        {/* head */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            {step === 'select' ? '上传头图' : '裁剪头图'}
+            {step === 'select' ? 'Upload header image' : 'Crop head image'}
           </h3>
           <button
             type="button"
@@ -161,7 +161,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
           </button>
         </div>
 
-        {/* 内容区域 */}
+        {/* Content area */}
         <div className="p-6">
           {step === 'select' && (
             <div className="text-center">
@@ -175,10 +175,10 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
               
               {currentCoverUrl && (
                 <div className="mb-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">当前头图</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Current head image</p>
                   <img
                     src={currentCoverUrl}
-                    alt="当前头图"
+                    alt="Current head image"
                     className="w-full max-w-md h-32 mx-auto object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
                   />
                 </div>
@@ -197,13 +197,13 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
               >
                 <FiUpload className={`w-12 h-12 mx-auto mb-4 ${isDragOver ? 'text-osu-pink' : 'text-gray-400'}`} />
                 <p className={`mb-2 ${isDragOver ? 'text-osu-pink' : 'text-gray-600 dark:text-gray-400'}`}>
-                  {isDragOver ? '释放文件开始上传' : '点击选择图片或拖拽图片到此处'}
+                  {isDragOver ? 'Release the file to start uploading' : 'Click to select the picture or drag the picture to here'}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-500">
-                  支持 PNG、JPEG、GIF 格式，最大 10MB
+                  support PNG,JPEG,GIF Format, maximum 10MB
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-400 mt-1">
-                  建议尺寸：2000*500 像素（4:1 比例）
+                  Suggested size:2000*500 Pixels (4:1 Proportion)
                 </p>
               </div>
 
@@ -212,18 +212,18 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 className="bg-osu-pink hover:bg-osu-pink/90 text-white px-6 py-2 rounded-lg transition-colors"
               >
-                选择图片
+                Select a picture
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* 图片裁剪器 */}
+      {/* Picture cropper */}
       {step === 'crop' && imgSrc && (
         <ImageCropper
           src={imgSrc}
-          aspectRatio={4} // 4:1 比例头图
+          aspectRatio={4} // 4:1 Scale header chart
           maxWidth={2000}
           maxHeight={500}
           quality={0.9}
@@ -231,7 +231,7 @@ const CoverUpload: React.FC<CoverUploadProps> = ({
           onCancel={handleCropCancel}
           fileName={originalFileName}
           isUploading={isUploading}
-          uploadingText="上传头图中..."
+          uploadingText="Upload header imagemiddle..."
         />
       )}
     </div>,

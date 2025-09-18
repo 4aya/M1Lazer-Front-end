@@ -20,14 +20,14 @@ const MemberActions: React.FC<Props> = ({ member, team, onMemberRemoved }) => {
   const isTargetLeader = member.id === team.leader_id;
   const canKick = isLeader && !isTargetLeader && user?.id !== member.id;
 
-  // 踢出成员
+  // Kick out members
   const handleKickMember = async () => {
-    if (!confirm(`确定要踢出 ${member.username} 吗？`)) return;
+    if (!confirm(`Confirm to kick out ${member.username} Is it?`)) return;
 
     setIsSubmitting(true);
     try {
       await teamsAPI.removeMember(team.id, member.id);
-      toast.success(`已将 ${member.username} 踢出战队`);
+      toast.success(`Already ${member.username} Kick out of the team`);
       onMemberRemoved?.();
     } catch (error) {
       handleApiError(error);
@@ -58,12 +58,12 @@ const MemberActions: React.FC<Props> = ({ member, team, onMemberRemoved }) => {
                 className="flex items-center w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
               >
                 <FiUserX className="mr-2 w-3 h-3" />
-                {isSubmitting ? '踢出中...' : '踢出'}
+                {isSubmitting ? 'Kick out...' : 'Kick out'}
               </button>
             </div>
           </div>
 
-          {/* 点击外部关闭菜单 */}
+          {/* Click externally to close the menu */}
           <div
             className="fixed inset-0 z-40"
             onClick={() => setShowActions(false)}

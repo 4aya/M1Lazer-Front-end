@@ -4,7 +4,7 @@ import { FiBarChart, FiUsers, FiActivity, FiPlay, FiRefreshCw, FiTrendingUp } fr
 import { statsAPI } from '../../utils/api';
 import type { ServerStats, OnlineHistoryResponse } from '../../types';
 
-// 简单的双线图表组件
+// Simple two-line chart component
 const SimpleLineChart: React.FC<{ 
   onlineData: { time: string; value: number }[];
   playingData: { time: string; value: number }[];
@@ -20,14 +20,14 @@ const SimpleLineChart: React.FC<{
   const height = 80;
   const padding = 10;
 
-  // 创建在线用户路径点
+  // Create online user path points
   const onlinePoints = onlineData.map((item, index) => {
     const x = padding + (index / (onlineData.length - 1)) * (width - 2 * padding);
     const y = height - padding - ((item.value - minValue) / range) * (height - 2 * padding);
     return `${x},${y}`;
   }).join(' ');
 
-  // 创建游玩用户路径点
+  // Create play user path points
   const playingPoints = playingData.map((item, index) => {
     const x = padding + (index / (playingData.length - 1)) * (width - 2 * padding);
     const y = height - padding - ((item.value - minValue) / range) * (height - 2 * padding);
@@ -48,19 +48,19 @@ const SimpleLineChart: React.FC<{
           </linearGradient>
         </defs>
         
-        {/* 在线用户填充区域 */}
+        {/* Online user fill area */}
         <polygon
           points={`${padding},${height - padding} ${onlinePoints} ${width - padding},${height - padding}`}
           fill="url(#onlineGradient)"
         />
         
-        {/* 游玩用户填充区域 */}
+        {/* Play users fill areas */}
         <polygon
           points={`${padding},${height - padding} ${playingPoints} ${width - padding},${height - padding}`}
           fill="url(#playingGradient)"
         />
         
-        {/* 在线用户线条 */}
+        {/* Online user lines */}
         <polyline
           points={onlinePoints}
           fill="none"
@@ -70,7 +70,7 @@ const SimpleLineChart: React.FC<{
           strokeLinejoin="round"
         />
 
-        {/* 游玩用户线条 */}
+        {/* Play user lines */}
         <polyline
           points={playingPoints}
           fill="none"
@@ -80,7 +80,7 @@ const SimpleLineChart: React.FC<{
           strokeLinejoin="round"
         />
         
-        {/* 在线用户数据点 - 只显示最后一个点 */}
+        {/* Online user data points - Show only the last point */}
         {onlineData.length > 0 && (() => {
           const lastIndex = onlineData.length - 1;
           const item = onlineData[lastIndex];
@@ -97,7 +97,7 @@ const SimpleLineChart: React.FC<{
           );
         })()}
 
-        {/* 游玩用户数据点 - 只显示最后一个点 */}
+        {/* Play user data points - Show only the last point */}
         {playingData.length > 0 && (() => {
           const lastIndex = playingData.length - 1;
           const item = playingData[lastIndex];
@@ -124,21 +124,21 @@ const ServerStatsCard: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 将UTC时间转换为本地时间
+  // WillUTCTime converted to local time
   const formatLocalTime = (utcTimeString: string): string => {
-    // 确保时间字符串被正确解析为UTC时间
+    // Make sure the time string is correctly parsed intoUTCtime
     const utcDate = new Date(utcTimeString.endsWith('Z') ? utcTimeString : utcTimeString + 'Z');
-    return utcDate.toLocaleTimeString('zh-CN', {
+    return utcDate.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // 使用系统时区
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Use system time zone
     });
   };
 
-  // 格式化完整的本地日期时间（用于调试）
+  // Format full local datetime(For debugging)
   const formatLocalDateTime = (utcTimeString: string): string => {
     const utcDate = new Date(utcTimeString.endsWith('Z') ? utcTimeString : utcTimeString + 'Z');
-    return utcDate.toLocaleString('zh-CN', {
+    return utcDate.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -161,7 +161,7 @@ const ServerStatsCard: React.FC = () => {
       setHistory(onlineHistory);
     } catch (err) {
       console.error('Failed to fetch server stats:', err);
-      setError('获取服务器统计失败');
+      setError('Failed to obtain server statistics');
     } finally {
       setLoading(false);
     }
@@ -170,7 +170,7 @@ const ServerStatsCard: React.FC = () => {
   useEffect(() => {
     fetchStats();
     
-    // 移除自动刷新，只在组件挂载时获取一次数据
+    // Remove automatic refresh and get data only once when component mounts
     // const interval = setInterval(fetchStats, 30000);
     // return () => clearInterval(interval);
   }, []);
@@ -182,7 +182,7 @@ const ServerStatsCard: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
       >
-        {/* 标题占位符 */}
+        {/* Title placeholder */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
@@ -191,7 +191,7 @@ const ServerStatsCard: React.FC = () => {
           <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
         </div>
 
-        {/* 统计数据占位符 */}
+        {/* Statistical placeholders */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           {[1, 2, 3].map((i) => (
             <div key={i} className="text-center">
@@ -204,7 +204,7 @@ const ServerStatsCard: React.FC = () => {
           ))}
         </div>
 
-        {/* 图表占位符 */}
+        {/* Chart placeholder */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -223,17 +223,17 @@ const ServerStatsCard: React.FC = () => {
             </div>
           </div>
           
-          {/* 图表区域占位符 */}
+          {/* Chart area placeholder */}
           <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
           
-          {/* 时间标签占位符 */}
+          {/* timeTag placeholders */}
           <div className="flex justify-between mb-2">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-3 w-10 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
             ))}
           </div>
           
-          {/* 时区标识占位符 */}
+          {/* Time zone identification placeholder */}
           <div className="text-center">
             <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mx-auto"></div>
           </div>
@@ -251,29 +251,29 @@ const ServerStatsCard: React.FC = () => {
       >
         <div className="text-center text-gray-500 dark:text-gray-400">
           <FiBarChart className="w-8 h-8 mx-auto mb-2" />
-          <p className="mb-2">统计暂不可用</p>
+          <p className="mb-2">Statistics are not available yet</p>
           <button
             onClick={fetchStats}
             className="text-sm text-blue-500 hover:text-blue-600 underline inline-flex items-center gap-1"
           >
             <FiRefreshCw className="w-3 h-3" />
-            重试
+            Try again
           </button>
         </div>
       </motion.div>
     );
   }
 
-  // 准备图表数据
+  // Prepare chart data
   const onlineChartData = history ? history.history.map(entry => ({
     time: formatLocalTime(entry.timestamp),
     value: entry.online_count
-  })).reverse() : []; // 反转使时间从早到晚
+  })).reverse() : []; // ReversaltimeFrom morning to night
 
   const playingChartData = history ? history.history.map(entry => ({
     time: formatLocalTime(entry.timestamp),
     value: entry.playing_count
-  })).reverse() : []; // 反转使时间从早到晚
+  })).reverse() : []; // ReversaltimeFrom morning to night
 
   return (
     <motion.div
@@ -287,16 +287,16 @@ const ServerStatsCard: React.FC = () => {
           <div className="w-8 h-8 bg-pink-100 dark:bg-pink-900/30 rounded-xl flex items-center justify-center">
             <FiBarChart className="w-4 h-4 text-pink-600 dark:text-pink-400" />
           </div>
-          服务器统计
+          Server Statistics
         </h3>
         {stats && (
           <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-            更新于 {formatLocalDateTime(stats.timestamp)}
+            Updated on {formatLocalDateTime(stats.timestamp)}
             <button
               onClick={fetchStats}
               disabled={loading}
               className="text-pink-500 hover:text-pink-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="手动刷新"
+              title="Manual refresh"
             >
               <FiRefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
             </button>
@@ -311,7 +311,7 @@ const ServerStatsCard: React.FC = () => {
               <FiUsers className="w-6 h-6" />
               {stats.registered_users.toLocaleString()}
             </div>
-            <div className="text-sm text-blue-600/70 dark:text-blue-400/70 font-medium">注册用户</div>
+            <div className="text-sm text-blue-600/70 dark:text-blue-400/70 font-medium">Registered User</div>
           </div>
           
           <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-2xl">
@@ -319,7 +319,7 @@ const ServerStatsCard: React.FC = () => {
               <FiActivity className="w-6 h-6" />
               {stats.online_users.toLocaleString()}
             </div>
-            <div className="text-sm text-green-600/70 dark:text-green-400/70 font-medium">在线用户</div>
+            <div className="text-sm text-green-600/70 dark:text-green-400/70 font-medium">Online users</div>
           </div>
           
           <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl">
@@ -327,7 +327,7 @@ const ServerStatsCard: React.FC = () => {
               <FiPlay className="w-6 h-6" />
               {stats.playing_users.toLocaleString()}
             </div>
-            <div className="text-sm text-purple-600/70 dark:text-purple-400/70 font-medium">正在游玩</div>
+            <div className="text-sm text-purple-600/70 dark:text-purple-400/70 font-medium">Playing</div>
           </div>
         </div>
       )}
@@ -337,35 +337,35 @@ const ServerStatsCard: React.FC = () => {
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
               <FiTrendingUp className="w-4 h-4" />
-              24小时在线趋势
+              24Hourly Online Trends
             </h4>
             
-            {/* 图例 */}
+            {/* legend */}
             <div className="flex items-center gap-4 text-xs">
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-gray-600 dark:text-gray-400">在线</span>
+                <span className="text-gray-600 dark:text-gray-400">Online</span>
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                <span className="text-gray-600 dark:text-gray-400">游玩</span>
+                <span className="text-gray-600 dark:text-gray-400">play</span>
               </div>
             </div>
           </div>
           
           <SimpleLineChart onlineData={onlineChartData} playingData={playingChartData} />
           
-          {/* 时间标签 */}
+          {/* timeLabel */}
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
             <span>{onlineChartData[0]?.time}</span>
             <span>{onlineChartData[Math.floor(onlineChartData.length / 2)]?.time}</span>
             <span>{onlineChartData[onlineChartData.length - 1]?.time}</span>
           </div>
           
-          {/* 时区指示 */}
+          {/* Time zone indication */}
           <div className="text-center mt-1">
             <span className="text-xs text-gray-400 dark:text-gray-500">
-              {Intl.DateTimeFormat().resolvedOptions().timeZone} 时区
+              {Intl.DateTimeFormat().resolvedOptions().timeZone} Time zone
             </span>
           </div>
         </div>

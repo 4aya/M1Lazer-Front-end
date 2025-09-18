@@ -14,10 +14,10 @@ export type FriendStatus = {
 export function useFriendRelationship(targetUserId: number, selfUserId: number) {
   const mountedRef = useRef(true);
   
-  // 添加调试日志
+  // Add debug log
   console.log('useFriendRelationship called with:', { targetUserId, selfUserId });
   
-  // 参数验证
+  // Parameter verification
   const isValidUserId = (id: any): id is number => {
     return typeof id === 'number' && !isNaN(id) && id > 0;
   };
@@ -35,19 +35,19 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     isBlocked: false,
     isMutual: false,
     followsMe: false,
-    loading: true, // 初始总是 loading，让 API 来判断
-    isSelf: false, // 初始假设不是自己，让 API 来判断
+    loading: true, // The beginning is always loading,let API Let's judge
+    isSelf: false, // The initial assumption is not yourself,let API Let's judge
   });
 
   const refresh = useCallback(async () => {
-    // 验证 targetUserId 是否有效
+    // verify targetUserId Is it valid or not
     if (!isValidUserId(targetUserId)) {
       console.error('Cannot make API call with invalid targetUserId:', targetUserId);
       setStatus(prev => ({ ...prev, loading: false }));
       return;
     }
     
-    // 验证 selfUserId 是否有效
+    // verify selfUserId Is it valid or not
     if (!isValidUserId(selfUserId)) {
       console.error('Cannot make API call with invalid selfUserId:', selfUserId);
       setStatus(prev => ({ ...prev, loading: false }));
@@ -63,12 +63,12 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
       
       if (!mountedRef.current) return;
 
-      // 映射 API 响应字段到组件状态
+      // Mapping API Response field to component state
       setStatus({
-        isFriend: !!res?.is_following,    // 我是否关注对方
-        isBlocked: !!res?.isBlocked,      // 是否屏蔽（API 可能不返回此字段）
-        isMutual: !!res?.mutual,          // 是否互相关注
-        followsMe: !!res?.is_followed,    // 对方是否关注我
+        isFriend: !!res?.is_following,    // Do I pay attention to the other person?
+        isBlocked: !!res?.isBlocked,      // Whether to block (API This field may not be returned)
+        isMutual: !!res?.mutual,          // Whether to pay attention to each other
+        followsMe: !!res?.is_followed,    // Does the other party pay attention to me
         loading: false,
         isSelf: false,
       });
@@ -85,7 +85,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     } catch (err: any) {
       console.log('API call failed:', err);
       
-      // 检查是否是"不能查看自己"的错误
+      // Check if it is"Can't check yourself"Error
       const errorMessage = err?.response?.data?.message || err?.message || '';
       const isSelfError = errorMessage.includes('Cannot check relationship with yourself') || 
                          errorMessage.includes('yourself') ||
@@ -103,10 +103,10 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
             isSelf: true,
           });
         }
-        return; // 不显示错误toast，这是正常情况
+        return; // No errors are displayedtoast, this is normal
       }
       
-      // 其他错误正常处理
+      // Other errors are handled normally
       console.error('Real API error:', {
         targetUserId,
         selfUserId,
@@ -126,7 +126,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     
     console.log('useEffect triggered:', { targetUserId, selfUserId });
     
-    // 总是尝试请求，让后端来判断是否为自己
+    // Always try to request,letrear endLet's judgeWhether it is for yourself
     refresh();
 
     return () => {
@@ -134,10 +134,10 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     };
   }, [targetUserId, selfUserId, refresh]);
 
-  // 动态获取 isSelf 状态
+  // Dynamic acquisition isSelf state
   const currentIsSelf = status.isSelf;
 
-  // 乐观更新辅助函数
+  // Optimistic update of auxiliary functions
   const withOptimisticUpdate = useCallback((
     updater: (prev: FriendStatus) => FriendStatus,
     action: () => Promise<any>,
@@ -158,7 +158,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
       });
   }, [status, refresh]);
 
-  // 创建操作函数
+  // Create operation functions
   const add = useCallback(() => {
     console.log('Add friend called:', { targetUserId, currentIsSelf, isValidTargetUserId: isValidUserId(targetUserId) });
     
@@ -169,7 +169,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     
     if (!isValidUserId(targetUserId)) {
       console.error('Cannot add friend - invalid targetUserId:', targetUserId);
-      toast.error('无效的用户ID');
+      toast.error('Invalid userID');
       return Promise.reject(new Error('Invalid targetUserId'));
     }
     
@@ -179,7 +179,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
         console.log('Calling friendsAPI.addFriend with targetUserId:', targetUserId);
         return friendsAPI.addFriend(targetUserId);
       },
-      '已关注该用户'
+      'Already followed this user'
     );
   }, [targetUserId, currentIsSelf, withOptimisticUpdate]);
 
@@ -189,7 +189,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     return withOptimisticUpdate(
       (s) => ({ ...s, isFriend: false, isMutual: false }),
       () => friendsAPI.removeFriend(targetUserId),
-      '已取消关注'
+      'Unfollowed'
     );
   }, [targetUserId, currentIsSelf, withOptimisticUpdate]);
 
@@ -199,7 +199,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     return withOptimisticUpdate(
       (s) => ({ ...s, isBlocked: true, isFriend: false, isMutual: false }),
       () => friendsAPI.blockUser(targetUserId),
-      '已屏蔽该用户'
+      'This user has been blocked'
     );
   }, [targetUserId, currentIsSelf, withOptimisticUpdate]);
 
@@ -209,7 +209,7 @@ export function useFriendRelationship(targetUserId: number, selfUserId: number) 
     return withOptimisticUpdate(
       (s) => ({ ...s, isBlocked: false }),
       () => friendsAPI.unblockUser(targetUserId),
-      '已取消屏蔽'
+      'Unblocked'
     );
   }, [targetUserId, currentIsSelf, withOptimisticUpdate]);
   console.log('Current status:', status);

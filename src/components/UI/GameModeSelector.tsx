@@ -48,15 +48,15 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
     setShowSubModes(showSubModes === mainMode ? null : mainMode);
   };
 
-    const handleSubModeSelect = (mode: GameMode) => {
-      onModeChange(mode);
-      setShowSubModes(null);
-      setHoveredMode(null);
-    };
+  const handleSubModeSelect = (mode: GameMode) => {
+    onModeChange(mode);
+    setShowSubModes(null);
+    setHoveredMode(null);
+  };
 
   if (variant === 'compact') {
     return (
-      <div className={`relative ${className}`} ref={modeSelectRef}>
+      <div className={`relative overflow-visible ${className}`} ref={modeSelectRef}>
         <div className="flex gap-2">
           {(Object.keys(GAME_MODE_GROUPS) as MainGameMode[]).map((mainMode) => {
             const isActive = selectedMainMode === mainMode;
@@ -81,18 +81,18 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
                   className={`relative flex items-center justify-center rounded-xl font-medium text-sm transition-colors duration-200 overflow-hidden border ${
                     isActive
                       ? 'text-white shadow-lg'
-                      : 'text-gray-700 dark:text-gray-300 bg-white/95 dark:bg-gray-900/85 border-black/10 dark:border-white/15 shadow-sm'
+                      : 'text-gray-700 dark:text-gray-200 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md border-white/20 dark:border-white/10 shadow-sm'
                   }`}
                   style={{
                     height: '36px',
                     backgroundColor: isActive ? brand : undefined,
                     borderColor: isActive ? `${brand}66` : undefined,
-                    boxShadow: isActive ? `0 4px 14px ${brand}30` : undefined,
+                    boxShadow: isActive ? `0 6px 18px ${brand}40` : undefined,
                   }}
                   animate={{ width: shouldExpand ? '56px' : '44px' }}
                   transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  {/* 图标容器 */}
+                  {/* Icon container */}
                   <motion.div
                     className="flex items-center justify-center"
                     animate={{ x: shouldExpand ? -6 : 0 }}
@@ -104,7 +104,7 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
                     />
                   </motion.div>
 
-                  {/* 箭头指示器 */}
+                  {/* Arrow indicator */}
                   {hasSubModes && (
                     <motion.div
                       className="absolute right-[8px] flex items-center justify-center"
@@ -118,24 +118,24 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
                       >
                         <FiChevronDown 
                           size={12} 
-                          className={isActive ? 'text-white/80' : 'text-gray-700/60 dark:text-gray-200/60'}
+                          className={isActive ? 'text-white/85' : 'text-gray-700/70 dark:text-gray-200/70'}
                         />
                       </motion.div>
                     </motion.div>
                   )}
 
-                  {/* 悬停背景效果（品牌色薄罩） */}
+                  {/* Hover background effect (brand color thin cover) */}
                   {!isActive && (
                     <motion.div
                       className="absolute inset-0 rounded-xl opacity-0"
-                      animate={{ opacity: isHovered ? 0.08 : 0 }}
+                      animate={{ opacity: isHovered ? 0.12 : 0 }}
                       transition={{ duration: 0.2 }}
                       style={{ backgroundColor: brand }}
                     />
                   )}
                 </motion.button>
 
-                {/* 子模式下拉菜单 */}
+                {/* Sub-mode drop-down menu */}
                 <AnimatePresence>
                   {showSubModes === mainMode && (
                     <motion.div
@@ -143,8 +143,9 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className="absolute top-full mt-2 right-0 z-30 min-w-36 rounded-xl p-1 backdrop-blur-xl
-                                 bg-white/95 dark:bg-gray-900/90 border border-gray-200/60 dark:border-white/15 shadow-2xl"
+                      className="absolute top-full mt-2 right-0 z-[9999] min-w-36 rounded-xl p-1 backdrop-blur-xl
+                                 bg-white/90 dark:bg-gray-900/90 border border-white/30 dark:border-white/10
+                                 shadow-2xl ring-1 ring-black/5 dark:ring-white/5"
                     >
                       {GAME_MODE_GROUPS[mainMode].map((mode, index) => (
                         <motion.button
@@ -156,7 +157,7 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
                           className={`w-full text-left px-3 py-2.5 rounded-lg font-medium transition-all duration-200 text-sm
-                                      ${selectedMode === mode ? 'text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/70'}`}
+                                      ${selectedMode === mode ? 'text-white' : 'text-gray-800 dark:text-gray-200 hover:bg-gray-100/70 dark:hover:bg-white/5'}`}
                           style={{ backgroundColor: selectedMode === mode ? GAME_MODE_COLORS[mode] : undefined }}
                         >
                           {GAME_MODE_NAMES[mode]}
@@ -173,7 +174,7 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
     );
   }
 
-  // 完整版本
+  // Full version
   const allModes: GameMode[] = ['osu', 'taiko', 'fruits', 'mania', 'osurx', 'osuap', 'taikorx', 'fruitsrx'];
 
   return (
@@ -192,17 +193,17 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
             className={`relative rounded-xl font-medium transition-all duration-200 flex flex-col items-center justify-center gap-2 overflow-hidden group border ${
               selectedMode === mode
                 ? 'text-white shadow-lg'
-                : 'text-gray-700 dark:text-gray-300 bg-white/95 dark:bg-gray-900/85 border-black/10 dark:border-white/15 shadow-sm hover:text-white'
+                : 'text-gray-800 dark:text-gray-200 bg-white/80 dark:bg-gray-900/70 backdrop-blur-md border-white/20 dark:border-white/10 shadow-sm hover:text-white'
             }`}
             style={{
               width: '80px',
               height: '64px',
               backgroundColor: selectedMode === mode ? brand : undefined,
               borderColor: selectedMode === mode ? `${brand}66` : undefined,
-              boxShadow: selectedMode === mode ? `0 4px 16px ${brand}25` : undefined,
+              boxShadow: selectedMode === mode ? `0 6px 20px ${brand}35` : undefined,
             }}
           >
-            {/* 图标 */}
+            {/* icon */}
             <motion.div
               animate={{ scale: selectedMode === mode ? 1.05 : 1 }}
               whileHover={{ 
@@ -223,7 +224,7 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
               {GAME_MODE_NAMES[mode]}
             </motion.span>
 
-            {/* 悬停效果背景（品牌色薄罩） */}
+            {/* Hover effect background (brand color thin cover) */}
             {selectedMode !== mode && (
               <motion.div 
                 className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-15 transition-opacity duration-200"
@@ -231,7 +232,7 @@ const GameModeSelector: React.FC<GameModeSelectorProps> = ({
               />
             )}
 
-            {/* 选中状态动画背景（品牌色更深薄罩） */}
+            {/* Select the status animation background (brand color is darker and thinner) */}
             {selectedMode === mode && (
               <motion.div 
                 layoutId="selected-bg-full"

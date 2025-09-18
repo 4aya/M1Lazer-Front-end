@@ -20,12 +20,12 @@ const CountryRankingCard: React.FC<Props> = ({ ranking, rank, selectedMode }) =>
       }`}
     >
       <div className="flex items-center gap-3 sm:gap-4 px-4 py-3">
-        {/* 排名徽章 */}
+        {/* Ranking badge */}
         <div className="flex-shrink-0">
           <RankBadge rank={rank} size="sm" />
         </div>
 
-        {/* 国旗 */}
+        {/* National flag */}
         <div className="flex-shrink-0">
           <LazyFlag
             src={`/image/flag/${ranking.code.toLowerCase()}.svg`}
@@ -35,15 +35,15 @@ const CountryRankingCard: React.FC<Props> = ({ ranking, rank, selectedMode }) =>
           />
         </div>
 
-        {/* 国家信息 */}
+        {/* National Information */}
         <div className="flex-1 min-w-0">
           <div className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white truncate">{ranking.name}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            <span>{ranking.active_users.toLocaleString()} 活跃用户 • {ranking.play_count.toLocaleString()} 次游戏</span>
+            <span>{ranking.active_users.toLocaleString()} Active users • {ranking.play_count.toLocaleString()} Time game</span>
           </div>
         </div>
 
-        {/* 统计数据 */}
+        {/* Statistics */}
         <div className="text-right flex-shrink-0">
           <div className="text-base sm:text-lg font-bold" style={{ color: GAME_MODE_COLORS[selectedMode] }}>
             {Math.round(ranking.performance).toLocaleString()}pp

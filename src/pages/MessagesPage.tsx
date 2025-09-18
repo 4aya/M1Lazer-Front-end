@@ -11,7 +11,7 @@ import {
   FiRefreshCw
 } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
-// 使用全局通知上下文，避免与 Navbar 各自实例不同步
+// Use global notification context to avoid Navbar The individual instances are not synchronized
 import { useNotificationContext } from '../contexts/NotificationContext';
 import { useWebSocketNotifications } from '../hooks/useWebSocketNotifications';
 import { chatAPI, teamsAPI, userAPI } from '../utils/api';
@@ -28,13 +28,13 @@ import type {
 } from '../types';
 import toast from 'react-hot-toast';
 
-// UTC时间转换为本地时间
+// UTCTime converted to local time
 const convertUTCToLocal = (utcTimeString: string): string => {
   try {
     const utcDate = new Date(utcTimeString);
-    return utcDate.toISOString(); // 这会自动转换为本地时区显示
+    return utcDate.toISOString(); // This will automatically convert to local time zone display
   } catch (error) {
-    console.error('时间转换错误:', error);
+    console.error('Time conversion error:', error);
     return utcTimeString;
   }
 };
@@ -48,7 +48,7 @@ const MessagesPage: React.FC = () => {
   const [channels, _setChannels] = useState<ChatChannel[]>([]);
   const [selectedChannel, setSelectedChannel] = useState<ChatChannel | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  // 保存最新消息数组避免 WebSocket 回调闭包使用过期的 messages
+  // Save the latest message array to avoid WebSocket The callback closure has expired messages
   const messagesRef = useRef<ChatMessage[]>([]);
   const [channelFilter, setChannelFilter] = useState<ChannelFilter>('all');
   const [isLoading, setIsLoading] = useState(true);
@@ -56,40 +56,40 @@ const MessagesPage: React.FC = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showNewPMModal, setShowNewPMModal] = useState(false);
   
-  // 优化的频道消息加载函数，使用缓存API
+  // Optimized channel message loading function, using cacheAPI
   const loadChannelMessages = useCallback(async (channelId: number): Promise<ChatMessage[] | null> => {
     try {
-      console.log(`开始加载频道 ${channelId} 的消息`);
+      console.log(`Start loading the channel ${channelId} News`);
       
       const channelMessages = await apiCache.getChannelMessages(channelId);
       
       if (channelMessages && channelMessages.length > 0) {
-        // 转换时间戳
+        // Convert timestamp
         const messagesWithLocalTime = channelMessages.map((msg: ChatMessage) => ({
           ...msg,
           timestamp: convertUTCToLocal(msg.timestamp)
         }));
         
-        console.log(`频道 ${channelId} 消息加载完成: ${messagesWithLocalTime.length} 条`);
+        console.log(`Channel ${channelId} Message loading complete: ${messagesWithLocalTime.length} strip`);
         return messagesWithLocalTime;
       }
       
       return [];
     } catch (error) {
-      console.error(`加载频道 ${channelId} 消息失败:`, error);
+      console.error(`loadChannel ${channelId} The message failed:`, error);
       return null;
     }
   }, []);
   
-  // 其他必要的refs
+  // Other necessaryrefs
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const selectedChannelRef = useRef<ChatChannel | null>(null);
   const channelsRef = useRef<ChatChannel[]>([]);
-  const initialLoadRef = useRef<boolean>(true); // 首次加载标记
-  const userScrolledUpRef = useRef<boolean>(false); // 用户是否向上滚动离开底部
+  const initialLoadRef = useRef<boolean>(true); // First loading mark
+  const userScrolledUpRef = useRef<boolean>(false); // Whether the user scrolls upwards away from the bottom
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // 同时更新状态和 ref 的 setChannels 函数
+  // Update status and ref of setChannels function
   const setChannels = useCallback((value: ChatChannel[] | ((prev: ChatChannel[]) => ChatChannel[])) => {
     _setChannels(prev => {
       const newChannels = typeof value === 'function' ? value(prev) : value;
@@ -98,13 +98,13 @@ const MessagesPage: React.FC = () => {
     });
   }, []);
 
-  // 更新频道已读状态
+  // renewChannelReadstate
   const updateChannelReadStatus = useCallback((channelId: number, messageId: number) => {
     setChannels(prev => prev.map(channel => {
       if (channel.channel_id === channelId) {
-        // 更新已读ID，确保它不小于当前消息ID
+        // Update readID, make sure it is not smaller than the current messageID
         const newLastReadId = Math.max(channel.last_read_id || 0, messageId);
-        console.log(`更新频道 ${channel.name} 已读ID: ${channel.last_read_id} -> ${newLastReadId}`);
+        console.log(`renewChannel ${channel.name} ReadID: ${channel.last_read_id} -> ${newLastReadId}`);
         return {
           ...channel,
           last_read_id: newLastReadId
@@ -114,7 +114,7 @@ const MessagesPage: React.FC = () => {
     }));
   }, []);
 
-  // 使用通知系统
+  // Use notification system
   const {
     notifications,
     unreadCount,
@@ -123,13 +123,13 @@ const MessagesPage: React.FC = () => {
     removeNotificationByObject,
   } = useNotificationContext();
 
-  // 使用WebSocket处理实时消息
-  // chatConnected 当前未在 UI 中使用，改名为 _chatConnected 以消除未使用警告
+  // useWebSocketProcess real-time messages
+  // chatConnected Not currently available UI middleuse, renamedfor _chatConnected To eliminate theusewarn
   const { isConnected: _chatConnected } = useWebSocketNotifications({
     isAuthenticated,
     currentUser: user,
     onNewMessage: (message) => {
-      console.log('WebSocket收到消息（处理前）:', {
+      console.log('WebSocketMessage received (before processing):', {
         messageId: message.message_id,
         channelId: message.channel_id,
         senderId: message.sender_id,
@@ -139,13 +139,13 @@ const MessagesPage: React.FC = () => {
         selectedChannelName: selectedChannelRef.current?.name
       });
       
-      // 过滤自己的消息，不显示推送
+      // Filter yourselfNews, no push is displayed
       if (message.sender_id === user?.id) {
-        console.log('收到自己的消息，跳过处理:', message.message_id, 'sender_id:', message.sender_id, 'user.id:', user?.id);
+        console.log('receivearriveOwnNews,jump overdeal with:', message.message_id, 'sender_id:', message.sender_id, 'user.id:', user?.id);
         return;
       }
       
-      console.log('WebSocket收到消息（处理后）:', {
+      console.log('WebSocketReceived the message (after processing):', {
         messageId: message.message_id,
         channelId: message.channel_id,
         senderId: message.sender_id,
@@ -154,50 +154,50 @@ const MessagesPage: React.FC = () => {
         selectedChannelName: selectedChannelRef.current?.name
       });
   
-      // messageWithLocalTime变量在此处不再使用，因为我们直接传递原始message给addMessageToList
+      // messageWithLocalTimeVariables are no longer hereuse,becauseforWe pass it directlyoriginalmessageGiveaddMessageToList
       
-      // 检查是否应该添加到当前频道（使用ref确保获取最新状态）
+      // Check if it should be addedarrivecurrentChannel(userefMake sure to get the latest status)
       const currentSelectedChannel = selectedChannelRef.current;
       const shouldAddToCurrentChannel = currentSelectedChannel && message.channel_id === currentSelectedChannel.channel_id;
       
       if (shouldAddToCurrentChannel) {
-        console.log('添加消息到当前频道，当前列表长度:', messagesRef.current.length);
+        console.log('Add toinformationarrivecurrentChannel,currentList length:', messagesRef.current.length);
         addMessageToList(message, 'websocket');
       } else if (currentSelectedChannel) {
-        console.log('消息不属于当前频道，当前频道:', currentSelectedChannel.channel_id, '消息频道:', message.channel_id);
+        console.log('informationNot belongingcurrentChannel,currentChannel:', currentSelectedChannel.channel_id, 'informationChannel:', message.channel_id);
       } else {
-        console.log('没有选中的频道，尝试找到对应频道并自动选择');
-        console.log('当前频道列表长度:', channelsRef.current.length);
-        console.log('目标频道ID:', message.channel_id);
-        console.log('频道列表:', channelsRef.current.map(ch => ({id: ch.channel_id, name: ch.name})));
+        console.log('No choicemiddleofChannel, try to findarrivecorrespondChannelAnd automatically select');
+        console.log('currentChannelList length:', channelsRef.current.length);
+        console.log('TargetChannelID:', message.channel_id);
+        console.log('ChannelList:', channelsRef.current.map(ch => ({id: ch.channel_id, name: ch.name})));
         
-        // 如果没有选中频道，尝试找到对应的频道并自动选择
+        // ifNo choicemiddleChannel, try to findarrivecorrespondofChannelAnd automatically select
         const targetChannel = channelsRef.current.find(ch => ch.channel_id === message.channel_id);
         if (targetChannel) {
-          console.log('找到对应频道，自动选择:', targetChannel.name);
+          console.log('try to findarrivecorrespondChannel, automatically select:', targetChannel.name);
           
-          // 调用selectChannel来加载历史消息和设置频道
-          // 在加载完成后再添加新消息
+          // CallselectChannelComeloadhistoryinformationand settingsChannel
+          // Add a new message after loading
           selectChannelAndAddMessage(targetChannel, message);
         } else {
-          console.log('未找到对应频道，频道ID:', message.channel_id);
+          console.log('not yettry to findarrivecorrespondChannel,ChannelID:', message.channel_id);
           
-          // 如果没找到频道，可能是频道列表还没加载完，尝试重新加载频道列表
+          // ifwithouttry to findarriveChannel,may beChannelListreturnwithoutloadover,Try to re-newloadChannelList
           if (channelsRef.current.length === 0) {
-            console.log('频道列表为空，尝试重新加载频道');
+            console.log('ChannelListfornull,Try to re-newloadChannel');
             chatAPI.getChannels().then(channelsData => {
-              console.log('重新加载频道完成，频道数量:', channelsData?.length || 0);
+              console.log('HeavynewloadChannelFinish,Channelquantity:', channelsData?.length || 0);
               if (channelsData) {
                 setChannels(channelsData);
                 const retryChannel = channelsData.find((ch: ChatChannel) => ch.channel_id === message.channel_id);
                 if (retryChannel) {
-                  console.log('重新加载后找到频道，自动选择:', retryChannel.name);
-                  // 调用selectChannelAndAddMessage来处理频道选择和消息添加
+                  console.log('Heavynewloadbacktry to findarriveChannel, automatically select:', retryChannel.name);
+                  // CallselectChannelAndAddMessageComedeal withChannelSelect andinformationAdd to
                   selectChannelAndAddMessage(retryChannel, message);
                 }
               }
             }).catch(error => {
-              console.error('重新加载频道失败:', error);
+              console.error('HeavynewloadChannelfail:', error);
             });
           }
         }
@@ -205,7 +205,7 @@ const MessagesPage: React.FC = () => {
     },
   });
 
-  // 检测屏幕尺寸
+  // Detect screen size
   useEffect(() => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768;
@@ -218,24 +218,24 @@ const MessagesPage: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // （滚动相关 useEffect 已移动到 throttledMarkAsRead 定义之后，避免提前引用）
+  // (Scroll related useEffect Moved to throttledMarkAsRead After definition, avoid early references)
 
-  // 加载频道数据
+  // loadChanneldata
   useEffect(() => {
     if (!isAuthenticated) return;
 
     const loadChannels = async () => {
       try {
         setIsLoading(true);
-        console.log('开始加载频道列表');
+        console.log('Start loading the channelList');
         const channelsData = await apiCache.getChannels();
-        console.log('原始频道数据:', channelsData);
+        console.log('originalChanneldata:', channelsData);
         
-        // 检查私聊频道
+        // examinePrivate chatChannel
         const pmChannels = (channelsData || []).filter((ch: ChatChannel) => ch.type === 'PM');
-        console.log('私聊频道数量:', pmChannels.length);
+        console.log('Private chatChannelquantity:', pmChannels.length);
         if (pmChannels.length > 0) {
-          console.log('私聊频道详情:', pmChannels.map((ch: ChatChannel) => ({ 
+          console.log('Private chatChannelDetails:', pmChannels.map((ch: ChatChannel) => ({ 
             id: ch.channel_id, 
             name: ch.name, 
             type: ch.type,
@@ -243,22 +243,22 @@ const MessagesPage: React.FC = () => {
           })));
         }
         
-        // 为私聊频道获取用户信息
+        // forPrivate chatChannelGet user information
         const channelsWithUserInfo = await Promise.all(
           (channelsData || []).map(async (channel: ChatChannel) => {
             if (channel.type === 'PM' && channel.users.length > 0) {
               try {
-                // 获取私聊对象的用户ID
+                // GetPrivate chatObjectofuserID
                 const targetUserId = channel.users.find(id => id !== user?.id);
                 if (targetUserId) {
-                  console.log('为私聊频道获取用户信息:', targetUserId);
+                  console.log('forPrivate chatChannelGet user information:', targetUserId);
                   
                   const userInfo = await apiCache.getUser(targetUserId);
                   
                   if (userInfo) {
                     return {
                       ...channel,
-                      name: `私聊: ${userInfo.username}`,
+                      name: `Private chat: ${userInfo.username}`,
                       user_info: {
                         id: userInfo.id,
                         username: userInfo.username,
@@ -269,40 +269,40 @@ const MessagesPage: React.FC = () => {
                   }
                 }
               } catch (error) {
-                console.error('获取用户信息失败:', error);
+                console.error('Failed to obtain user information:', error);
               }
             }
             return channel;
           })
         );
         
-        // 过滤并排序频道：倒序排列，频道在前，最下面是第一个
+        // Filter and sortChannel: Inverse order,Channelexistforward,The bottom is the firstoneindivual
         const sortedChannels = channelsWithUserInfo.sort((a: ChatChannel, b: ChatChannel) => {
-          // 优先级：公共频道 > 私聊 > 团队 > 私有
+          // Priority:publicChannel > Private chat > team > private
           const typeOrder: Record<string, number> = { 'PUBLIC': 0, 'PM': 1, 'TEAM': 2, 'PRIVATE': 3 };
           const aOrder = typeOrder[a.type] || 4;
           const bOrder = typeOrder[b.type] || 4;
           
           if (aOrder !== bOrder) {
-            // 倒序排列：较大的 order 值在前
+            // Inverse order: largerof order Value before
             return bOrder - aOrder;
           }
           
-          // 同类型内按名称倒序排列
+          // Order in reverse order of names within the same type
           return b.name.localeCompare(a.name);
         });
         
-        console.log('排序后的频道列表:', sortedChannels.map((ch: ChatChannel) => ({ id: ch.channel_id, name: ch.name, type: ch.type })));
+        console.log('After sortingofChannelList:', sortedChannels.map((ch: ChatChannel) => ({ id: ch.channel_id, name: ch.name, type: ch.type })));
         setChannels(sortedChannels);
         
-        // 清理重复的私聊频道
+        // Clean up duplicateofPrivate chatChannel
         setTimeout(() => {
           cleanupDuplicatePrivateChannels();
         }, 100);
         
-        // 如果没有选中频道且有可用频道，优先选择 osu! 频道
+        // ifNo choicemiddleChannelAnd availableChannel,excellentFirstselectselect osu! Channel
         if (!selectedChannel && sortedChannels.length > 0) {
-          // 查找 osu! 频道
+          // Find osu! Channel
           const osuChannel = sortedChannels.find(ch => 
             ch.name.toLowerCase().includes('osu') || 
             ch.name.toLowerCase().includes('#osu') ||
@@ -310,11 +310,11 @@ const MessagesPage: React.FC = () => {
           );
           
           const channelToSelect = osuChannel || sortedChannels[0];
-          console.log('自动选择频道:', channelToSelect.name, '类型:', channelToSelect.type);
+          console.log('Automatic selectionChannel:', channelToSelect.name, 'type:', channelToSelect.type);
           selectChannel(channelToSelect);
         }
       } catch (error) {
-        console.error('加载频道失败:', error);
+        console.error('loadChannelfail:', error);
       } finally {
         setIsLoading(false);
       }
@@ -323,26 +323,26 @@ const MessagesPage: React.FC = () => {
     loadChannels();
   }, [isAuthenticated]);
 
-  // 同步selectedChannel状态到ref
+  // synchronousselectedChannelStatus toref
   useEffect(() => {
     selectedChannelRef.current = selectedChannel;
-    console.log('同步选中频道到ref:', selectedChannel?.name || 'null');
+    console.log('synchronousselectmiddleChannelarriveref:', selectedChannel?.name || 'null');
   }, [selectedChannel]);
 
-  // 同步 messages 到 ref
+  // synchronous messages arrive ref
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
-  // 监听通知变化，处理私聊通知
+  // monitornotifychange,deal withPrivate chatnotify
   useEffect(() => {
     if (notifications.length > 0) {
-      console.log('检测到新通知，数量:', notifications.length);
+      console.log('Testarrivenewnotify,quantity:', notifications.length);
       
-      // 使用 object_id 进行分组去重
+      // use object_id Group deduplication
       const processedObjectIds = new Set<string>();
       
-      // 处理所有私聊通知，按 object_id 去重
+      // deal withallPrivate chatnotify,according to object_id Go to the heavy
       notifications.forEach(notification => {
         if (notification.name === 'channel_message' && 
             notification.details?.type === 'pm') {
@@ -350,24 +350,24 @@ const MessagesPage: React.FC = () => {
           const objectKey = `${notification.object_type}-${notification.object_id}`;
           
           if (!processedObjectIds.has(objectKey)) {
-            console.log('处理私聊通知:', notification.id, objectKey, notification.details.title);
+            console.log('deal withPrivate chatnotify:', notification.id, objectKey, notification.details.title);
             processedObjectIds.add(objectKey);
             handlePrivateMessageNotification(notification);
             
-            // 自动标记已存在的私聊消息为已读
+            // Automatic marks already existofPrivate chatinformationforRead
             autoMarkPrivateMessagesAsRead(notification);
           } else {
-            console.log('跳过重复的通知对象:', objectKey);
+            console.log('Skip duplicationofnotifyObject:', objectKey);
           }
         }
       });
     }
   }, [notifications, channels, user?.id]);
 
-  // 清理定时器
+  // Clean the timer
   useEffect(() => {
     return () => {
-      // 组件卸载时清理所有回退定时器
+      // Clean up all fallback timers when component uninstallation
       const fallbackTimers = (window as any).messageFallbackTimers;
       if (fallbackTimers) {
         fallbackTimers.forEach((timer: NodeJS.Timeout) => clearTimeout(timer));
@@ -376,7 +376,7 @@ const MessagesPage: React.FC = () => {
     };
   }, []);
 
-  // 过滤频道
+  // filterChannel
   const filteredChannels = channels.filter(channel => {
     switch (channelFilter) {
       case 'private':
@@ -390,14 +390,14 @@ const MessagesPage: React.FC = () => {
     }
   });
 
-  // 选择频道，加载消息，并添加新消息
+  // selectselectChannel,loadinformation,andAdd tonewinformation
   const selectChannelAndAddMessage = async (channel: ChatChannel, newMessage: ChatMessage) => {
-    console.log('选择频道并添加消息:', channel.name, '频道ID:', channel.channel_id);
-  // 重置首次加载标记，用于滚动判断
+    console.log('selectselectChannelandAdd toinformation:', channel.name, 'ChannelID:', channel.channel_id);
+  // ResetFirst loading mark,Used for scroll judgment
   initialLoadRef.current = true;
     setSelectedChannel(channel);
     selectedChannelRef.current = channel;
-  // 记录本次请求，用于竞态检测
+  // Record this request for competition detection
   const requestToken = Symbol('channel-load');
   (selectChannelAndAddMessage as any).currentToken = requestToken;
     
@@ -406,23 +406,23 @@ const MessagesPage: React.FC = () => {
     }
 
     try {
-      console.log('开始加载频道历史消息');
+      console.log('Start loading the channelhistoryinformation');
       const channelMessages = await loadChannelMessages(channel.channel_id);
       
       if (channelMessages && channelMessages.length > 0) {
-        // 如果在请求完成前频道被再次切换，放弃本次结果
+        // IfaskBefore completionChannelSwitched again,Give up this timeresult
         if ((selectChannelAndAddMessage as any).currentToken !== requestToken) {
-          console.log('放弃过期的频道历史消息结果 (addMessage path)');
+          console.log('Give up expirationofChannelhistoryinformationresult (addMessage path)');
           return;
         }
         
-        // 检查新消息是否已经在历史消息中
+        // Check if the new message is already in the historical message
         const messageExists = channelMessages.find((m: ChatMessage) => m.message_id === newMessage.message_id);
         
-        // 使用函数式更新，避免覆盖在加载过程中到达的消息
+        // usefunctionModerenew,Avoid coverageexistloadprocessmiddlearriveDeNews
         setMessages(prev => {
-          console.log('合并历史消息与 in-flight 消息(仅当前频道)');
-          // 只保留当前频道在加载期间通过 WS 到达的消息
+          console.log('Merge historical news and in-flight information(onlycurrentChannel)');
+          // Only retaincurrentChannelexistloadPassed during the period WS arriveDeNews
           const inflight = prev.filter(m => m.channel_id === channel.channel_id);
           const mergedMap = new Map<number, ChatMessage>();
           [...channelMessages, ...inflight].forEach(m => mergedMap.set(m.message_id, m));
@@ -433,30 +433,30 @@ const MessagesPage: React.FC = () => {
             });
           }
           const all = Array.from(mergedMap.values()).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-          console.log('最终消息列表数量:', all.length);
+          console.log('finalinformationListquantity:', all.length);
           return all;
         });
         
-        // 标记最后一条消息为已读
+        // Mark the last onestripinformationforRead
         const lastMessage = channelMessages[channelMessages.length - 1];
-        console.log('标记最后一条消息为已读:', lastMessage.message_id);
+        console.log('Mark the last onestripinformationforRead:', lastMessage.message_id);
         throttledMarkAsRead(channel.channel_id, lastMessage.message_id);
-        console.log('消息已读标记完成');
+        console.log('informationReadMarking done');
 
-        // 私聊频道：打开后立即标记相关通知为已读（即使 last_read 已是最新也要确保通知消失）
+        // Private chatChannel: Mark the relevant immediately after openingnotifyforRead(even though last_read It's already the latest and you need to make sure the notification disappears)
         if (channel.type === 'PM') {
           try {
             const relatedPmNotifications = notifications.filter(n => n.name === 'channel_message' && n.object_id === channel.channel_id.toString());
             if (relatedPmNotifications.some(n => !n.is_read)) {
-              console.log('私聊频道打开，自动标记通知为已读 (addMessage path):', relatedPmNotifications.map(n => n.id));
+              console.log('Private chatChannelOpen,automaticmarknotifyforRead (addMessage path):', relatedPmNotifications.map(n => n.id));
               await removeNotificationByObject(channel.channel_id.toString(), 'channel');
             }
           } catch (e) {
-            console.error('标记私聊通知已读失败(selectChannelAndAddMessage):', e);
+            console.error('markPrivate chatnotifyReadfail(selectChannelAndAddMessage):', e);
           }
         }
       } else {
-        console.log('频道没有历史消息，只显示新消息');
+        console.log('ChannelNohistoryinformation,Onlyshownewinformation');
         setMessages(prev => {
           const inflight = prev.filter(m => m.channel_id === channel.channel_id);
           const exists = inflight.some(m => m.message_id === newMessage.message_id);
@@ -466,23 +466,23 @@ const MessagesPage: React.FC = () => {
             }];
         });
         
-        // 无历史消息也要处理通知
+        // nonehistoryinformationWant toProcessing notification
         if (channel.type === 'PM') {
           try {
             const relatedPmNotifications = notifications.filter(n => n.name === 'channel_message' && n.object_id === channel.channel_id.toString());
             if (relatedPmNotifications.some(n => !n.is_read)) {
-              console.log('私聊频道(空历史)打开，自动标记通知为已读 (addMessage path)');
+              console.log('Private chatChannel(Empty history)Open,automaticmarknotifyforRead (addMessage path)');
               await removeNotificationByObject(channel.channel_id.toString(), 'channel');
             }
           } catch (e) {
-            console.error('标记私聊通知已读失败(空历史 addMessage):', e);
+            console.error('markPrivate chatnotifyReadfail(Empty history addMessage):', e);
           }
         }
       }
     } catch (error) {
-      console.error('加载频道消息失败:', error);
-      toast.error('加载消息失败');
-      // 即使加载失败，也要显示新消息
+      console.error('loadChannelThe message failed:', error);
+      toast.error('loadThe message failed');
+      // even thoughLoading failed,Want toshownewinformation
       setMessages(prev => {
         let allMessages = [...prev];
         
@@ -491,13 +491,13 @@ const MessagesPage: React.FC = () => {
           timestamp: convertUTCToLocal(newMessage.timestamp)
         };
         
-        // 检查新消息是否已存在
+        // examinenewinformationWhether it already exists
         const messageExists = allMessages.find(msg => msg.message_id === newMessage.message_id);
         if (!messageExists) {
           allMessages.push(newMessageWithLocalTime);
         }
         
-        // 按时间戳排序
+        // Sort by timestamp
         allMessages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
         
         return allMessages;
@@ -507,24 +507,24 @@ const MessagesPage: React.FC = () => {
         try {
           const relatedPmNotifications = notifications.filter(n => n.name === 'channel_message' && n.object_id === channel.channel_id.toString());
           if (relatedPmNotifications.some(n => !n.is_read)) {
-            console.log('私聊频道(加载失败)打开，自动标记通知为已读');
+            console.log('Private chatChannel(Loading failed)Open,automaticmarknotifyforRead');
             await removeNotificationByObject(channel.channel_id.toString(), 'channel');
           }
         } catch (e) {
-          console.error('标记私聊通知已读失败(加载失败 addMessage):', e);
+          console.error('markPrivate chatnotifyReadfail(Loading failed addMessage):', e);
         }
       }
     }
   };
 
-  // 选择频道并加载消息
+  // selectselectChannelandloadinformation
   const selectChannel = async (channel: ChatChannel) => {
-    console.log('选择频道:', channel.name, '类型:', channel.type, '频道ID:', channel.channel_id);
-  // 重置首次加载标记
+    console.log('selectselectChannel:', channel.name, 'type:', channel.type, 'ChannelID:', channel.channel_id);
+  // ResetFirst loading mark
   initialLoadRef.current = true;
     setSelectedChannel(channel);
     selectedChannelRef.current = channel;
-  // 记录请求 token 用于竞态
+  // Record request token Used for competition
   const requestToken = Symbol('channel-load');
   (selectChannel as any).currentToken = requestToken;
     
@@ -532,25 +532,25 @@ const MessagesPage: React.FC = () => {
       setShowSidebar(false);
     }
 
-    // 如果是私聊频道，尝试获取用户信息并更新频道显示
+    // in the case ofPrivate chatChannel,tryGet user informationandrenewChannelshow
     if (channel.type === 'PM' && channel.users.length > 0) {
       try {
-        // 获取私聊对象的用户信息
+        // GetPrivate chatObjectofuserinformation
         const targetUserId = channel.users.find(id => id !== user?.id);
         if (targetUserId && !channel.user_info) {
-          console.log('获取私聊用户信息:', targetUserId);
+          console.log('GetPrivate chatuserinformation:', targetUserId);
           
           const userInfo = await apiCache.getUser(targetUserId);
           
           if (userInfo) {
-            console.log('私聊用户信息:', userInfo);
+            console.log('Private chatuserinformation:', userInfo);
             
-            // 更新频道信息
+            // renewChannelinformation
             setChannels(prev => prev.map(ch => {
               if (ch.channel_id === channel.channel_id) {
                 return {
                   ...ch,
-                  name: `私聊: ${userInfo.username}`,
+                  name: `Private chat: ${userInfo.username}`,
                   user_info: {
                     id: userInfo.id,
                     username: userInfo.username,
@@ -564,53 +564,53 @@ const MessagesPage: React.FC = () => {
           }
         }
       } catch (error) {
-        console.error('获取私聊用户信息失败:', error);
+        console.error('GetPrivate chatuserinformationfail:', error);
       }
     }
 
     try {
-      console.log('开始加载频道消息，频道ID:', channel.channel_id);
+      console.log('Start loading the channelinformation,ChannelID:', channel.channel_id);
       const channelMessages = await loadChannelMessages(channel.channel_id);
       
       if (channelMessages && channelMessages.length > 0) {
         if ((selectChannel as any).currentToken !== requestToken) {
-          console.log('放弃过期的频道消息结果');
+          console.log('Give up expirationofChannelinformationresult');
           return;
         }
         
-        console.log('设置消息列表，消息数量:', channelMessages.length);
+        console.log('set upinformationList,informationquantity:', channelMessages.length);
         
-        // 使用函数式更新，保留可能在加载过程中到达的新消息
+        // usefunctionModerenew,Keep possibleexistloadprocessmiddlearriveDeofnewinformation
         setMessages(prev => {
-          console.log('合并历史消息与 in-flight 消息(仅当前频道)');
+          console.log('Merge historical news and in-flight information(onlycurrentChannel)');
           const inflight = prev.filter(m => m.channel_id === channel.channel_id);
           const mergedMap = new Map<number, ChatMessage>();
           [...channelMessages, ...inflight].forEach(m => mergedMap.set(m.message_id, m));
           const all = Array.from(mergedMap.values()).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-          console.log('最终消息列表数量:', all.length);
+          console.log('finalinformationListquantity:', all.length);
           return all;
         });
         
-        // 标记最后一条消息为已读
+        // Mark the last onestripinformationforRead
         const lastMessage = channelMessages[channelMessages.length - 1];
-        console.log('标记最后一条消息为已读:', lastMessage.message_id);
+        console.log('Mark the last onestripinformationforRead:', lastMessage.message_id);
         throttledMarkAsRead(channel.channel_id, lastMessage.message_id);
-        console.log('消息已读标记完成');
+        console.log('informationReadMarking done');
 
         if (channel.type === 'PM') {
           try {
             const relatedPmNotifications = notifications.filter(n => n.name === 'channel_message' && n.object_id === channel.channel_id.toString());
             if (relatedPmNotifications.some(n => !n.is_read)) {
-              console.log('私聊频道打开，自动标记通知为已读 (selectChannel path):', relatedPmNotifications.map(n => n.id));
+              console.log('Private chatChannelOpen,automaticmarknotifyforRead (selectChannel path):', relatedPmNotifications.map(n => n.id));
               await removeNotificationByObject(channel.channel_id.toString(), 'channel');
             }
           } catch (e) {
-            console.error('标记私聊通知已读失败(selectChannel):', e);
+            console.error('markPrivate chatnotifyReadfail(selectChannel):', e);
           }
         }
     } else {
-        console.log('频道没有历史消息');
-        // 即使没有历史消息，也要保留可能在加载过程中到达的消息
+        console.log('ChannelNohistoryinformation');
+        // even thoughNohistoryinformation,Want toKeep possibleexistloadprocessmiddlearriveDeNews
         setMessages(prev => {
       const inflight = prev.filter(m => m.channel_id === channel.channel_id);
       return inflight.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
@@ -620,21 +620,21 @@ const MessagesPage: React.FC = () => {
           try {
             const relatedPmNotifications = notifications.filter(n => n.name === 'channel_message' && n.object_id === channel.channel_id.toString());
             if (relatedPmNotifications.some(n => !n.is_read)) {
-              console.log('空私聊频道打开，自动标记通知为已读 (selectChannel path)');
+              console.log('nullPrivate chatChannelOpen,automaticmarknotifyforRead (selectChannel path)');
               await removeNotificationByObject(channel.channel_id.toString(), 'channel');
             }
           } catch (e) {
-            console.error('标记私聊通知已读失败(空频道 selectChannel):', e);
+            console.error('markPrivate chatnotifyReadfail(nullChannel selectChannel):', e);
           }
         }
       }
     } catch (error) {
-      console.error('加载频道消息失败:', error);
-      toast.error('加载消息失败');
+      console.error('loadChannelThe message failed:', error);
+      toast.error('loadThe message failed');
       
-      // 即使加载失败，也要保留可能已经到达的消息
+      // even thoughLoading failed,Want toKeep possiblealreadythrougharriveDeNews
       setMessages(prev => {
-        console.log('频道加载失败，保留现有消息数量:', prev.length);
+        console.log('ChannelLoading failed,reserveexistinginformationquantity:', prev.length);
         return prev;
       });
       
@@ -642,24 +642,24 @@ const MessagesPage: React.FC = () => {
         try {
           const relatedPmNotifications = notifications.filter(n => n.name === 'channel_message' && n.object_id === channel.channel_id.toString());
           if (relatedPmNotifications.some(n => !n.is_read)) {
-            console.log('私聊频道(加载失败)打开，自动标记通知为已读 (selectChannel)');
+            console.log('Private chatChannel(Loading failed)Open,automaticmarknotifyforRead (selectChannel)');
             await removeNotificationByObject(channel.channel_id.toString(), 'channel');
           }
         } catch (e) {
-          console.error('标记私聊通知已读失败(加载失败 selectChannel):', e);
+          console.error('markPrivate chatnotifyReadfail(Loading failed selectChannel):', e);
         }
       }
     }
   };
 
-  // 统一的消息添加函数
+  // unifiedNewsAdd tofunction
   const addMessageToList = useCallback((message: ChatMessage, source: 'api' | 'websocket') => {
-    console.log(`添加消息(${source}): ID=${message.message_id}, 频道ID=${message.channel_id}, 发送者=${message.sender_id}, 内容="${message.content.substring(0, 30)}"`);
+    console.log(`Add toinformation(${source}): ID=${message.message_id}, ChannelID=${message.channel_id}, Sender=${message.sender_id}, content="${message.content.substring(0, 30)}"`);
     
-    // 检查消息是否属于当前选中的频道
+    // examineinformationWhether it belongs tocurrentselectmiddleofChannel
     const currentChannel = selectedChannelRef.current;
     if (!currentChannel || message.channel_id !== currentChannel.channel_id) {
-      console.log(`消息不属于当前频道，跳过添加。当前频道: ${currentChannel?.channel_id || 'null'}, 消息频道: ${message.channel_id}`);
+      console.log(`informationNot belongingcurrentChannel,jump overAdd to.currentChannel: ${currentChannel?.channel_id || 'null'}, informationChannel: ${message.channel_id}`);
       return;
     }
     
@@ -669,16 +669,16 @@ const MessagesPage: React.FC = () => {
     };
     
     setMessages(prev => {
-      // 检查消息是否已存在
+      // examineinformationWhether it already exists
       const existsById = prev.find(m => m.message_id === message.message_id);
       if (existsById) {
-        console.log(`消息已存在，跳过: ${message.message_id}`);
+        console.log(`informationAlready exists,jump over: ${message.message_id}`);
         return prev;
       }
       
-      console.log(`成功添加消息: ${message.message_id}, 当前消息列表长度: ${prev.length} -> ${prev.length + 1}`);
+      console.log(`successAdd toinformation: ${message.message_id}, currentinformationList length: ${prev.length} -> ${prev.length + 1}`);
       
-      // 确保消息按时间戳排序插入
+      // make sureinformationSort by timestampinsert
       const newMessages = [...prev, messageWithLocalTime];
       newMessages.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
       
@@ -686,15 +686,15 @@ const MessagesPage: React.FC = () => {
       return newMessages;
     });
 
-    // 如果是当前频道的新消息，使用防抖函数标记为已读
-    console.log(`准备标记消息为已读: ${message.message_id}, 频道: ${currentChannel.name}`);
-    // 使用 setTimeout 来避免循环依赖
+    // in the case ofcurrentChannelofnewinformation,useAnti-shakefunctionmarkforRead
+    console.log(`PreparemarkinformationforRead: ${message.message_id}, Channel: ${currentChannel.name}`);
+    // use setTimeout To avoid circular dependencies
     setTimeout(() => {
       throttledMarkAsRead(message.channel_id, message.message_id);
     }, 0);
   }, []);
 
-  // 发送消息
+  // sendinformation
   const sendMessage = async (messageText: string) => {
     if (!selectedChannel || !messageText.trim()) return;
 
@@ -704,24 +704,24 @@ const MessagesPage: React.FC = () => {
         messageText.trim()
       );
       
-      console.log('消息发送成功，立即显示:', message.message_id);
+      console.log('informationsendsuccess,immediatelyshow:', message.message_id);
       
-      // 立即显示消息，不等待WebSocket确认
+      // immediatelyshowinformation,Don't waitWebSocketconfirm
       addMessageToList(message, 'api');
       
     } catch (error) {
-      console.error('发送消息失败:', error);
-      toast.error('发送消息失败');
+      console.error('sendThe message failed:', error);
+      toast.error('sendThe message failed');
     }
   };
 
-  // 优化的防抖标记已读函数，减少重复请求
+  // optimizationofAnti-shakemarkReadfunction,reducerepeatask
   const throttledMarkAsRead = useCallback(
     (() => {
       let timeoutId: NodeJS.Timeout | null = null;
       const pendingRequests = new Set<string>();
-      const lastReadCache = new Map<number, number>(); // 缓存每个频道的最后已读消息ID
-      const batchQueue = new Map<number, number>(); // 批量处理队列：channelId -> messageId
+      const lastReadCache = new Map<number, number>(); // cacheEveryindivualChannelofat lastReadinformationID
+      const batchQueue = new Map<number, number>(); // Batch processing queue:channelId -> messageId
       
       const processBatch = async () => {
         if (batchQueue.size === 0) return;
@@ -729,45 +729,45 @@ const MessagesPage: React.FC = () => {
         const currentBatch = new Map(batchQueue);
         batchQueue.clear();
         
-        // 并行处理多个频道的markAsRead请求
+        // andOKdeal withmanyindivualChannelofmarkAsReadask
         const promises = Array.from(currentBatch.entries()).map(async ([channelId, messageId]) => {
           const requestKey = `${channelId}-${messageId}`;
           
-          // 检查是否已经标记了更高的消息ID
+          // examinewhetheralreadythroughmarkIt'shigherNewsID
           const cachedLastRead = lastReadCache.get(channelId) || 0;
           if (messageId <= cachedLastRead) {
-            console.log(`消息${messageId}已被更高ID${cachedLastRead}标记，跳过`);
+            console.log(`information${messageId}Has been higherID${cachedLastRead}Tag, skip`);
             return;
           }
           
           if (pendingRequests.has(requestKey)) {
-            console.log(`请求已在进行中，跳过: ${requestKey}`);
+            console.log(`askAlready underwaymiddle,jump over: ${requestKey}`);
             return;
           }
           
           try {
             pendingRequests.add(requestKey);
-            console.log(`批量标记已读: 频道${channelId}, 消息${messageId}`);
+            console.log(`batchmarkRead: Channel${channelId}, information${messageId}`);
             
             await chatAPI.markAsRead(channelId, messageId);
             
-            // 更新缓存
+            // Update cache
             lastReadCache.set(channelId, Math.max(cachedLastRead, messageId));
             
-            console.log(`标记已读成功: 频道${channelId}, 消息${messageId}`);
+            console.log(`markReadsuccess: Channel${channelId}, information${messageId}`);
             
-            // 更新频道列表中的已读状态
+            // renewChannelListmiddleofReadstate
             updateChannelReadStatus(channelId, messageId);
             
-            // 删除相关通知（批量操作）
+            // Delete related notifications (batch operations)
             try {
               await removeNotificationByObject(channelId.toString(), 'channel');
             } catch (error) {
-              console.error(`删除通知失败: 频道${channelId}`, error);
+              console.error(`Delete notification failed: Channel${channelId}`, error);
             }
             
           } catch (error) {
-            console.error(`标记已读失败: 频道${channelId}, 消息${messageId}`, error);
+            console.error(`markReadfail: Channel${channelId}, information${messageId}`, error);
           } finally {
             pendingRequests.delete(requestKey);
           }
@@ -777,49 +777,49 @@ const MessagesPage: React.FC = () => {
       };
       
       return async (channelId: number, messageId: number) => {
-        // 检查是否已经有更高的消息ID在队列中
+        // examinewhetheralreadythroughhavehigherNewsIDIn the queue
         const queuedMessageId = batchQueue.get(channelId);
         if (queuedMessageId && messageId <= queuedMessageId) {
-          console.log(`消息${messageId}低于队列中的${queuedMessageId}，跳过`);
+          console.log(`information${messageId}Below queuemiddleof${queuedMessageId},jump over`);
           return;
         }
         
-        // 检查缓存，避免重复标记
+        // Check cache to avoid duplicate marking
         const cachedLastRead = lastReadCache.get(channelId) || 0;
         if (messageId <= cachedLastRead) {
-          console.log(`消息${messageId}已被标记为已读(缓存${cachedLastRead})，跳过`);
+          console.log(`information${messageId}alreadyquiltmarkforRead(cache${cachedLastRead}),jump over`);
           return;
         }
         
-        // 添加到批量队列
+        // Add toarriveBatch Queue
         batchQueue.set(channelId, Math.max(queuedMessageId || 0, messageId));
         
-        // 清除之前的定时器
+        // Before clearingofTimer
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
         
-        // 设置新的定时器，延长防抖时间以减少请求频率
-        timeoutId = setTimeout(processBatch, 1500); // 增加到1.5秒防抖
+        // set upnewofTimer,extendAnti-shakehourbetweenbyreduceaskfrequency
+        timeoutId = setTimeout(processBatch, 1500); // Increasearrive1.5Anti-shake in seconds
       };
     })(),
     [updateChannelReadStatus, removeNotificationByObject]
   );
 
-  // 监听滚动，判断用户是否离开底部（移动到 throttledMarkAsRead 之后）
+  // monitorscroll,judgeuserwhetherleavebottom(movearrive throttledMarkAsRead after)
   useEffect(() => {
     const container = scrollContainerRef.current || document.querySelector('#chat-message-scroll-container');
     if (!container) return;
     const el = container as HTMLElement;
     const onScroll = () => {
       const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-      userScrolledUpRef.current = distanceToBottom > 120; // 超过120px认为离开底部
+      userScrolledUpRef.current = distanceToBottom > 120; // Exceed120pxThinking to leave the bottom
     };
     el.addEventListener('scroll', onScroll);
     return () => el.removeEventListener('scroll', onScroll);
   }, []);
 
-  // 条件自动滚动：仅当 (非首次加载 && 用户仍在底部附近) 或 (新消息来自自己) 才滚动
+  // stripAutomatic scrolling of the piece: only (Not first loading && User is still near the bottom) or (newinformationFromOwn) Just roll
   useEffect(() => {
     if (messages.length === 0) return;
     const lastMessage = messages[messages.length - 1];
@@ -831,46 +831,46 @@ const MessagesPage: React.FC = () => {
     if (container) {
       const el = container as HTMLElement;
       const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-      nearBottom = distanceToBottom < 150; // 150px 以内视为接近底部
+      nearBottom = distanceToBottom < 150; // 150px Considered as close to the bottom
     }
 
     const isOwnMessage = lastMessage.sender_id === user?.id;
     const isInitial = initialLoadRef.current;
 
-    // 首次加载：滚动到底部，然后重置标记
+    // firstload:scrollarrivebottom,Of coursebackResetmark
     if (isInitial) {
       initialLoadRef.current = false;
-      // 首次加载时也滚动到底部，使用 setTimeout 确保 DOM 已更新
+      // firstloadhouralsoscrollarrivebottom,use setTimeout make sure DOM Updated
       setTimeout(() => {
         const containerEl = scrollContainerRef.current || document.querySelector('#chat-message-scroll-container');
         if (containerEl) {
           (containerEl as HTMLElement).scrollTop = (containerEl as HTMLElement).scrollHeight;
         } else {
-          // 备用：直接使用默认行为的 scrollIntoView（无 smooth）
+          // Backup: DirectuseDefault lineforof scrollIntoView(none smooth)
           messagesEndRef.current?.scrollIntoView();
         }
-      }, 50); // 50ms 延迟确保 DOM 完全更新
+      }, 50); // 50ms Delaymake sure DOM Completely updated
       return;
     }
 
     if (!userScrolledUpRef.current || nearBottom || isOwnMessage) {
-      // 立即跳到底部（去除平滑动画）
+      // Jump nowarrivebottom(Remove smooth animations)
       const containerEl = scrollContainerRef.current || document.querySelector('#chat-message-scroll-container');
       if (containerEl) {
         (containerEl as HTMLElement).scrollTop = (containerEl as HTMLElement).scrollHeight;
       } else {
-        // 备用：直接使用默认行为的 scrollIntoView（无 smooth）
+        // Backup: DirectuseDefault lineforof scrollIntoView(none smooth)
         messagesEndRef.current?.scrollIntoView();
       }
     }
 
-    // 标记已读逻辑（与之前一致）
+    // markReadlogic(andAlways before)
     if (lastMessage.message_id > (currentChannel.last_read_id || 0)) {
       throttledMarkAsRead(currentChannel.channel_id, lastMessage.message_id);
     }
   }, [messages, throttledMarkAsRead, user?.id]);
 
-  // 消息可见性检测 - 当用户真正"看到"消息时自动标记已读
+  // informationVisibilityTest - When the user is really"lookarrive"informationhourautomaticmarkRead
   useEffect(() => {
     if (!selectedChannel || messages.length === 0) return;
 
@@ -882,24 +882,24 @@ const MessagesPage: React.FC = () => {
             const messageId = parseInt(messageElement.dataset.messageId || '0');
             const channelId = selectedChannel.channel_id;
             
-            // 确保消息ID有效且大于当前已读ID
+            // make sureinformationIDEffective and greater thancurrentReadID
             if (messageId > 0 && messageId > (selectedChannel.last_read_id || 0)) {
-              console.log(`消息 ${messageId} 在频道 ${channelId} 中进入可视区域，准备标记为已读`);
+              console.log(`information ${messageId} existChannel ${channelId} middleEnter the visualarea,PreparemarkforRead`);
               
-              // 延迟一点时间确保用户真的看到了消息
+              // Delayonepointhourbetweenmake sureuserrealoflookarriveIt'sinformation
               const timeoutId = setTimeout(() => {
-                // 再次检查是否仍然是当前选中的频道
+                // againexaminewhetherstillOf courseyescurrentselectmiddleofChannel
                 if (selectedChannel && selectedChannel.channel_id === channelId) {
-                  console.log(`延迟后标记消息 ${messageId} 为已读`);
+                  console.log(`Delaybackmarkinformation ${messageId} forRead`);
                   throttledMarkAsRead(channelId, messageId);
                 }
-              }, 1000); // 1秒后标记为已读
+              }, 1000); // 1SecondbackmarkforRead
               
-              // 存储 timeout ID 以便在需要时清除
+              // storage timeout ID To clear if needed
               messageElement.dataset.readTimeout = timeoutId.toString();
             }
           } else {
-            // 消息离开可视区域时，清除等待中的标记已读操作
+            // informationLeave the visualareahour,Clear waitingmiddleofmarkReadoperate
             const messageElement = entry.target as HTMLElement;
             const timeoutId = messageElement.dataset.readTimeout;
             if (timeoutId) {
@@ -910,20 +910,20 @@ const MessagesPage: React.FC = () => {
         });
       },
       {
-        root: null, // 使用视窗作为根
+        root: null, // useWindowforroot
         rootMargin: '0px',
-        threshold: 0.6 // 当消息60%可见时触发，确保用户真的看到了
+        threshold: 0.6 // wheninformation60%visiblehourtrigger,make sureuserrealoflookarriveIt's
       }
     );
 
-    // 观察当前频道的所有消息元素
+    // observecurrentChannelofallinformationelement
     const messageElements = document.querySelectorAll(`[data-message-id]`);
     messageElements.forEach((element) => {
       observer.observe(element);
     });
 
     return () => {
-      // 清除所有观察和等待中的timeout
+      // Clearallobserveandwaitmiddleoftimeout
       messageElements.forEach((element) => {
         const timeoutId = (element as HTMLElement).dataset.readTimeout;
         if (timeoutId) {
@@ -934,47 +934,47 @@ const MessagesPage: React.FC = () => {
     };
   }, [messages, selectedChannel, throttledMarkAsRead]);
 
-  // 处理通知标记已读并跳转到聊天
+  // Processing notificationmarkReadAnd jumparrivechat
   const handleNotificationMarkAsRead = useCallback(async (notification: typeof notifications[0]) => {
     try {
-      console.log('处理通知标记已读:', notification.id, notification.name);
+      console.log('Processing notificationmarkRead:', notification.id, notification.name);
       
-      // 先调用API标记通知为已读（确保服务器状态更新）
+      // FirstCallAPImarknotifyforRead(make sureserverstaterenew)
       await markAsRead(notification.id);
       
-      // 如果是频道消息通知，跳转到对应聊天
+      // in the case ofChannelinformationnotify,Jumparrivecorrespondchat
       if (notification.name === 'channel_message') {
         const channelId = parseInt(notification.object_id);
         
-        // 查找对应的频道
+        // FindcorrespondofChannel
         const targetChannel = channels.find(channel => channel.channel_id === channelId);
         
         if (targetChannel) {
-          console.log(`跳转到频道: ${targetChannel.name} (${channelId})`);
+          console.log(`JumparriveChannel: ${targetChannel.name} (${channelId})`);
           setSelectedChannel(targetChannel);
           if (isMobile) {
-            setShowSidebar(false); // 在移动端关闭侧边栏
+            setShowSidebar(false); // Close the sidebar on the mobile terminal
           }
           
-          // 可选：延迟删除通知，确保用户看到跳转效果
+          // Canselect:Delaydeletenotify,make sureuserlookarriveJumpEffect
           setTimeout(() => {
             removeNotificationByObject(notification.object_id, notification.object_type);
           }, 500);
         } else {
-          console.log(`未找到频道ID为 ${channelId} 的频道`);
+          console.log(`not yettry to findarriveChannelIDfor ${channelId} ofChannel`);
         }
       }
     } catch (error) {
-      console.error('处理通知标记已读失败:', error);
+      console.error('Processing notificationmarkReadfail:', error);
     }
   }, [markAsRead, channels, removeNotificationByObject, setSelectedChannel, setShowSidebar, isMobile, notifications]);
 
-  // 监控未读计数变化
+  // Monitor unread count changes
   useEffect(() => {
-    console.log('未读计数更新:', unreadCount);
+    console.log('Unread count update:', unreadCount);
   }, [unreadCount]);
 
-  // 优化的批量获取通知相关的用户信息
+  // optimizationofbatchGetnotifyRelatedofuserinformation
   useEffect(() => {
     if (!notifications.length) return;
 
@@ -986,21 +986,21 @@ const MessagesPage: React.FC = () => {
       }
     });
 
-    // 批量获取用户信息
+    // Get user information in batches
     if (userIdsToFetch.size > 0) {
       apiCache.getUsers(Array.from(userIdsToFetch))
         .then(() => {
-          console.log(`批量获取用户信息完成: ${userIdsToFetch.size}个用户`);
-          // 强制重新渲染以显示正确的用户名
-          setActiveTab(prev => prev); // 触发重新渲染
+          console.log(`Get user information in batchesFinish: ${userIdsToFetch.size}A user`);
+          // MandatoryHeavynewRender withshowcorrectofusername
+          setActiveTab(prev => prev); // Trigger rerendering
         })
         .catch(error => {
-          console.error('批量获取用户信息失败:', error);
+          console.error('batchFailed to obtain user information:', error);
         });
     }
   }, [notifications]);
 
-  // 清理重复的私聊频道
+  // Clean up duplicateofPrivate chatChannel
   const cleanupDuplicatePrivateChannels = () => {
     setChannels(prev => {
       const uniqueChannels: ChatChannel[] = [];
@@ -1008,12 +1008,12 @@ const MessagesPage: React.FC = () => {
       
       prev.forEach(channel => {
         if (channel.type === 'PM') {
-          // 对于私聊频道，检查用户组合是否重复
+          // forPrivate chatChannel,examineusercombinationwhetherrepeat
           const currentUserId = user?.id || 0;
           const otherUsers = channel.users.filter(id => id !== currentUserId);
           
           if (otherUsers.length > 0) {
-            // 创建用户组合的唯一标识
+            // createusercombinationofUnique ID
             const userPairKey = otherUsers.sort().join(',');
             const fullPairKey = `${currentUserId}-${userPairKey}`;
             
@@ -1021,42 +1021,42 @@ const MessagesPage: React.FC = () => {
               seenUserPairs.add(fullPairKey);
               uniqueChannels.push(channel);
             } else {
-              console.log('移除重复的私聊频道:', channel.name);
+              console.log('Remove duplicatesofPrivate chatChannel:', channel.name);
             }
           } else {
-            // 如果没有其他用户，保留频道
+            // ifNootheruser,reserveChannel
             uniqueChannels.push(channel);
           }
         } else {
-          // 非私聊频道直接保留
+          // NoPrivate chatChannelKeep it directly
           uniqueChannels.push(channel);
         }
       });
       
-      console.log('清理后的频道数量:', uniqueChannels.length, '原始数量:', prev.length);
+      console.log('After cleaningofChannelquantity:', uniqueChannels.length, 'Original quantity:', prev.length);
       return uniqueChannels;
     });
   };
 
-  // 处理私聊通知，创建对应的私聊频道
+  // deal withPrivate chatnotify,createcorrespondofPrivate chatChannel
   const handlePrivateMessageNotification = async (notification: APINotification) => {
     if (notification.name === 'channel_message' && notification.details?.type === 'pm') {
       try {
-        console.log('检测到私聊消息通知，尝试创建私聊频道:', notification);
+        console.log('TestarrivePrivate chatinformationnotify,trycreatePrivate chatChannel:', notification);
         
-        // 从通知中获取用户信息
+        // Get user information from notifications
         const sourceUserId = notification.source_user_id;
         
         if (!sourceUserId) {
-          console.log('通知中缺少源用户ID，跳过处理');
+          console.log('Source user is missing in notificationID,jump overdeal with');
           return;
         }
         
-        // 检查是否已经存在对应的私聊频道（通过用户ID去重）
+        // examinewhetheralreadythroughliveexistcorrespondofPrivate chatChannel(passuserIDGo to the heavy)
         const existingChannel = channels.find(ch => {
           if (ch.type !== 'PM') return false;
           
-          // 检查频道是否包含当前用户和目标用户
+          // examineChannelwhetherIncludecurrentuserandTargetuser
           const hasCurrentUser = ch.users.includes(user?.id || 0);
           const hasTargetUser = ch.users.includes(sourceUserId);
           
@@ -1064,37 +1064,37 @@ const MessagesPage: React.FC = () => {
         });
         
         if (existingChannel) {
-          console.log('私聊频道已存在，跳过创建:', existingChannel.name);
+          console.log('Private chatChannelAlready exists,jump overcreate:', existingChannel.name);
           return;
         }
         
-        console.log('未找到现有私聊频道，获取用户信息并创建新的私聊频道');
+        console.log('not yettry to findarriveexistingPrivate chatChannel,Get user informationandcreatenewofPrivate chatChannel');
         
-        // 获取用户详细信息
-        let userName = notification.details.title as string || '未知用户';
+        // Get user details
+        let userName = notification.details.title as string || 'Unknown user';
         let userAvatarUrl = '';
         let userCoverUrl = '';
         
         try {
-          // 检查缓存
+          // examinecache
           const userInfo = await apiCache.getUser(sourceUserId);
           
           if (userInfo) {
-            console.log('获取到用户信息:', userInfo);
+            console.log('Getarriveuserinformation:', userInfo);
             userName = userInfo.username || userName;
             userAvatarUrl = userInfo.avatar_url || userAPI.getAvatarUrl(sourceUserId);
             userCoverUrl = userInfo.cover_url || userInfo.cover?.url || '';
           }
         } catch (error) {
-          console.error('获取用户信息失败，使用默认值:', error);
+          console.error('Failed to obtain user information,usedefault value:', error);
           userAvatarUrl = userAPI.getAvatarUrl(sourceUserId);
         }
         
-        // 创建新的私聊频道对象
+        // createnewofPrivate chatChannelObject
         const newPrivateChannel: ChatChannel = {
-          channel_id: parseInt(notification.object_id.toString()), // 转换为数字
-          name: `私聊: ${userName}`,
-          description: `与 ${userName} 的私聊`,
+          channel_id: parseInt(notification.object_id.toString()), // Convertfornumber
+          name: `Private chat: ${userName}`,
+          description: `and ${userName} ofPrivate chat`,
           type: 'PM',
           moderated: false,
           users: [user?.id || 0, sourceUserId],
@@ -1107,7 +1107,7 @@ const MessagesPage: React.FC = () => {
           last_message_id: 0,
           recent_messages: [],
           message_length_limit: 1000,
-          // 添加用户信息到频道对象中以便显示
+          // Add touserinformationarriveChannelObjectmiddleso thatshow
           user_info: {
             id: sourceUserId,
             username: userName,
@@ -1116,15 +1116,15 @@ const MessagesPage: React.FC = () => {
           }
         };
         
-        console.log('创建新的私聊频道对象:', newPrivateChannel);
+        console.log('createnewofPrivate chatChannelObject:', newPrivateChannel);
         
-        // 添加到频道列表，确保不重复
+        // Add toarriveChannelList,make sureNo repetition
         setChannels(prev => {
-          // 再次检查是否已经存在相同的私聊频道（防止竞态条件）
+          // againexaminewhetheralreadythroughliveexistsameofPrivate chatChannel(Prevent competitionstripParts)
           const isDuplicate = prev.some(ch => {
             if (ch.type !== 'PM') return false;
             
-            // 检查是否包含相同的用户组合
+            // examinewhetherIncludesameofusercombination
             const hasCurrentUser = ch.users.includes(user?.id || 0);
             const hasTargetUser = ch.users.includes(sourceUserId);
             
@@ -1132,86 +1132,86 @@ const MessagesPage: React.FC = () => {
           });
           
           if (isDuplicate) {
-            console.log('检测到重复的私聊频道，跳过添加');
+            console.log('TestarriverepeatofPrivate chatChannel,jump overAdd to');
             return prev;
           }
           
-          console.log('添加新的私聊频道到列表');
+          console.log('Add tonewofPrivate chatChannelarriveList');
           const newChannels = [...prev, newPrivateChannel];
           
-          // 重新排序：倒序排列，频道在前，最下面是第一个
+          // HeavynewSort: Inverse order,Channelexistforward,The bottom is the firstoneindivual
           return newChannels.sort((a: ChatChannel, b: ChatChannel) => {
-            // 优先级：公共频道 > 私聊 > 团队 > 私有
+            // Priority:publicChannel > Private chat > team > private
             const typeOrder: Record<string, number> = { 'PUBLIC': 0, 'PM': 1, 'TEAM': 2, 'PRIVATE': 3 };
             const aOrder = typeOrder[a.type] || 4;
             const bOrder = typeOrder[b.type] || 4;
             
             if (aOrder !== bOrder) {
-              // 倒序排列：较大的 order 值在前
+              // Inverse order: largerof order Value before
               return bOrder - aOrder;
             }
             
-            // 同类型内按名称倒序排列
+            // Order in reverse order of names within the same type
             return b.name.localeCompare(a.name);
           });
         });
         
-        //console.log('私聊频道已添加到列表');
-        //toast.success(`发现新的私聊: ${userName}`);
+        //console.log('Private chatChannelalreadyAdd toarriveList');
+        //toast.success(`DiscovernewofPrivate chat: ${userName}`);
         
-        // 从通知中提取消息内容并创建聊天消息对象
+        // fromnotifymiddleextractinformationcontentandcreatechatinformationObject
         const messageContent = notification.details?.title as string;
         if (messageContent) {
-          console.log('从通知中提取消息内容，准备添加到聊天列表:', messageContent);
+          console.log('fromnotifymiddleextractinformationcontent,PrepareAdd toarrivechatList:', messageContent);
           
-          // 创建一个临时的消息对象（基于通知信息）
+          // createoneindivualtemporaryNewsObject(based onnotifyinformation)
           const chatMessage: ChatMessage = {
-            message_id: Date.now() + Math.random(), // 生成临时的唯一消息ID
+            message_id: Date.now() + Math.random(), // generatetemporaryofonlyinformationID
             channel_id: parseInt(notification.object_id.toString()),
             content: messageContent,
             timestamp: notification.created_at,
             sender_id: sourceUserId,
             is_action: false,
-            // sender 是可选的，暂不提供完整的 User 对象
+            // sender yesCanselectof,Not yetsupplyoverallof User Object
           };
           
-          console.log('创建的临时聊天消息对象:', chatMessage);
+          console.log('createoftemporarychatinformationObject:', chatMessage);
           
-          // 如果当前没有选中频道，或者选中的频道就是这个私聊频道，则添加消息
+          // ifcurrentNo choicemiddleChannel,orThoseselectmiddleofChannelThat's itindivualPrivate chatChannel,butAdd toinformation
           const currentChannel = selectedChannelRef.current;
           if (!currentChannel || currentChannel.channel_id === newPrivateChannel.channel_id) {
-            console.log('将从通知提取的消息添加到当前聊天列表');
+            console.log('WillfromnotifyextractNewsAdd toarrivecurrentchatList');
             addMessageToList(chatMessage, 'websocket');
           } else {
-            console.log('当前选中的不是对应私聊频道，消息暂不显示');
+            console.log('currentselectmiddleofnocorrespondPrivate chatChannel,informationNot yetshow');
           }
         }
         
       } catch (error) {
-        console.error('处理私聊通知失败:', error);
+        console.error('deal withPrivate chatnotifyfail:', error);
       }
     }
   };
 
-  // 自动标记私聊消息为已读
+  // automaticmarkPrivate chatinformationforRead
   const autoMarkPrivateMessagesAsRead = async (notification: APINotification) => {
     if (notification.name !== 'channel_message' || notification.details?.type !== 'pm') {
       return;
     }
 
-    // 计算文本相似度的简单函数
+    // Calculate text similarityofSimplefunction
     const calculateTextSimilarity = (text1: string, text2: string): number => {
       if (text1 === text2) return 1.0;
       if (text1.length === 0 || text2.length === 0) return 0.0;
 
-      // 使用最长公共子序列算法
+      // uselongestpublicSubsequence algorithm
       const longerText = text1.length > text2.length ? text1 : text2;
       const shorterText = text1.length > text2.length ? text2 : text1;
       
       let matches = 0;
       const shorterLength = shorterText.length;
       
-      // 简单的滑动窗口匹配
+      // SimpleofSliding window matching
       for (let i = 0; i <= longerText.length - shorterLength; i++) {
         const window = longerText.substring(i, i + shorterLength);
         if (window === shorterText) {
@@ -1219,7 +1219,7 @@ const MessagesPage: React.FC = () => {
           break;
         }
         
-        // 计算字符匹配数
+        // Calculate the number of character matches
         let charMatches = 0;
         for (let j = 0; j < shorterLength; j++) {
           if (window[j] === shorterText[j]) {
@@ -1232,7 +1232,7 @@ const MessagesPage: React.FC = () => {
       return matches / shorterLength;
     };
 
-    // 消息去重函数
+    // informationGo to the heavyfunction
     const deduplicateMessages = (messages: ChatMessage[]): ChatMessage[] => {
       const uniqueMessages: ChatMessage[] = [];
       const seenContents = new Set<string>();
@@ -1243,13 +1243,13 @@ const MessagesPage: React.FC = () => {
           .replace(/\s+/g, ' ')
           .toLowerCase();
         
-        // 检查是否已经有相似的内容
+        // examinewhetheralreadythroughhaveresemblanceofcontent
         let isDuplicate = false;
         for (const seenContent of seenContents) {
           const similarity = calculateTextSimilarity(normalizedContent, seenContent);
-          if (similarity > 0.9) { // 90%以上相似度认为是重复
+          if (similarity > 0.9) { // 90%The above similarityrecognizeforyesrepeat
             isDuplicate = true;
-            //console.log('发现重复消息:', {
+            //console.log('Discoverrepeatinformation:', {
             // messageId: message.message_id,
              // content: message.content.substring(0, 30),
              // similarity: similarity.toFixed(2)
@@ -1264,7 +1264,7 @@ const MessagesPage: React.FC = () => {
         }
       });
       
-      console.log(`消息去重: 原始 ${messages.length} 条，去重后 ${uniqueMessages.length} 条`);
+      console.log(`informationGo to the heavy: original ${messages.length} strip,Go to the heavyback ${uniqueMessages.length} strip`);
       return uniqueMessages;
     };
 
@@ -1272,65 +1272,65 @@ const MessagesPage: React.FC = () => {
       const channelId = parseInt(notification.object_id.toString());
       const notificationTitle = notification.details?.title as string;
       
-      console.log('开始自动标记私聊消息为已读:', {
+      console.log('startautomaticmarkPrivate chatinformationforRead:', {
         channelId,
         notificationTitle,
         notificationId: notification.id
       });
 
-      // 查找对应的私聊频道
+      // FindcorrespondofPrivate chatChannel
       const targetChannel = channels.find(ch => ch.channel_id === channelId && ch.type === 'PM');
       
       if (!targetChannel) {
-        console.log('未找到对应的私聊频道，跳过自动标记');
+        console.log('not yettry to findarrivecorrespondofPrivate chatChannel,jump overautomaticmark');
         return;
       }
 
-      // 获取频道的所有消息
+      // GetChannelofallinformation
       const channelMessages = await chatAPI.getChannelMessages(channelId);
       
       if (!channelMessages || channelMessages.length === 0) {
-        console.log('频道没有消息，跳过自动标记');
+        console.log('ChannelNoinformation,jump overautomaticmark');
         return;
       }
 
-      console.log(`频道 ${channelId} 共有 ${channelMessages.length} 条消息`);
+      console.log(`Channel ${channelId} There are a total of ${channelMessages.length} stripinformation`);
 
-      // 检查是否是当前选中的频道，如果是，用户已经"看到"了消息
+      // examinewhetheryescurrentselectmiddleofChannel,in the case of,useralreadythrough"lookarrive"It'sinformation
       const isCurrentlyViewingChannel = selectedChannel?.channel_id === channelId;
       
-      // 清理和标准化文本的函数
+      // Clean up and standardize textoffunction
       const normalizeText = (text: string) => {
         return text
-          .trim()                          // 移除前后空白
-          .replace(/\s+/g, ' ')           // 多个空格合并为一个
-          .replace(/[^\w\s\u4e00-\u9fff]/g, '') // 移除特殊字符，保留中文、字母、数字
-          .toLowerCase();                  // 转换为小写
+          .trim()                          // Remove the front and back blanks
+          .replace(/\s+/g, ' ')           // manyindivualnullCompatibleandforoneindivual
+          .replace(/[^\w\s\u4e00-\u9fff]/g, '') // Remove special characters and keep Chinese, letters, and numbers
+          .toLowerCase();                  // Convertforlower case
       };
 
-      // 查找包含通知标题内容的消息
+      // FindIncludenotifytitlecontentNews
       const matchingMessages = channelMessages.filter((message: ChatMessage) => {
         if (!notificationTitle || !message.content) {
           return false;
         }
 
-        // 标准化文本进行比较
+        // Standardized text comparison
         const normalizedTitle = normalizeText(notificationTitle);
         const normalizedContent = normalizeText(message.content);
         
-        // 多种匹配策略
+        // Multiple matching strategies
         const exactMatch = normalizedContent === normalizedTitle;
         const contentIncludesTitle = normalizedContent.includes(normalizedTitle);
         const titleIncludesContent = normalizedTitle.includes(normalizedContent);
         
-        // 相似度匹配（简单版本）
+        // Similaritymatch(SimpleVersion)
         const similarity = calculateTextSimilarity(normalizedTitle, normalizedContent);
-        const similarityMatch = similarity > 0.8; // 80%以上相似度
+        const similarityMatch = similarity > 0.8; // 80%The above similarity
         
         const isMatch = exactMatch || contentIncludesTitle || titleIncludesContent || similarityMatch;
         
         if (isMatch) {
-          console.log('找到匹配的消息:', {
+          console.log('try to findarrivematchNews:', {
             messageId: message.message_id,
             content: message.content.substring(0, 50),
             notificationTitle,
@@ -1345,95 +1345,95 @@ const MessagesPage: React.FC = () => {
         return isMatch;
       });
 
-      // 对匹配的消息进行去重（基于内容相似性）
+      // rightmatchNewsconductGo to the heavy(based oncontentSimilarity)
       const uniqueMessages = deduplicateMessages(matchingMessages);
 
       let shouldMarkAsRead = false;
       let maxMessageIdToMark = 0;
 
       if (uniqueMessages.length > 0) {
-        // 如果找到匹配的消息，标记到最新的匹配消息
+        // iftry to findarrivematchNews,markarrivemostnewofmatchinformation
         maxMessageIdToMark = Math.max(...uniqueMessages.map((m: ChatMessage) => m.message_id));
         shouldMarkAsRead = true;
-        console.log(`找到 ${uniqueMessages.length} 条唯一匹配消息（原始 ${matchingMessages.length} 条），将标记到消息ID: ${maxMessageIdToMark}`);
+        console.log(`try to findarrive ${uniqueMessages.length} striponlymatchinformation(original ${matchingMessages.length} strip),WillmarkarriveinformationID: ${maxMessageIdToMark}`);
       } else if (isCurrentlyViewingChannel) {
-        // 如果用户正在查看该频道，标记所有消息为已读
+        // ifuserjustexistchecklookShouldChannel,markallinformationforRead
         maxMessageIdToMark = Math.max(...channelMessages.map((m: ChatMessage) => m.message_id));
         shouldMarkAsRead = true;
-        console.log(`用户正在查看频道 ${channelId}，标记所有消息为已读，最大消息ID: ${maxMessageIdToMark}`);
+        console.log(`userjustexistchecklookChannel ${channelId},markallinformationforRead,mostbiginformationID: ${maxMessageIdToMark}`);
       }
 
       if (shouldMarkAsRead && maxMessageIdToMark > 0) {
-        // 检查是否需要更新已读状态
+        // examinewhetherneedUpdate readstate
         const currentLastReadId = targetChannel.last_read_id || 0;
         
         if (maxMessageIdToMark > currentLastReadId) {
-          console.log(`准备标记频道 ${channelId} 消息 ${maxMessageIdToMark} 为已读 (当前已读: ${currentLastReadId})`);
+          console.log(`PreparemarkChannel ${channelId} information ${maxMessageIdToMark} forRead (currentRead: ${currentLastReadId})`);
           
-          // 调用API标记为已读
+          // CallAPImarkforRead
           await chatAPI.markAsRead(channelId, maxMessageIdToMark);
-          console.log(`成功标记频道 ${channelId} 消息 ${maxMessageIdToMark} 为已读`);
+          console.log(`successmarkChannel ${channelId} information ${maxMessageIdToMark} forRead`);
           
-          // 更新本地频道状态
+          // renewlocalChannelstate
           updateChannelReadStatus(channelId, maxMessageIdToMark);
           
-          // 删除相关通知
+          // Delete related notifications
           try {
-            console.log(`删除已处理的通知: ${notification.id}`);
+            console.log(`deletealreadydeal withofnotify: ${notification.id}`);
             await removeNotificationByObject(notification.object_id, notification.object_type);
           } catch (error) {
-            console.error(`删除通知失败: ${notification.id}`, error);
+            console.error(`Delete notification failed: ${notification.id}`, error);
           }
         } else {
-          console.log(`消息 ${maxMessageIdToMark} 已经被标记为已读 (当前已读: ${currentLastReadId})`);
+          console.log(`information ${maxMessageIdToMark} alreadythroughquiltmarkforRead (currentRead: ${currentLastReadId})`);
         }
       } else {
-        console.log('没有找到需要标记的消息或用户未查看该频道');
+        console.log('Notry to findarriveneedmarkNewsorusernot yetchecklookShouldChannel');
       }
       
     } catch (error) {
-      console.error('自动标记私聊消息已读失败:', error);
+      console.error('automaticmarkPrivate chatinformationReadfail:', error);
     }
   };
 
-  // 批量处理私聊通知标记已读
+  // batchdeal withPrivate chatnotifymarkRead
   const batchMarkPrivateNotificationsAsRead = async () => {
-    console.log('开始批量处理私聊通知...');
+    console.log('startbatchdeal withPrivate chatnotify...');
     let privateNotifications = notifications.filter(notification => 
       notification.name === 'channel_message' && 
       notification.details?.type === 'pm'
     );
 
-    console.log(`找到 ${privateNotifications.length} 个私聊通知需要处理`);
+    console.log(`try to findarrive ${privateNotifications.length} indivualPrivate chatnotifyneeddeal with`);
 
     if (privateNotifications.length === 0) {
-      toast('没有需要处理的私聊通知');
+      toast('Noneeddeal withofPrivate chatnotify');
       return;
     }
 
-    // 对通知进行去重处理（基于频道ID和内容相似性）
+    // rightnotifyconductGo to the heavydeal with(based onChannelIDandcontentSimilarity)
     const deduplicatedNotifications = deduplicateNotifications(privateNotifications);
-    console.log(`通知去重: 原始 ${privateNotifications.length} 个，去重后 ${deduplicatedNotifications.length} 个`);
+    console.log(`notifyGo to the heavy: original ${privateNotifications.length} indivual,Go to the heavyback ${deduplicatedNotifications.length} indivual`);
 
     let processedCount = 0;
     let errorCount = 0;
 
     for (const notification of deduplicatedNotifications) {
       try {
-        console.log(`处理私聊通知 ${notification.id}: ${notification.details?.title}`);
+        console.log(`deal withPrivate chatnotify ${notification.id}: ${notification.details?.title}`);
         await autoMarkPrivateMessagesAsRead(notification);
         processedCount++;
         
-        // 添加小延迟避免API请求过快
+        // Add small delay to avoidAPIaskToo fast
         await new Promise(resolve => setTimeout(resolve, 200));
       } catch (error) {
-        console.error(`处理通知 ${notification.id} 失败:`, error);
+        console.error(`Processing notification ${notification.id} fail:`, error);
         errorCount++;
       }
     }
 
-    // 显示处理结果
-    const resultMessage = `处理完成: 成功 ${processedCount}，失败 ${errorCount}`;
+    // Show processing results
+    const resultMessage = `Processing is completed: success ${processedCount},fail ${errorCount}`;
     console.log(resultMessage);
     
     if (errorCount > 0) {
@@ -1442,37 +1442,37 @@ const MessagesPage: React.FC = () => {
       toast.success(resultMessage);
     }
 
-    // 刷新通知列表
+    // Refresh notification list
     setTimeout(() => {
       refresh();
     }, 1000);
   };
 
-  // 通知去重函数
+  // notifyGo to the heavyfunction
   const deduplicateNotifications = (notifications: APINotification[]): APINotification[] => {
     const uniqueNotifications: APINotification[] = [];
     const seenCombinations = new Set<string>();
     
     notifications.forEach(notification => {
-      // 创建基于频道ID和标题的唯一标识
+      // createbased onChannelIDandtitleofUnique ID
       const channelId = notification.object_id;
       const title = (notification.details?.title as string) || '';
       const normalizedTitle = title.trim().replace(/\s+/g, ' ').toLowerCase();
       
-      // 组合键：频道ID + 标准化标题
+      // Key combination:ChannelID + Standardized title
       const combinationKey = `${channelId}-${normalizedTitle}`;
       
       if (!seenCombinations.has(combinationKey)) {
         seenCombinations.add(combinationKey);
         uniqueNotifications.push(notification);
-        console.log('保留通知:', {
+        console.log('Retention notice:', {
           id: notification.id,
           channelId,
           title: title.substring(0, 30),
           combinationKey
         });
       } else {
-        console.log('跳过重复通知:', {
+        console.log('Skip duplicate notifications:', {
           id: notification.id,
           channelId,
           title: title.substring(0, 30),
@@ -1484,157 +1484,157 @@ const MessagesPage: React.FC = () => {
     return uniqueNotifications;
   };
 
-  // 获取通知标题
+  // Get notification title
   const getNotificationTitle = useCallback((notification: APINotification): string => {
-    // 获取用户信息（从apiCache中）
-    let userName = '未知用户';
+    // Get user information (fromapiCachemiddle)
+    let userName = 'Unknown user';
     if (notification.source_user_id) {
       const cachedUser = apiCache.getCachedUser(notification.source_user_id);
       if (cachedUser) {
-        userName = cachedUser.username || '未知用户';
+        userName = cachedUser.username || 'Unknown user';
       }
     }
 
     switch (notification.name) {
       case 'team_application_store':
-        return `团队加入申请`;
+        return `teamApplication for joining`;
       case 'team_application_accept':
-        return `团队申请已接受`;
+        return `teamApplyaccept`;
       case 'team_application_reject':
-        return `团队申请已拒绝`;
+        return `teamApplyreject`;
       case 'channel_message':
-        // 根据类型显示不同的标题
+        // rootaccording totypeshowdifferentoftitle
         if (notification.details?.type === 'pm') {
-          return `新私聊消息: ${userName}`;
+          return `newPrivate chatinformation: ${userName}`;
         } else if (notification.details?.type === 'team') {
-          return `新团队消息: ${notification.details.title || '团队频道'}`;
+          return `newteaminformation: ${notification.details.title || 'teamChannel'}`;
         }
-        return `新私聊消息: ${userName}`;
+        return `newPrivate chatinformation: ${userName}`;
       case 'channel_team':
-        return `新团队消息: ${notification.details?.title || '团队频道'}`;
+        return `newteaminformation: ${notification.details?.title || 'teamChannel'}`;
       case 'channel_public':
-        return `新公共频道消息: ${notification.details?.title || '公共频道'}`;
+        return `newpublicChannelinformation: ${notification.details?.title || 'publicChannel'}`;
       case 'channel_private':
-        return `新私有频道消息: ${notification.details?.title || '私有频道'}`;
+        return `newprivateChannelinformation: ${notification.details?.title || 'privateChannel'}`;
       case 'channel_multiplayer':
-        return `新多人游戏消息: ${notification.details?.title || '多人游戏'}`;
+        return `newMultiplayer Gameinformation: ${notification.details?.title || 'Multiplayer Game'}`;
       case 'channel_spectator':
-        return `新观战频道消息: ${notification.details?.title || '观战频道'}`;
+        return `newWatch the battleChannelinformation: ${notification.details?.title || 'Watch the battleChannel'}`;
       case 'channel_temporary':
-        return `新临时频道消息: ${notification.details?.title || '临时频道'}`;
+        return `newtemporaryChannelinformation: ${notification.details?.title || 'temporaryChannel'}`;
       case 'channel_group':
-        return `新群组消息: ${notification.details?.title || '群组频道'}`;
+        return `newGroupsinformation: ${notification.details?.title || 'GroupsChannel'}`;
       case 'channel_system':
-        return `新系统消息: ${notification.details?.title || '系统频道'}`;
+        return `newsysteminformation: ${notification.details?.title || 'systemChannel'}`;
       case 'channel_announce':
-        return `新公告: ${notification.details?.title || '公告频道'}`;
+        return `New announcement: ${notification.details?.title || 'announcementChannel'}`;
       default:
         return notification.name;
     }
   }, []);
 
-  // 获取通知内容
+  // Getnotifycontent
   const getNotificationContent = useCallback((notification: APINotification): string => {
-    // 获取用户信息（从apiCache中）
-    let userName = '未知用户';
+    // Get user information (fromapiCachemiddle)
+    let userName = 'Unknown user';
     if (notification.source_user_id) {
       const cachedUser = apiCache.getCachedUser(notification.source_user_id);
       if (cachedUser) {
-        userName = cachedUser.username || '未知用户';
+        userName = cachedUser.username || 'Unknown user';
       }
     }
 
     switch (notification.name) {
       case 'team_application_store':
-        return `${userName} 申请加入您的团队`;
+        return `${userName} Apply to join youofteam`;
       case 'team_application_accept':
-        return `您已成功加入团队 ${notification.details.title}`;
+        return `You havesuccessjoin inteam ${notification.details.title}`;
       case 'team_application_reject':
-        return `您的团队申请被拒绝`;
+        return `youofteamApply forreject`;
       case 'channel_message':
-        // 根据类型显示不同的内容
+        // rootaccording totypeshowdifferentofcontent
         if (notification.details?.type === 'pm') {
-          // 尝试获取完整的消息内容
+          // tryGetoverallNewscontent
           const messageContent = notification.details.title as string;
           const messageUrl = notification.details.url as string;
           
-          // 如果有详细的消息内容，显示它
-          if (messageContent && messageContent !== '来自用户' && messageContent !== userName) {
-            // 如果消息被截断（通常36字符），尝试显示完整内容
+          // If there isdetailedNewscontent,showit
+          if (messageContent && messageContent !== 'From the user' && messageContent !== userName) {
+            // ifinformationquiltCutoff(generally36character),tryshowoverallcontent
             if (messageContent.length >= 36) {
-              return `${userName}: ${messageContent}... (可能有更多内容)`;
+              return `${userName}: ${messageContent}... (CanablehaveEvenmanycontent)`;
             } else {
               return `${userName}: ${messageContent}`;
             }
           }
           
-          // 如果有URL信息，尝试从中提取更多信息
+          // If there isURLInformation, try to extract more information from it
           if (messageUrl) {
-            return `来自 ${userName} 的私聊消息 (ID: ${notification.object_id})`;
+            return `From ${userName} ofPrivate chatinformation (ID: ${notification.object_id})`;
           }
           
-          return `来自 ${userName} 的私聊消息`;
+          return `From ${userName} ofPrivate chatinformation`;
         } else if (notification.details?.type === 'team') {
-          return `团队频道: ${notification.details.title || '团队消息'}`;
+          return `teamChannel: ${notification.details.title || 'teaminformation'}`;
         }
-        return `来自 ${notification.details.title || '未知来源'}`;
+        return `From ${notification.details.title || 'Unknown source'}`;
       case 'channel_team':
-        return `团队频道: ${notification.details?.title || '团队消息'}`;
+        return `teamChannel: ${notification.details?.title || 'teaminformation'}`;
       case 'channel_public':
-        return `公共频道: ${notification.details?.title || '公共消息'}`;
+        return `publicChannel: ${notification.details?.title || 'publicinformation'}`;
       case 'channel_private':
-        return `私有频道: ${notification.details?.title || '私有消息'}`;
+        return `privateChannel: ${notification.details?.title || 'privateinformation'}`;
       case 'channel_multiplayer':
-        return `多人游戏: ${notification.details?.title || '游戏消息'}`;
+        return `Multiplayer Game: ${notification.details?.title || 'gameinformation'}`;
       case 'channel_spectator':
-        return `观战频道: ${notification.details?.title || '观战消息'}`;
+        return `Watch the battleChannel: ${notification.details?.title || 'Watch the battleinformation'}`;
       case 'channel_temporary':
-        return `临时频道: ${notification.details?.title || '临时消息'}`;
+        return `temporaryChannel: ${notification.details?.title || 'temporaryinformation'}`;
       case 'channel_group':
-        return `群组频道: ${notification.details?.title || '群组消息'}`;
+        return `GroupsChannel: ${notification.details?.title || 'Groupsinformation'}`;
       case 'channel_system':
-        return `系统频道: ${notification.details?.title || '系统消息'}`;
+        return `systemChannel: ${notification.details?.title || 'systeminformation'}`;
       case 'channel_announce':
-        return `公告频道: ${notification.details?.title || '公告消息'}`;
+        return `announcementChannel: ${notification.details?.title || 'announcementinformation'}`;
       default:
         return JSON.stringify(notification.details);
     }
   }, []);
 
-  // 辅助函数：检查用户信息是否在apiCache中
+  // Auxiliaryfunction:examineuserinformationwhetherexistapiCachemiddle
   const hasUserInfoInCache = useCallback((userId: number): boolean => {
     return apiCache.hasCachedUser(userId);
   }, []);
 
-  // 辅助函数：从apiCache获取用户信息
+  // Auxiliaryfunction:fromapiCacheGet user information
   const getUserInfoFromCache = useCallback((userId: number): { username: string } | null => {
     return apiCache.getCachedUser(userId);
   }, []);
 
-  // 处理团队请求
+  // deal withteamask
   const handleTeamRequest = async (notification: APINotification, action: 'accept' | 'reject') => {
     try {
       const teamId = parseInt(notification.object_id);
       const userId = notification.source_user_id;
       
       if (!userId) {
-        toast.error('无法获取用户信息');
+        toast.error('CannotGet user information');
         return;
       }
 
       if (action === 'accept') {
         await teamsAPI.acceptJoinRequest(teamId, userId);
-        toast.success('已接受加入请求');
+        toast.success('alreadyacceptjoin inask');
       } else {
         await teamsAPI.rejectJoinRequest(teamId, userId);
-        toast.success('已拒绝加入请求');
+        toast.success('alreadyrejectjoin inask');
       }
 
-      // 标记通知为已读
+      // marknotifyforRead
       await markAsRead(notification.id);
     } catch (error) {
-      console.error('处理团队请求失败:', error);
-      toast.error(`${action === 'accept' ? '接受' : '拒绝'}请求失败`);
+      console.error('deal withteamaskfail:', error);
+      toast.error(`${action === 'accept' ? 'accept' : 'reject'}askfail`);
     }
   };
 
@@ -1643,10 +1643,10 @@ const MessagesPage: React.FC = () => {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            需要登录
+            Need to log in
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            请登录后查看消息
+            Please log in.
           </p>
         </div>
       </div>
@@ -1654,8 +1654,8 @@ const MessagesPage: React.FC = () => {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[calc(100vh-8rem)] md:max-h-[calc(100vh-4rem)] overflow-hidden bg-gray-50 dark:bg-gray-900">
-      {/* 侧边栏 */}
+    <div className="flex h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[calc(100vh-8rem)] md:max-h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-b from-white to-gray-50 dark:from-[#0f1424] dark:to-[#0b1020]">
+      {/* Sidebar */}
       <AnimatePresence>
         {showSidebar && (
           <motion.div
@@ -1665,18 +1665,18 @@ const MessagesPage: React.FC = () => {
             transition={{ duration: 0.3 }}
             className={`
               ${isMobile ? 'fixed inset-y-0 left-0 z-50' : 'relative'}
-              w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
+              w-80 bg-white/80 dark:bg-gray-800/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-r border-black/5 dark:border-white/10 shadow
               flex flex-col ${isMobile ? 'h-screen max-h-screen' : 'h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)]'}
             `}
           >
-            {/* 侧边栏头部 */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+            {/* Sidebarhead */}
+            <div className="p-4 border-b border-black/5 dark:border-white/10 bg-white/70 dark:bg-gray-800/60 backdrop-blur supports-[backdrop-filter]:bg-white/60">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                    消息中心
+                    Osu! server Chat.
                   </h1>
-                  {/* WebSocket连接状态 */}
+                  {/* WebSocketConnection status */}
                   {/* <div className="flex items-center space-x-1">
                     <div className={`w-2 h-2 rounded-full ${chatConnected ? 'bg-green-500' : 'bg-red-500'}`} />
                   </div> */}
@@ -1691,21 +1691,21 @@ const MessagesPage: React.FC = () => {
                 )}
               </div>
 
-              {/* 标签页切换 */}
-              <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+              {/* Tag page switching */}
+              <div className="flex space-x-1 p-1 rounded-xl border border-black/5 dark:border-white/10 bg-white/70 dark:bg-gray-800/60 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
                 <button
                   onClick={() => setActiveTab('channels')}
                   className={`
                     flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-md text-sm font-medium
                     transition-all duration-200
                     ${activeTab === 'channels'
-                      ? 'bg-white dark:bg-gray-600 text-osu-pink shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-osu-pink text-white shadow'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent'
                     }
                   `}
                 >
                   <FiMessageCircle size={16} />
-                  <span>消息</span>
+                  <span>Channels</span>
                 </button>
                 <button
                   onClick={() => setActiveTab('notifications')}
@@ -1713,15 +1713,15 @@ const MessagesPage: React.FC = () => {
                     flex-1 flex items-center justify-center space-x-2 py-2 px-3 rounded-md text-sm font-medium
                     transition-all duration-200 relative
                     ${activeTab === 'notifications'
-                      ? 'bg-white dark:bg-gray-600 text-osu-pink shadow-sm'
-                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                      ? 'bg-osu-pink text-white shadow'
+                      : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-transparent'
                     }
                   `}
                 >
                   <FiBell size={16} />
-                  <span>通知</span>
+                  <span>Notifications</span>
                   {unreadCount.total > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 min-w-5 px-1.5 flex items-center justify-center">
                       {unreadCount.total > 99 ? '99+' : unreadCount.total}
                     </span>
                   )}
@@ -1729,27 +1729,27 @@ const MessagesPage: React.FC = () => {
               </div>
             </div>
 
-            {/* 内容区域 */}
+            {/* contentarea */}
             <div className="flex-1 overflow-hidden">
               {activeTab === 'channels' ? (
                 <div className="h-full flex flex-col">
-                  {/* 频道过滤器和新建按钮 */}
-                  <div className="p-4 border-b border-gray-200 dark:border-gray-700 space-y-3">
+                  {/* ChannelfilterDeviceandnewestablishButton */}
+                  <div className="p-4 border-b border-black/5 dark:border-white/10 space-y-3 bg-white/70 dark:bg-gray-800/60 backdrop-blur supports-[backdrop-filter]:bg-white/60">
                     <div className="grid grid-cols-2 gap-1 text-xs">
                       {[
-                        { key: 'all' as const, label: '全部' },
-                        { key: 'private' as const, label: '私聊' },
-                        { key: 'team' as const, label: '团队' },
-                        { key: 'public' as const, label: '公共' },
+                        { key: 'all' as const, label: 'all' },
+                        { key: 'private' as const, label: 'Private chat' },
+                        { key: 'team' as const, label: 'team' },
+                        { key: 'public' as const, label: 'public' },
                       ].map(filter => (
                         <button
                           key={filter.key}
                           onClick={() => setChannelFilter(filter.key)}
                           className={`
-                            py-1.5 px-2 rounded text-center font-medium transition-all duration-200
+                            py-1.5 px-2 rounded-md text-center font-medium transition-all duration-200
                             ${channelFilter === filter.key
-                              ? 'bg-osu-pink text-white'
-                              : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                              ? 'bg-osu-pink text-white shadow'
+                              : 'bg-white/70 dark:bg-gray-800/60 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 border border-black/5 dark:border-white/10 shadow-sm'
                             }
                           `}
                         >
@@ -1758,17 +1758,17 @@ const MessagesPage: React.FC = () => {
                       ))}
                     </div>
                     
-                    {/* 刷新频道列表按钮 */}
+                    {/* brushnewChannelListButton */}
                     <button
                       onClick={async () => {
-                        console.log('手动刷新频道列表');
+                        console.log('ManualbrushnewChannelList');
                         try {
                           const channels = await chatAPI.getChannels();
-                          console.log('手动刷新后的频道列表:', channels);
+                          console.log('ManualbrushnewbackofChannelList:', channels);
                           const pmChannels = channels.filter((ch: ChatChannel) => ch.type === 'PM');
-                          console.log('手动刷新后的私聊频道数量:', pmChannels.length);
+                          console.log('ManualbrushnewbackofPrivate chatChannelquantity:', pmChannels.length);
                           if (pmChannels.length > 0) {
-                            console.log('私聊频道详情:', pmChannels.map((ch: ChatChannel) => ({ 
+                            console.log('Private chatChannelDetails:', pmChannels.map((ch: ChatChannel) => ({ 
                               id: ch.channel_id, 
                               name: ch.name, 
                               type: ch.type,
@@ -1776,64 +1776,67 @@ const MessagesPage: React.FC = () => {
                             })));
                           }
                           
-                          // 重新排序频道：倒序排列，频道在前，最下面是第一个
+                          // HeavynewSortChannel: Inverse order,Channelexistforward,The bottom is the firstoneindivual
                           const sortedChannels = channels.sort((a: ChatChannel, b: ChatChannel) => {
-                            // 优先级：公共频道 > 私聊 > 团队 > 私有
+                            // Priority:publicChannel > Private chat > team > private
                             const typeOrder: Record<string, number> = { 'PUBLIC': 0, 'PM': 1, 'TEAM': 2, 'PRIVATE': 3 };
                             const aOrder = typeOrder[a.type] || 4;
                             const bOrder = typeOrder[b.type] || 4;
                             
                             if (aOrder !== bOrder) {
-                              // 倒序排列：较大的 order 值在前
+                              // Inverse order: largerof order Value before
                               return bOrder - aOrder;
                             }
                             
-                            // 同类型内按名称倒序排列
+                            // Order in reverse order of names within the same type
                             return b.name.localeCompare(a.name);
                           });
                           
                           setChannels(sortedChannels);
                           
-                          // 清理重复的私聊频道
+                          // Clean up duplicateofPrivate chatChannel
                           setTimeout(() => {
                             cleanupDuplicatePrivateChannels();
                           }, 100);
                           
-                          toast.success(`频道列表已刷新，共 ${channels.length} 个频道，其中私聊 ${pmChannels.length} 个`);
+                          toast.success(`ChannelListalreadybrushnew,common ${channels.length} indivualChannel,ThatmiddlePrivate chat ${pmChannels.length} indivual`);
                         } catch (error) {
-                          console.error('手动刷新失败:', error);
-                          toast.error('刷新失败');
+                          console.error('Manualbrushnewfail:', error);
+                          toast.error('brushnewfail');
                         }
                       }}
-                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 bg-green-500/10 text-green-500 hover:bg-green-500/20 rounded-lg transition-colors text-sm font-medium"
-                      title="刷新频道列表"
+                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg transition-colors text-sm font-medium
+                       bg-white/70 dark:bg-gray-800/60 backdrop-blur supports-[backdrop-filter]:bg-white/60
+                       border border-black/5 dark:border-white/10 text-emerald-600 dark:text-emerald-400 hover:bg-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-emerald-400/40"
+                      title="Refresh Channel list"
                     >
                       <FiRefreshCw size={16} />
-                      <span>刷新频道</span>
+                      <span>Refresh channels.</span>
                     </button>
                     
-                    {/* 新建私聊按钮 */}
+                    {/* newestablishPrivate chatButton */}
                     <button
                       onClick={() => setShowNewPMModal(true)}
-                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 bg-osu-pink/10 text-osu-pink hover:bg-osu-pink/20 rounded-lg transition-colors text-sm font-medium"
+                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg transition-colors text-sm font-medium
+                       bg-osu-pink text-white hover:brightness-110 shadow focus:outline-none focus:ring-2 focus:ring-osu-pink/40"
                     >
                       <FiPlus size={16} />
-                      <span>新建私聊</span>
+                      <span>New Private Message</span>
                     </button>
                   </div>
 
-                  {/* 频道列表 */}
+                  {/* ChannelList */}
                   <div className="flex-1 overflow-y-auto">
                     {isLoading ? (
-                      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                        加载中...
+                      <div className="p-4 text-center text-gray-600 dark:text-gray-400">
+                        loadmiddle...
                       </div>
                     ) : filteredChannels.length === 0 ? (
-                      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                        暂无频道
+                      <div className="p-4 text-center text-gray-600 dark:text-gray-400">
+                        Nothing yet.
                       </div>
                     ) : (
-                      <div className="space-y-1 p-2">
+                      <div className="space-y-1.5 p-2">
                         {filteredChannels.map(channel => (
                           <ChannelItem
                             key={channel.channel_id}
@@ -1847,62 +1850,66 @@ const MessagesPage: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                /* 通知列表 */
+                /* notifyList */
                 <div className="flex flex-col h-full">
-                  {/* 通知操作按钮 */}
-                  <div className="p-2 border-b border-gray-200 dark:border-gray-700 space-y-2">
+                  {/* notifyoperateButton */}
+                  <div className="p-2 border-b border-black/5 dark:border-white/10 space-y-2 bg-white/70 dark:bg-gray-800/60 backdrop-blur supports-[backdrop-filter]:bg-white/60">
                     <button
                       onClick={() => {
-                        console.log('手动刷新通知列表');
-                        refresh(); // 调用通知刷新函数
+                        console.log('ManualRefresh notification list');
+                        refresh(); // Callnotifybrushnewfunction
                       }}
-                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 rounded-lg transition-colors text-sm font-medium"
-                      title="刷新通知列表"
+                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg transition-colors text-sm font-medium
+                         bg-white/70 dark:bg-gray-800/60 backdrop-blur supports-[backdrop-filter]:bg-white/60
+                         border border-black/5 dark:border-white/10 text-blue-600 dark:text-blue-400 hover:bg-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400/40"
+                      title="Refresh notification list"
                     >
                       <FiRefreshCw size={16} />
-                      <span>刷新通知</span>
+                      <span>Refresh notifications</span>
                     </button>
                     
-                    {/* 批量标记私聊已读按钮 */}
+                    {/* batchmarkPrivate chatReadButton */}
                     <button
                       onClick={batchMarkPrivateNotificationsAsRead}
-                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 rounded-lg transition-colors text-sm font-medium"
-                      title="批量标记私聊消息为已读"
+                      className="w-full flex items-center justify-center space-x-2 py-2 px-3 rounded-lg transition-colors text-sm font-medium
+                         bg-white/70 dark:bg-gray-800/60 backdrop-blur supports-[backdrop-filter]:bg-white/60
+                         border border-black/5 dark:border-white/10 text-fuchsia-600 dark:text-fuchsia-400 hover:bg-white dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-fuchsia-400/40"
+                      title="batchmarkPrivate chatinformationforRead"
                     >
                       <FiCheck size={16} />
-                      <span>标记私聊已读</span>
+                      <span>Mark all as readed</span>
                     </button>
                   </div>
                   
                   <div className="flex-1 overflow-y-auto min-h-0">
                     {notifications.length === 0 ? (
-                      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                        暂无通知
+                      <div className="p-4 text-center text-gray-600 dark:text-gray-400">
+                        Nothing yet.
                       </div>
                     ) : (
-                      <div className="space-y-1 p-2">
+                      <div className="space-y-1.5 p-2">
                         {notifications.map((notification, index) => (
                           <div
                             key={`notification-${notification.object_type}-${notification.object_id}-${notification.source_user_id || 'no-user'}-${index}`}
-                            className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                            className="p-3 rounded-xl border border-black/5 dark:border-white/10 bg-white/80 dark:bg-gray-800/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow"
                           >
                             <div className="flex items-start space-x-3">
                               <div className="flex-shrink-0">
-                                {/* 显示用户头像或默认图标 */}
+                                {/* showUser profile pictureorDefault icon */}
                                 {notification.source_user_id && hasUserInfoInCache(notification.source_user_id) ? (
                                   <img
                                     src={userAPI.getAvatarUrl(notification.source_user_id)}
-                                    alt="用户头像"
+                                    alt="User profile picture"
                                     className="w-10 h-10 rounded-lg object-cover"
                                     onError={(e) => {
-                                      // 如果头像加载失败，显示默认图标
+                                      // ifavatarLoading failed,showDefault icon
                                       e.currentTarget.style.display = 'none';
-                                      e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                                      (e.currentTarget.nextElementSibling as HTMLElement)?.classList.remove('hidden');
                                     }}
                                   />
                                 ) : null}
                                 
-                                {/* 默认图标 - 在没有用户信息或头像加载失败时显示 */}
+                                {/* Default icon - existNouserinformationoravatarLoading failedhourshow */}
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                                   notification.source_user_id && hasUserInfoInCache(notification.source_user_id) ? 'hidden' : ''
                                 } ${
@@ -1932,21 +1939,21 @@ const MessagesPage: React.FC = () => {
                                   {getNotificationContent(notification)}
                                 </p>
                                 
-                                {/* 显示发送者信息 */}
+                                {/* showSenderinformation */}
                                 {notification.source_user_id && hasUserInfoInCache(notification.source_user_id) && (
                                   <div className="flex items-center space-x-2 mt-2">
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">来自:</span>
-                                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">From:</span>
+                                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md border border-black/5 dark:border-white/10">
                                       {(() => {
-                                        // 从缓存获取用户名
+                                        // fromcacheGetusername
                                         const cachedUser = getUserInfoFromCache(notification.source_user_id!);
-                                        return cachedUser?.username || '未知用户';
+                                        return cachedUser?.username || 'Unknown user';
                                       })()}
                                     </span>
                                   </div>
                                 )}
                                 
-                                <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                   {new Date(notification.created_at).toLocaleString()}
                                 </p>
                                 
@@ -1954,17 +1961,17 @@ const MessagesPage: React.FC = () => {
                                   <div className="flex space-x-2 mt-3">
                                     <button
                                       onClick={() => handleTeamRequest(notification, 'accept')}
-                                      className="flex items-center space-x-1 px-3 py-1.5 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition-colors"
+                                      className="flex items-center space-x-1 px-3 py-1.5 bg-green-500 text-white text-sm rounded-lg shadow hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400/40"
                                     >
                                       <FiCheck size={14} />
-                                      <span>接受</span>
+                                      <span>accept</span>
                                     </button>
                                     <button
                                       onClick={() => handleTeamRequest(notification, 'reject')}
-                                      className="flex items-center space-x-1 px-3 py-1.5 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition-colors"
+                                      className="flex items-center space-x-1 px-3 py-1.5 bg-red-500 text-white text-sm rounded-lg shadow hover:bg-red-600 transition-colors focus:outline-none focus:ring-2 focus:ring-red-400/40"
                                     >
                                       <FiX size={14} />
-                                      <span>拒绝</span>
+                                      <span>reject</span>
                                     </button>
                                   </div>
                                 )}
@@ -1974,7 +1981,7 @@ const MessagesPage: React.FC = () => {
                                     onClick={() => handleNotificationMarkAsRead(notification)}
                                     className="text-xs text-osu-pink hover:text-osu-pink/80 mt-2"
                                   >
-                                    标记为已读
+                                    markforRead
                                   </button>
                                 )}
                               </div>
@@ -1991,12 +1998,12 @@ const MessagesPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* 主内容区域 */}
+      {/* hostcontentarea */}
       <div className="flex-1 flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)] max-h-[calc(100vh-8rem)] md:max-h-[calc(100vh-4rem)] overflow-hidden">
         {selectedChannel ? (
           <>
-            {/* 聊天头部 */}
-            <div className="mt-[2px] h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex items-center px-4 flex-shrink-0">
+            {/* Chat head */}
+            <div className="mt-[2px] h-16 bg-white/80 dark:bg-gray-800/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-black/5 dark:border-white/10 shadow-sm flex items-center px-4 flex-shrink-0">
               <div className="flex items-center space-x-3">
                 {isMobile && (
                   <button
@@ -2010,26 +2017,26 @@ const MessagesPage: React.FC = () => {
                   <h2 className="font-semibold text-gray-900 dark:text-white">
                     {selectedChannel.name}
                   </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {selectedChannel.type === 'PM' ? '私聊' : 
-                     selectedChannel.type === 'TEAM' ? '团队频道' : '公共频道'}
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {selectedChannel.type === 'PM' ? 'Private chat' : 
+                     selectedChannel.type === 'TEAM' ? 'teamChannel' : 'publicChannel'}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* 消息列表 */}
+            {/* informationList */}
             <div className="flex-1 overflow-y-auto p-4 min-h-0">
               {messages.map((message, index) => {
                 const prevMessage = messages[index - 1];
                 
-                // 改进消息分组逻辑
+                // improveinformationGrouping logic
                 let isGrouped = false;
                 if (prevMessage && prevMessage.sender_id === message.sender_id) {
                   const timeDiff = new Date(message.timestamp).getTime() - new Date(prevMessage.timestamp).getTime();
-                  // 临时禁用分组功能进行调试
-                  isGrouped = false; // timeDiff < 300000; // 5分钟内才分组，而不是1分钟
-                  console.log(`消息分组检查: ${message.message_id}, 时间差: ${timeDiff}ms, 是否分组: ${isGrouped}`);
+                  // Temporarily disable grouping function for debugging
+                  isGrouped = false; // timeDiff < 300000; // 5Grouping within minutes, not1minute
+                  console.log(`informationGroupingexamine: ${message.message_id}, Time difference: ${timeDiff}ms, Whether to group: ${isGrouped}`);
                 }
                 
                 return (
@@ -2045,21 +2052,21 @@ const MessagesPage: React.FC = () => {
               <div ref={messagesEndRef} />
             </div>
 
-            {/* 消息输入框 */}
-            <div className="flex-shrink-0">
+            {/* informationInput box */}
+            <div className="flex-shrink-0 border-t border-black/5 dark:border-white/10 bg-white/80 dark:bg-gray-800/70 backdrop-blur supports-[backdrop-filter]:bg-white/60">
               <MessageInput
                 onSendMessage={sendMessage}
                 disabled={!selectedChannel?.current_user_attributes?.can_message}
                 placeholder={
                   selectedChannel?.current_user_attributes?.can_message_error || 
-                  "输入消息..."
+                  "Type something here..."
                 }
                 maxLength={selectedChannel?.message_length_limit || 1000}
               />
             </div>
           </>
         ) : (
-          /* 未选择频道时的占位内容 */
+          /* not yetselectselectChannelhourofPlaceholdercontent */
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
               {isMobile && (
@@ -2071,17 +2078,17 @@ const MessagesPage: React.FC = () => {
                 </button>
               )}
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                选择一个频道开始聊天
+                selectselectoneindivualChannelstartchat
               </h3>
-              <p className="text-gray-500 dark:text-gray-400">
-                从左侧选择一个频道或私聊开始对话
+              <p className="text-gray-600 dark:text-gray-400">
+                fromLeft sideselectselectoneindivualChannelorPrivate chatstartrighttalk
               </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* 移动端遮罩 */}
+      {/* Mobile terminal mask */}
       {isMobile && showSidebar && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
@@ -2089,47 +2096,47 @@ const MessagesPage: React.FC = () => {
         />
       )}
 
-      {/* 新建私聊模态框 */}
+      {/* newestablishPrivate chatModal Box */}
       <PrivateMessageModal
         isOpen={showNewPMModal}
         onClose={() => setShowNewPMModal(false)}
         onMessageSent={async (newChannel) => {
-          console.log('私聊消息发送成功，新频道:', newChannel);
+          console.log('Private chatinformationsendsuccess,newChannel:', newChannel);
           
           if (isAuthenticated && newChannel) {
             try {
-              // 重新加载频道列表
-              console.log('重新加载频道列表以包含新私聊频道');
+              // HeavynewloadChannelList
+              console.log('HeavynewloadChannelListbyIncludenewPrivate chatChannel');
               const channels = await chatAPI.getChannels();
-              console.log('重新加载后的频道列表:', channels);
+              console.log('HeavynewloadbackofChannelList:', channels);
               
-              // 过滤并排序频道：倒序排列，频道在前，最下面是第一个
+              // Filter and sortChannel: Inverse order,Channelexistforward,The bottom is the firstoneindivual
               const sortedChannels = channels.sort((a: ChatChannel, b: ChatChannel) => {
-                // 优先级：公共频道 > 私聊 > 团队 > 私有
+                // Priority:publicChannel > Private chat > team > private
                 const typeOrder: Record<string, number> = { 'PUBLIC': 0, 'PM': 1, 'TEAM': 2, 'PRIVATE': 3 };
                 const aOrder = typeOrder[a.type] || 4;
                 const bOrder = typeOrder[b.type] || 4;
                 
                 if (aOrder !== bOrder) {
-                  // 倒序排列：较大的 order 值在前
+                  // Inverse order: largerof order Value before
                   return bOrder - aOrder;
                 }
                 
-                // 同类型内按名称倒序排列
+                // Order in reverse order of names within the same type
                 return b.name.localeCompare(a.name);
               });
               
               setChannels(sortedChannels);
               
-              // 自动选择新创建的私聊频道
-              console.log('自动选择新创建的私聊频道:', newChannel.name);
+              // Automatic selectionnewcreateofPrivate chatChannel
+              console.log('Automatic selectionnewcreateofPrivate chatChannel:', newChannel.name);
               await selectChannel(newChannel);
               
-              // 确保消息被正确加载
-              console.log('私聊频道选择完成，开始加载消息');
+              // make sureinformationquiltcorrectload
+              console.log('Private chatChannelselectselectFinish,startloadinformation');
             } catch (error) {
-              console.error('处理新私聊频道失败:', error);
-              toast.error('加载私聊频道失败');
+              console.error('deal withnewPrivate chatChannelfail:', error);
+              toast.error('loadPrivate chatChannelfail');
             }
           }
         }}

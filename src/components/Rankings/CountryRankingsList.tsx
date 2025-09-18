@@ -16,8 +16,8 @@ const CountryRankingsList: React.FC<Props> = ({ rankings, currentPage, selectedM
         <div className="bg-gray-100 dark:bg-gray-700 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
           <FiGlobe className="text-4xl text-gray-400 dark:text-gray-500" />
         </div>
-        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">暂无国家排行榜数据</h3>
-        <p className="text-gray-500 dark:text-gray-400">当前模式下没有找到国家数据</p>
+        <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No country ranking data yet.</h3>
+        <p className="text-gray-500 dark:text-gray-400">No country data was found in the current mode.</p>
       </div>
     );
   }

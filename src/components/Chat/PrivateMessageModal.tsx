@@ -17,7 +17,7 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
   isOpen,
   onClose,
   onMessageSent,
-  currentUser: _currentUser, // 目前未使用，但保留以便后续扩展
+  currentUser: _currentUser, // Not currently used, but reserved for subsequent expansion
 }) => {
   const [targetUserId, setTargetUserId] = useState<number | null>(null);
   const [targetUsername, setTargetUsername] = useState('');
@@ -25,13 +25,13 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<User[]>([]);
 
-  // 检查是否有预选用户
+  // Check if there are preselected users
   React.useEffect(() => {
     const selectedUser = (window as any).selectedUserForPM as User;
     if (selectedUser) {
       setTargetUserId(selectedUser.id);
       setTargetUsername(selectedUser.username);
-      // 清除全局变量
+      // Clear global variables
       delete (window as any).selectedUserForPM;
     }
   }, [isOpen]);
@@ -43,23 +43,23 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
       setIsLoading(true);
       const result = await chatAPI.createPrivateMessage(targetUserId, message.trim());
       
-      toast.success('私聊已发送');
+      toast.success('Private chat sent');
       onMessageSent(result?.channel);
       onClose();
       
-      // 重置表单
+      // Reset the form
       setTargetUserId(null);
       setTargetUsername('');
       setMessage('');
       
-      // 如果创建成功，可以尝试自动选择新创建的频道
+      // If the creation is successful, you can try to automatically select the newly created channel
       if (result?.channel) {
-        console.log('私聊频道创建成功:', result.channel);
-        // 通过回调通知父组件选择新频道
+        console.log('Private chat channel was created successfully:', result.channel);
+        // Notify the parent component to select a new channel through a callback
       }
     } catch (error) {
-      console.error('发送私聊失败:', error);
-      toast.error('发送私聊失败');
+      console.error('Send private chat failed:', error);
+      toast.error('Send private chat failed');
     } finally {
       setIsLoading(false);
     }
@@ -72,12 +72,12 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
     }
 
     try {
-      // 由于没有搜索接口，这里暂时显示空结果
-      toast.error('暂不支持用户搜索功能');
+      // Since there is no search interface, the empty result is temporarily displayed here
+      toast.error('User search function is not supported yet');
       setSearchResults([]);
     } catch (error) {
-      console.error('搜索用户失败:', error);
-      toast.error('搜索用户失败');
+      console.error('Search user failed:', error);
+      toast.error('Search user failed');
       setSearchResults([]);
     }
   };
@@ -93,7 +93,7 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        {/* 背景遮罩 */}
+        {/* Background mask */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -102,17 +102,17 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
           onClick={onClose}
         />
         
-        {/* 模态框 */}
+        {/* Modal Box */}
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
           className="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md mx-4"
         >
-          {/* 头部 */}
+          {/* head */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              发送私聊
+              Send to a private chat
             </h2>
             <button
               onClick={onClose}
@@ -122,24 +122,24 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
             </button>
           </div>
 
-          {/* 内容 */}
+          {/* content */}
           <div className="p-6 space-y-4">
-            {/* 选择用户 */}
+            {/* Select a user */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                发送给
+                Send to
               </label>
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="搜索用户名..."
+                  placeholder="Search for username..."
                   value={targetUsername}
                   onChange={(e) => {
                     const value = e.target.value;
                     setTargetUsername(value);
                     
                     if (value) {
-                      // 防抖搜索
+                      // Anti-shake search
                       const timeoutId = setTimeout(() => {
                         searchUsers(value);
                       }, 300);
@@ -155,7 +155,7 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
                 <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
               </div>
 
-              {/* 搜索结果 */}
+              {/* Search results */}
               {searchResults.length > 0 && (
                 <div className="mt-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {searchResults.map(user => (
@@ -184,15 +184,15 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
               )}
             </div>
 
-            {/* 消息内容 */}
+            {/* informationcontent */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                消息内容
+                informationcontent
               </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="输入你的消息..."
+                placeholder="Enter your message..."
                 rows={4}
                 maxLength={1000}
                 className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg resize-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-osu-pink focus:border-transparent"
@@ -205,13 +205,13 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
             </div>
           </div>
 
-          {/* 底部 */}
+          {/* bottom */}
           <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={onClose}
               className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              取消
+              Cancel
             </button>
             <button
               onClick={handleSendMessage}
@@ -219,7 +219,7 @@ const PrivateMessageModal: React.FC<PrivateMessageModalProps> = ({
               className="flex items-center space-x-2 px-4 py-2 bg-osu-pink text-white rounded-lg hover:bg-osu-pink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <FiSend size={16} />
-              <span>{isLoading ? '发送中...' : '发送'}</span>
+              <span>{isLoading ? 'Send...' : 'send'}</span>
             </button>
           </div>
         </motion.div>

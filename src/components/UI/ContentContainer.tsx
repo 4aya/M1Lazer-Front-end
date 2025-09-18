@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 interface ContentContainerProps {
   children: React.ReactNode;
-  maxHeight?: number; // 最大高度（像素）
+  maxHeight?: number; // Maximum height (pixels)
   className?: string;
   expandText?: string;
   collapseText?: string;
@@ -13,8 +13,8 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
   children,
   maxHeight = 400,
   className = '',
-  expandText = '显示更多',
-  collapseText = '收起',
+  expandText = 'Show more',
+  collapseText = 'Close',
   showExpandButton = true,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -30,7 +30,7 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
     };
 
     checkHeight();
-    // 监听内容变化
+    // Listening content changes
     const resizeObserver = new ResizeObserver(checkHeight);
     if (contentRef.current) {
       resizeObserver.observe(contentRef.current);
@@ -45,7 +45,7 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
 
   return (
     <div className={`relative ${className}`}>
-      {/* 内容区域 */}
+      {/* Content area */}
       <div
         ref={contentRef}
         className="overflow-hidden transition-all duration-300 ease-in-out"
@@ -56,12 +56,12 @@ const ContentContainer: React.FC<ContentContainerProps> = ({
         {children}
       </div>
 
-      {/* 渐变遮罩 - 只在未展开且需要显示按钮时显示 */}
+      {/* Gradient mask - Shows only when the button is not expanded and needs to be displayed */}
       {!isExpanded && showButton && showExpandButton && (
         <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-gray-900 to-transparent pointer-events-none" />
       )}
 
-      {/* 展开/收起按钮 - 动态调整间距，展开时减少空白 */}
+      {/* Expand/CloseButton - Dynamically adjust spacing,ExpandReduce blank space when */}
       {showButton && showExpandButton && (
         <div className={`text-center transition-all duration-300 ${
           isExpanded ? 'mt-1 mb-0' : 'mt-4'

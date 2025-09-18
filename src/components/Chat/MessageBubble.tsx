@@ -26,28 +26,28 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       transition={{ duration: 0.2 }}
       className={`flex items-start space-x-3 ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''} ${isGrouped ? 'mt-1' : 'mt-4'}`}
     >
-      {/* 头像 */}
+      {/* avatar */}
       {showAvatar && !isGrouped && (
         <div className="flex-shrink-0">
           <Avatar
             userId={message.sender_id}
-            username={message.sender?.username || '未知用户'}
+            username={message.sender?.username || 'Unknown user'}
             avatarUrl={message.sender?.avatar_url}
             size="sm"
           />
         </div>
       )}
       
-      {/* 消息内容 */}
+      {/* Message content */}
       <div className={`flex-1 max-w-md ${isOwnMessage ? 'text-right' : ''}`}>
-        {/* 发送者信息和时间 */}
+        {/* Sender information and time */}
         {!isGrouped && (
           <div className={`flex items-center space-x-2 mb-1 ${isOwnMessage ? 'justify-end' : ''}`}>
             <span className="font-medium text-gray-900 dark:text-white text-sm">
-              {isOwnMessage ? '你' : message.sender?.username}
+              {isOwnMessage ? 'you' : message.sender?.username}
             </span>
             <span className="text-xs text-gray-500 dark:text-gray-400">
-              {timestamp.toLocaleTimeString('zh-CN', { 
+              {timestamp.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit' 
               })}
@@ -55,7 +55,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           </div>
         )}
         
-        {/* 消息气泡 */}
+        {/* Message bubble */}
         <div className={`inline-block`}>
           <div className={`
             p-3 rounded-2xl text-sm
@@ -75,7 +75,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         </div>
       </div>
       
-      {/* 占位符，保持布局平衡 */}
+      {/* Placeholder to maintain balanced layout */}
       {showAvatar && !isGrouped && !isOwnMessage && <div className="w-8" />}
       {showAvatar && !isGrouped && isOwnMessage && <div className="w-8" />}
     </motion.div>

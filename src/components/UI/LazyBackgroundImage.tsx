@@ -43,13 +43,13 @@ const LazyBackgroundImage: React.FC<LazyBackgroundImageProps> = ({
   useEffect(() => {
     if (!isInView || !src) return;
 
-    // 延迟加载背景图片，确保用户数据先显示
+    // Delay loading background images to ensure that user data is displayed first
     const timer = setTimeout(() => {
       const img = new Image();
       img.onload = () => {
         setIsLoaded(true);
         setHasError(false);
-        // 再延迟一点显示背景，让用户数据先渲染
+        // Delay the background display a little more, so that user data can be rendered first
         setTimeout(() => setShowBackground(true), 50);
       };
       img.onerror = () => {
@@ -57,7 +57,7 @@ const LazyBackgroundImage: React.FC<LazyBackgroundImageProps> = ({
         setIsLoaded(false);
       };
       img.src = src;
-    }, 300); // 延迟300ms开始加载背景，确保用户数据先显示
+    }, 300); // Delay300msStart loading the background and make sure that the user data is displayed first
 
     return () => clearTimeout(timer);
   }, [isInView, src]);
@@ -73,7 +73,7 @@ const LazyBackgroundImage: React.FC<LazyBackgroundImageProps> = ({
 
   return (
     <div ref={elementRef} className={`relative ${className}`}>
-      {/* 背景图片层 - 只有背景渐变 */}
+      {/* Background picture layer - Only background gradient */}
       <div
         className="absolute inset-0"
         style={{
@@ -86,7 +86,7 @@ const LazyBackgroundImage: React.FC<LazyBackgroundImageProps> = ({
         }}
       />
       
-      {/* 内容层 - 立即显示 */}
+      {/* Content layer - Show now */}
       <div className="relative">
         {children}
       </div>

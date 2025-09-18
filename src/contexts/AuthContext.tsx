@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(userData);
       setIsAuthenticated(true);
 
-      toast.success(`欢迎回来，${userData.username}！`);
+      toast.success(`Welcome back,${userData.username}!`);
       return true;
     } catch (error) {
       handleApiError(error);
@@ -93,7 +93,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // After successful registration, automatically log in
       const loginSuccess = await login(username, password);
       if (loginSuccess) {
-        toast.success('账户创建成功！');
+        toast.success('Account creation successfully!');
       }
       return loginSuccess;
     } catch (error) {
@@ -110,11 +110,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           } = formError.user;
 
           if (usernameErrors.length > 0) {
-            toast.error(`用户名：${usernameErrors[0]}`);
+            toast.error(`username:${usernameErrors[0]}`);
           } else if (emailErrors.length > 0) {
-            toast.error(`邮箱：${emailErrors[0]}`);
+            toast.error(`Mail:${emailErrors[0]}`);
           } else if (passwordErrors.length > 0) {
-            toast.error(`密码：${passwordErrors[0]}`);
+            toast.error(`password:${passwordErrors[0]}`);
           }
         } else if (formError.message) {
           toast.error(formError.message);
@@ -133,12 +133,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem('refresh_token');
     setUser(null);
     setIsAuthenticated(false);
-    toast.success('成功退出登录');
+    toast.success('Log out successfully');
   };
 
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) throw new Error('没有可用的刷新令牌');
+    if (!refreshToken) throw new Error('No refresh token available');
 
     const tokenResponse: TokenResponse = await authAPI.refreshToken(
       refreshToken,

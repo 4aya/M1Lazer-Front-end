@@ -5,28 +5,29 @@ interface Country {
   name: string;
 }
 
-// 常见国家列表
+// List of common countries
 const COMMON_COUNTRIES: Country[] = [
-  { code: 'CN', name: '中国' },
-  { code: 'US', name: '美国' },
-  { code: 'JP', name: '日本' },
-  { code: 'KR', name: '韩国' },
-  { code: 'DE', name: '德国' },
-  { code: 'GB', name: '英国' },
-  { code: 'FR', name: '法国' },
-  { code: 'CA', name: '加拿大' },
-  { code: 'AU', name: '澳大利亚' },
-  { code: 'RU', name: '俄罗斯' },
-  { code: 'BR', name: '巴西' },
-  { code: 'TW', name: '台湾' },
-  { code: 'HK', name: '香港' },
-  { code: 'SG', name: '新加坡' },
-  { code: 'TH', name: '泰国' },
-  { code: 'MY', name: '马来西亚' },
-  { code: 'ID', name: '印度尼西亚' },
-  { code: 'PH', name: '菲律宾' },
-  { code: 'VN', name: '越南' },
-  { code: 'IN', name: '印度' },
+  { code: 'CN', name: 'China' },
+  { code: 'US', name: 'USA' },
+  { code: 'JP', name: 'Japan' },
+  { code: 'KR', name: 'South Korea' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'GB', name: 'U.K.' },
+  { code: 'FR', name: 'France' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'AU', name: 'Australia' },
+  { code: 'RU', name: 'Russia' },
+  { code: 'BR', name: 'Brazil' },
+  { code: 'TW', name: 'Taiwan' },
+  { code: 'HK', name: 'Hongkong' },
+  { code: 'SG', name: 'Singapore' },
+  { code: 'TH', name: 'Thailand' },
+  { code: 'MY', name: 'Malaysia' },
+  { code: 'ID', name: 'Indonesia' },
+  { code: 'PH', name: 'the Philippines' },
+  { code: 'VN', name: 'Vietnam' },
+  { code: 'IN', name: 'India' },
+  { code: 'PL', name: 'Poland' },
 ];
 
 interface CountrySelectProps {
@@ -38,7 +39,7 @@ interface CountrySelectProps {
 const CountrySelect: React.FC<CountrySelectProps> = ({
   value,
   onChange,
-  placeholder = "选择国家或输入国家代码"
+  placeholder = "Select a country or enter a country code"
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -105,7 +106,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
             className="w-full px-3 sm:px-4 py-2 sm:py-2.5 pr-10 border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white shadow-sm min-h-[44px] sm:min-h-[48px] focus:ring-2 focus:ring-blue-500 focus:border-transparent font-medium text-sm sm:text-base"
           />
           
-          {/* 国旗显示 */}
+          {/* National flag display */}
           {selectedCountry && (
             <div className="absolute right-8 top-1/2 transform -translate-y-1/2">
               <img
@@ -117,7 +118,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
             </div>
           )}
           
-          {/* 下拉箭头 */}
+          {/* Pull down arrow */}
           <button
             type="button"
             onClick={() => setIsOpen(!isOpen)}
@@ -129,18 +130,18 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
           </button>
         </div>
         
-        {/* 清除按钮 */}
+        {/* Clear button */}
         {value && (
           <button
             onClick={handleClear}
             className="px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-500 text-white rounded-lg sm:rounded-xl hover:bg-gray-600 transition-colors shadow-sm font-medium text-sm sm:text-base min-h-[44px] sm:min-h-[48px] flex items-center justify-center"
           >
-            清除
+            Clear
           </button>
         )}
       </div>
 
-      {/* 下拉列表 */}
+      {/* Drop-down list */}
       {isOpen && (
         <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl shadow-lg max-h-60 overflow-y-auto">
           {filteredCountries.length > 0 ? (
@@ -165,7 +166,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
             ))
           ) : searchTerm ? (
             <div className="px-3 py-2 text-gray-500 dark:text-gray-400 text-center">
-              未找到匹配的国家
+              No matching country found!
             </div>
           ) : null}
         </div>

@@ -17,7 +17,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
   animated = true,
   className = ''
 }) => {
-  // 确保进度值在0-100之间
+  // Make sure the progress value is0-100between
   const clampedProgress = Math.min(100, Math.max(0, progress));
 
   return (
@@ -34,8 +34,8 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       </div>
       {showLabel && (
         <div className="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
-          <span>进度: {clampedProgress.toFixed(1)}%</span>
-          <span>剩余: {(100 - clampedProgress).toFixed(1)}%</span>
+          <span>schedule: {clampedProgress.toFixed(1)}%</span>
+          <span>Remaining: {(100 - clampedProgress).toFixed(1)}%</span>
         </div>
       )}
     </div>

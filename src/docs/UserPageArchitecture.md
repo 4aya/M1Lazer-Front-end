@@ -1,100 +1,100 @@
-# 个人页面编辑系统 - 架构说明
+# Personal page editing system - Architecture Description
 
-## 📋 数据流架构
+## 📋 Data flow architecture
 
-### 1. **用户页面数据获取**
-- **显示用户页面**: 直接从 `/api/v2/me/` 响应中的 `page` 字段获取
-- **编辑用户页面**: 使用 `/api/v2/users/{id}/page` 接口进行更新
+### 1. **User page data acquisition**
+- **Show user page**: Directly from `/api/v2/me/` Responsive `page` Field acquisition
+- **Edit user page**: use `/api/v2/users/{id}/page` Update the interface
 
-### 2. **API 接口说明**
+### 2. **API Interface description**
 
-#### 📖 页面内容获取
+#### 📖 Page content acquisition
 ```typescript
-// 从用户对象获取页面数据
+// Get page data from user object
 const userPage = user.page; // { html: string, raw: string }
 ```
 
-#### ✏️ 页面内容编辑
+#### ✏️ Page content edit
 ```typescript
-// 更新页面内容
+// Update page content
 await userAPI.updateUserPage(userId, content);
-// 返回: { html: string }
+// return: { html: string }
 ```
 
-#### ✅ BBCode 验证
+#### ✅ BBCode verify
 ```typescript
-// 实时验证BBCode语法
+// real timeverifyBBCodegrammar
 await userAPI.validateBBCode(content);
-// 返回: { valid: boolean, errors: string[], preview: { html: string, raw: string } }
+// return: { valid: boolean, errors: string[], preview: { html: string, raw: string } }
 ```
 
-### 3. **组件数据流**
+### 3. **Component data flow**
 
 ```
-UserPage.tsx (管理用户状态)
+UserPage.tsx (Manage user status)
     ↓
-UserProfileLayout.tsx (集成页面显示和编辑)
+UserProfileLayout.tsx (Integrated page display and editing)
     ↓
-UserPageDisplay.tsx (显示) ←→ UserPageEditor.tsx (编辑)
+UserPageDisplay.tsx (show) ←→ UserPageEditor.tsx (edit)
     ↓                              ↓
-user.page 字段                  BBCodeEditor.tsx
+user.page Fields                  BBCodeEditor.tsx
 ```
 
-### 4. **状态管理**
+### 4. **Status Management**
 
-1. **UserPage**: 维护完整的用户对象状态
-2. **UserProfileLayout**: 管理编辑模式切换
-3. **UserPageDisplay**: 直接从 `user.page` 读取内容
+1. **UserPage**: Maintain complete user object status
+2. **UserProfileLayout**: manageeditMode Switching
+3. **UserPageDisplay**: Directly from `user.page` Read content
 4. **UserPageEditor**: 
-   - 初始化时从 `user.page.raw` 获取内容
-   - 保存时调用 API 更新
-   - 保存成功后通过回调更新父组件的用户状态
+   - Initialization from `user.page.raw` Get content
+   - Called when saving API renew
+   - After saving successfully, callbackrenewUser status of parent component
 
-### 5. **关键实现细节**
+### 5. **Key implementation details**
 
-#### ✨ 优化点
-- **减少API调用**: 显示时不需要额外的API请求
-- **实时同步**: 编辑保存后立即更新本地状态
-- **一致性**: 确保显示和编辑使用相同的数据源
+#### ✨ Optimization point
+- **reduceAPICall**: showNo additionalAPIask
+- **Real-time synchronization**: editImmediately after savingrenewLocal status
+- **consistency**: make sureshowandedituseSame data source
 
-#### 🔄 数据同步流程
-1. 用户访问页面 → 获取用户数据（包含 `page` 字段）
-2. 显示页面内容 → 直接使用 `user.page.html`
-3. 点击编辑 → 从 `user.page.raw` 初始化编辑器
-4. 保存更改 → 调用编辑API → 更新本地用户状态
-5. 返回显示模式 → 显示更新后的内容
+#### 🔄 Data synchronization process
+1. User access page → Get user data (including `page` Fields)
+2. showpagecontent → directuse `user.page.html`
+3. Clickedit → from `user.page.raw` initializationeditDevice
+4. Save changes → CalleditAPI → renewLocal user status
+5. returnshowmodel → showrenewThe lattercontent
 
-### 6. **API 规范对应**
+### 6. **API Standard correspondence**
 
-根据提供的API文档：
+According to the providedAPIdocument:
 
-- ✅ `GET /api/v2/users/{user_id}/page` - 仅用于编辑时获取最新内容
-- ✅ `PUT /api/v2/users/{user_id}/page` - 更新用户页面内容
-- ✅ `POST /api/v2/me/validate-bbcode` - BBCode语法验证
+- ✅ `GET /api/v2/users/{user_id}/page` - For onlyeditGet the latestcontent
+- ✅ `PUT /api/v2/users/{user_id}/page` - renewuserpagecontent
+- ✅ `POST /api/v2/me/validate-bbcode` - BBCodegrammarverify
 
-用户页面内容的主要来源是 `/api/v2/me/` 响应中的 `page` 字段：
+The main source of user page content is `/api/v2/me/` Responsive `page` Fields:
 
 ```json
 {
   "page": {
     "html": "<processed-html-content>",
-    "raw": "[bbcode]原始BBCode内容[/bbcode]"
+    "raw": "[bbcode]originalBBCodecontent[/bbcode]"
   }
 }
 ```
 
-### 7. **测试和调试**
+### 7. **Testing and debugging**
 
-使用 `UserPageTestPage.tsx` 可以：
-- 测试三种模式：显示、编辑、BBCode编辑器
-- 查看用户页面数据结构
-- 验证保存后的数据同步
-- 调试BBCode验证和预览功能
+use `UserPageTestPage.tsx` Can:
+- Test three typesmodel:show,edit,BBCodeeditDevice
+- View user page data structure
+- verifysaveThe latterdatasynchronous
+- debugBBCodeverifyandPreview function
 
-## 🎯 总结
+## 🎯 Summarize
 
-这个架构确保了：
-1. **性能优化**: 减少不必要的API调用
-2. **数据一致性**: 统一的数据源和更新机制
-3. **用户体验**: 实时预览和即时反馈
-4. **可维护性**: 清晰的组件职责分离
+This architecture ensures:
+1. **Performance optimization**: reduceUnnecessaryAPICall
+2. **dataconsistency**: Unifieddatasourceandrenewmechanism
+3. **User Experience**: Real-time preview and instant feedback
+4. **Maintainability**: Clear separation of components

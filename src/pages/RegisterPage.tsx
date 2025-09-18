@@ -29,35 +29,35 @@ const RegisterPage: React.FC = () => {
     const newErrors: Partial<RegisterForm> = {};
 
     if (!formData.username) {
-      newErrors.username = '用户名为必填项';
+      newErrors.username = 'Username is required';
     } else if (formData.username.length < 3) {
-      newErrors.username = '用户名至少需要3个字符';
+      newErrors.username = 'Username must be at least 3 characters';
     } else if (formData.username.length > 15) {
-      newErrors.username = '用户名最多15个字符';
+      newErrors.username = 'Username must be at most 15 characters';
     } else if (!/^[a-zA-Z0-9_-]+$/.test(formData.username)) {
-      newErrors.username = '用户名只能包含字母、数字、下划线和连字符';
+      newErrors.username = 'Username can only contain letters, numbers, underscores, and hyphens';
     } else if (/^\d/.test(formData.username)) {
-      newErrors.username = '用户名不能以数字开头';
+      newErrors.username = 'Username cannot start with a number';
     }
 
     if (!formData.email) {
-      newErrors.email = '邮箱为必填项';
+      newErrors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = '请输入有效的邮箱地址';
+      newErrors.email = 'Please enter a valid email address';
     }
 
     if (!formData.password) {
-      newErrors.password = '密码为必填项';
+      newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
-      newErrors.password = '密码至少需要8个字符';
+      newErrors.password = 'Password must be at least 8 characters';
     } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-      newErrors.password = '密码必须包含大小写字母和数字';
+      newErrors.password = 'Password must contain uppercase, lowercase letters, and numbers';
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = '请确认密码';
+      newErrors.confirmPassword = 'Please confirm your password';
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = '两次输入的密码不一致';
+      newErrors.confirmPassword = 'Passwords do not match';
     }
 
     setErrors(newErrors);
@@ -109,10 +109,10 @@ const RegisterPage: React.FC = () => {
             />
           </div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            注册
+            Register
           </h2>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            创建你的 咕哦！ 账户
+            Create Your M1Lazer Account
           </p>
         </div>
 
@@ -120,7 +120,7 @@ const RegisterPage: React.FC = () => {
           <form className="space-y-3" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                用户名
+                Username
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -134,7 +134,7 @@ const RegisterPage: React.FC = () => {
                   className={`w-full px-3 py-2 pl-10 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-osu-pink focus:border-transparent ${
                     errors.username ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
-                  placeholder="输入用户名"
+                  placeholder="Enter username"
                   value={formData.username}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -147,7 +147,7 @@ const RegisterPage: React.FC = () => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                邮箱
+                Email
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -161,7 +161,7 @@ const RegisterPage: React.FC = () => {
                   className={`w-full px-3 py-2 pl-10 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-osu-pink focus:border-transparent ${
                     errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
-                  placeholder="输入邮箱地址"
+                  placeholder="Enter email address"
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -174,7 +174,7 @@ const RegisterPage: React.FC = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                密码
+                Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -188,7 +188,7 @@ const RegisterPage: React.FC = () => {
                   className={`w-full px-3 py-2 pl-10 pr-10 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-osu-pink focus:border-transparent ${
                     errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
-                  placeholder="输入密码"
+                  placeholder="Enter password"
                   value={formData.password}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -212,7 +212,7 @@ const RegisterPage: React.FC = () => {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                确认密码
+                Confirm Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -226,7 +226,7 @@ const RegisterPage: React.FC = () => {
                   className={`w-full px-3 py-2 pl-10 pr-10 border rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-osu-pink focus:border-transparent ${
                     errors.confirmPassword ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
-                  placeholder="确认密码"
+                  placeholder="Confirm password"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
                   disabled={isLoading}
@@ -257,19 +257,19 @@ const RegisterPage: React.FC = () => {
                 {isLoading ? (
                   <LoadingSpinner size="sm" />
                 ) : (
-                  '注册'
+                  'Register'
                 )}
               </button>
             </div>
 
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                已有账户？{' '}
+                Already have an account?{' '}
                 <Link
                   to="/login"
                   className="font-medium text-osu-pink hover:text-osu-pink/80 dark:text-osu-pink dark:hover:text-osu-pink/80"
                 >
-                  立即登录
+                  Log in
                 </Link>
               </p>
             </div>
@@ -278,7 +278,24 @@ const RegisterPage: React.FC = () => {
 
         <div className="text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            注册即表示你同意我们的服务条款和隐私政策
+                      By using our service, you agree to our{' '}
+            <a
+              href="https://m1pposu.dev/docs/terms-of-service"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Terms of Service
+            </a>{' '}
+            and{' '}
+            <a
+              href="https://m1pposu.dev/docs/privacy-policy"
+              className="text-blue-500 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Privacy Policy
+            </a>.
           </p>
         </div>
       </div>

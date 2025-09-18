@@ -5,7 +5,7 @@ interface LazyFlagProps {
   alt: string;
   className?: string;
   title?: string;
-  [key: string]: any; // 允许传递额外的属性
+  [key: string]: any; // Allows to pass additional properties
 }
 
 const LazyFlag: React.FC<LazyFlagProps> = ({
@@ -45,7 +45,7 @@ const LazyFlag: React.FC<LazyFlagProps> = ({
   useEffect(() => {
     if (!isInView) return;
 
-    // 延迟加载国旗
+    // Delay loading flag
     const timer = setTimeout(() => {
       const img = new Image();
       img.onload = () => {
@@ -58,7 +58,7 @@ const LazyFlag: React.FC<LazyFlagProps> = ({
         setIsLoaded(true);
       };
       img.src = src;
-    }, 150); // 延迟150ms加载国旗
+    }, 150); // Delay150msLoading flag
 
     return () => clearTimeout(timer);
   }, [isInView, src]);
@@ -69,14 +69,14 @@ const LazyFlag: React.FC<LazyFlagProps> = ({
       className={`relative overflow-hidden ${className}`}
       {...restProps}
     >
-      {/* 占位符背景 - 只在未加载且没有错误时显示 */}
+      {/* Placeholder background - Show only when not loaded and no errors */}
       {!isLoaded && !hasError && (
         <div className="absolute inset-0 bg-gray-100 dark:bg-gray-700 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded">
           <div className="w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded animate-pulse" />
         </div>
       )}
       
-      {/* 国旗图片 */}
+      {/* National flag picture */}
       {imageSrc && !hasError && (
         <img
           src={imageSrc}
@@ -89,7 +89,7 @@ const LazyFlag: React.FC<LazyFlagProps> = ({
         />
       )}
       
-      {/* 错误时的占位符 */}
+      {/* Placeholder in error */}
       {hasError && (
         <div className={`bg-gray-200 dark:bg-gray-600 flex items-center justify-center border border-gray-200 dark:border-gray-600 rounded ${className}`}>
           <span className="text-xs text-gray-500 dark:text-gray-400">{alt}</span>

@@ -21,15 +21,15 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, delay = 0 }) => (
   >
     <div className="space-y-1.5">
       <div className="flex justify-between items-center">
-        <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">用户 ID</span>
-        <span className="text-gray-900 dark:text白 font-bold text-lg">{user.id}</span>
+        <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">Player ID</span>
+        <span className="text-gray-900 dark:textwhite font-bold text-lg">{user.id}</span>
       </div>
 
       {user.join_date && (
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">加入时间</span>
-          <span className="text-gray-900 dark:text白 font-medium text-base">
-            {new Date(user.join_date).toLocaleDateString('zh-CN', {
+          <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">Join time</span>
+          <span className="text-gray-900 dark:textwhite font-medium text-base">
+            {new Date(user.join_date).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'short',
               day: 'numeric',
@@ -40,9 +40,9 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ user, delay = 0 }) => (
 
       {user.last_visit && (
         <div className="flex justify-between items-center">
-          <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">最后访问</span>
-          <span className="text-gray-900 dark:text白 font-medium text-base">
-            {new Date(user.last_visit).toLocaleDateString('zh-CN', {
+          <span className="text-gray-600 dark:text-gray-400 text-sm font-medium">Last visit</span>
+          <span className="text-gray-900 dark:textwhite font-medium text-base">
+            {new Date(user.last_visit).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'short',
               day: 'numeric',

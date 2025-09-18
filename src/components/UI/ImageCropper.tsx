@@ -17,7 +17,7 @@ interface ImageCropperProps {
   uploadingText?: string;
 }
 
-// 压缩图片并调整大小
+// Compress and resize the picture
 const compressImage = (
   canvas: HTMLCanvasElement,
   maxWidth: number,
@@ -29,27 +29,27 @@ const compressImage = (
     let newWidth = width;
     let newHeight = height;
 
-    // 计算新的尺寸，保持宽高比
+    // Calculate new dimensions to maintain aspect ratio
     if (width > maxWidth || height > maxHeight) {
       const ratio = Math.min(maxWidth / width, maxHeight / height);
       newWidth = width * ratio;
       newHeight = height * ratio;
     }
 
-    // 创建新的canvas进行压缩
+    // Create a new onecanvasPerform compression
     const compressCanvas = document.createElement('canvas');
     const compressCtx = compressCanvas.getContext('2d')!;
     compressCanvas.width = newWidth;
     compressCanvas.height = newHeight;
 
-    // 使用高质量的插值算法
+    // Using high-quality interpolation algorithm
     compressCtx.imageSmoothingEnabled = true;
     compressCtx.imageSmoothingQuality = 'high';
 
-    // 绘制压缩后的图片
+    // Draw compressed pictures
     compressCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
 
-    // 输出为blob
+    // The output isblob
     compressCanvas.toBlob(
       (blob) => resolve(blob!),
       'image/jpeg',
@@ -58,7 +58,7 @@ const compressImage = (
   });
 };
 
-// 获取裁剪后的图片
+// Get cropped images
 const getCroppedImg = async (
   image: HTMLImageElement,
   crop: PixelCrop,
@@ -73,10 +73,10 @@ const getCroppedImg = async (
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
 
-  // 根据旋转角度调整画布尺寸
+  // Adjust the canvas size according to the rotation angle
   const rotRad = (rotation * Math.PI) / 180;
   
-  // 90度或270度旋转时，宽高互换
+  // 90degree or270When the degree is rotated, the width and height are exchanged
   if (rotation % 180 === 90) {
     canvas.width = crop.height;
     canvas.height = crop.width;
@@ -85,18 +85,18 @@ const getCroppedImg = async (
     canvas.height = crop.height;
   }
 
-  // 设置画布中心点
+  // Set the center point of the canvas
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
 
-  // 保存当前状态
+  // Save the current status
   ctx.save();
 
-  // 移动到中心点并旋转
+  // Move to the center point and rotate
   ctx.translate(centerX, centerY);
   ctx.rotate(rotRad);
 
-  // 计算绘制时的偏移
+  // Calculate the offset when drawing
   const drawWidth = crop.width;
   const drawHeight = crop.height;
   
@@ -112,10 +112,10 @@ const getCroppedImg = async (
     drawHeight
   );
 
-  // 恢复状态
+  // Recovery status
   ctx.restore();
 
-  // 压缩图片
+  // Compressed pictures
   return compressImage(canvas, maxWidth, maxHeight, quality);
 };
 
@@ -129,7 +129,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   onCancel,
   fileName = 'cropped-image.jpg',
   isUploading = false,
-  uploadingText = '上传中...'
+  uploadingText = 'Uploading...'
 }) => {
   const [crop, setCrop] = useState<Crop>();
   const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
@@ -137,14 +137,14 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   const imgRef = useRef<HTMLImageElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 图片加载完成后设置初始crop
+  // Set the initial setting after the image is loadedcrop
   const onImageLoad = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
     const { width, height } = e.currentTarget;
     
     let initialCrop: Crop;
     
     if (aspectRatio) {
-      // 如果指定了宽高比，创建居中的crop
+      // If the aspect ratio is specified, create a centeredcrop
       initialCrop = centerCrop(
         makeAspectCrop(
           {
@@ -159,7 +159,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
         height
       );
     } else {
-      // 如果没有指定宽高比，默认选择80%的区域
+      // If no aspect ratio is specified, the default selection is80%Areas of
       initialCrop = {
         unit: '%',
         x: 10,
@@ -172,7 +172,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
     setCrop(initialCrop);
   }, [aspectRatio]);
 
-  // 处理裁剪确认
+  // Processing crop confirmation
   const handleCropConfirm = useCallback(async () => {
     if (!completedCrop || !imgRef.current) return;
 
@@ -187,20 +187,20 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
         quality
       );
 
-      // 将blob转换为File对象
+      // WillblobConvert toFileObject
       const croppedFile = new File([croppedImageBlob], fileName, {
         type: 'image/jpeg',
       });
 
       onCropComplete(croppedFile);
     } catch (error) {
-      console.error('图片裁剪失败:', error);
+      console.error('Image cropping failed:', error);
     } finally {
       setIsProcessing(false);
     }
   }, [completedCrop, rotation, maxWidth, maxHeight, quality, fileName, onCropComplete]);
 
-  // 旋转图片
+  // Rotate the picture
   const handleRotate = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -210,10 +210,10 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-        {/* 头部 */}
+        {/* head */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            裁剪图片
+            Crop pictures
           </h3>
           <button
             type="button"
@@ -224,7 +224,7 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
           </button>
         </div>
 
-        {/* 工具栏 */}
+        {/* Toolbar */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <button
@@ -234,17 +234,17 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
               className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <FiRotateCw className="w-4 h-4" />
-              旋转
+              Rotate
             </button>
           </div>
           
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            {aspectRatio ? `比例 ${aspectRatio}:1` : '自由裁剪'} | 
-            最大尺寸 {maxWidth}x{maxHeight}px
+            {aspectRatio ? `Proportion ${aspectRatio}:1` : 'Free cut'} | 
+            Maximum size {maxWidth}x{maxHeight}px
           </div>
         </div>
 
-        {/* 裁剪区域 */}
+        {/* Crop area */}
         <div className="flex-1 overflow-auto p-4">
           <div className="flex items-center justify-center min-h-[400px]">
             <ReactCrop
@@ -271,14 +271,14 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
           </div>
         </div>
 
-        {/* 底部操作 */}
+        {/* Bottom operation */}
         <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
           <button
             type="button"
             onClick={onCancel}
             className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            取消
+            Cancel
           </button>
           <button
             type="button"
@@ -294,12 +294,12 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
             ) : isProcessing ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                处理中...
+                Processing...
               </>
             ) : (
               <>
                 <FiCheck className="w-4 h-4" />
-                确认裁剪
+                Confirm the cut
               </>
             )}
           </button>

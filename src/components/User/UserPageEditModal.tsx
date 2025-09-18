@@ -25,10 +25,10 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
   useEffect(() => {
     if (isOpen) {
       setContent(user.page?.raw || '');
-      // 防止背景滚动
+      // Prevent background scrolling
       document.body.style.overflow = 'hidden';
       
-      // 添加全局键盘事件监听，仅处理Escape键
+      // Add global keyboard event listening, only handledEscapekey
       const handleGlobalKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape' && !e.defaultPrevented) {
           onClose();
@@ -42,7 +42,7 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
         document.body.style.overflow = 'unset';
       };
     } else {
-      // 恢复背景滚动
+      // Restore background scrolling
       document.body.style.overflow = 'unset';
     }
   }, [isOpen, user.page?.raw, onClose]);
@@ -54,7 +54,7 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
     try {
       const response = await userAPI.updateUserPage(currentUser.id, content);
       
-      // 尝试获取渲染后的HTML
+      // Try to get the renderedHTML
       let html = '';
       if (response.html) {
         html = response.html;
@@ -63,20 +63,20 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
       } else if (response.preview?.html) {
         html = response.preview.html;
       } else {
-        // 如果没有HTML，尝试验证BBCode获取预览
+        // If notHTML, try to verifyBBCodeGet a preview
         try {
           const validationResult = await userAPI.validateBBCode(content);
           if (validationResult.preview?.html) {
             html = validationResult.preview.html;
           }
         } catch (validationError) {
-          console.warn('BBCode验证失败:', validationError);
-          // 使用原始内容作为HTML（不理想但至少显示内容）
+          console.warn('BBCodeVerification failed:', validationError);
+          // Use original content asHTML(Not ideal but at least the content is displayed)
           html = content.replace(/\n/g, '<br>');
         }
       }
       
-      // 更新用户数据
+      // Update user data
       const updatedUser = {
         ...user,
         page: {
@@ -85,12 +85,12 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
         }
       };
       
-      // 通知父组件更新
+      // Notify the parent component to update
       onSave(updatedUser);
       onClose();
     } catch (error) {
-      console.error('保存失败:', error);
-      // 这里可以添加错误提示
+      console.error('Saving failed:', error);
+      // Here you can add error prompts
     } finally {
       setIsSaving(false);
     }
@@ -101,12 +101,12 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
     onClose();
   };
 
-  // 阻止模态框内部的事件冒泡
+  // Prevent events from bubbled inside the modal box
   const handleModalContentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
 
-  // 阻止模态框内部的鼠标事件冒泡
+  // Prevent mouse events from bubbled inside the modal box
   const handleModalContentMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
   };
@@ -115,7 +115,7 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
     e.stopPropagation();
   };
 
-  // 处理鼠标按下事件，记录按下位置和时间
+  // Handle mouse press events, record press position and time
   const [mouseDownTarget, setMouseDownTarget] = useState<EventTarget | null>(null);
   const [mouseDownTime, setMouseDownTime] = useState<number>(0);
   const [mouseDownPosition, setMouseDownPosition] = useState<{x: number, y: number} | null>(null);
@@ -128,25 +128,25 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
 
   const handleBackdropMouseUp = (e: React.MouseEvent) => {
     const timeDiff = Date.now() - mouseDownTime;
-    const isQuickClick = timeDiff < 200; // 少于200ms认为是点击而非拖拽
+    const isQuickClick = timeDiff < 200; // less than200msThink of it as clicking rather than dragging
     
-    // 计算鼠标移动距离
+    // Calculate the distance of the mouse
     const distance = mouseDownPosition ? 
       Math.sqrt(
         Math.pow(e.clientX - mouseDownPosition.x, 2) + 
         Math.pow(e.clientY - mouseDownPosition.y, 2)
       ) : 0;
     
-    const isStationary = distance < 5; // 移动距离小于5px认为是点击
+    const isStationary = distance < 5; // Moving distance is less than5pxThink it's a click
     
-    // 只有在同一个元素上按下和松开，且是快速点击或静止点击，且是背景层时，才关闭模态框
+    // The modal box is closed only when pressing and releasing on the same element, and is a quick click or a still click, and is a background layer.
     if (e.target === e.currentTarget && 
         mouseDownTarget === e.target && 
         (isQuickClick || isStationary)) {
       onClose();
     }
     
-    // 重置状态
+    // Reset status
     setMouseDownTarget(null);
     setMouseDownTime(0);
     setMouseDownPosition(null);
@@ -166,10 +166,10 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
         onMouseDown={handleModalContentMouseDown}
         onMouseUp={handleModalContentMouseUp}
       >
-        {/* 头部 */}
+        {/* head */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            编辑个人介绍
+            Editor of About Me
           </h2>
           <button
             onClick={onClose}
@@ -179,25 +179,25 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
           </button>
         </div>
 
-        {/* 内容 */}
+        {/* content */}
         <div className="p-4 md:p-6 overflow-y-auto flex-1">
           <BBCodeEditor
-            title="个人介绍"
+            title="About Me"
             value={content}
             onChange={setContent}
-            placeholder="使用 BBCode 编写你的个人介绍..."
+            placeholder="use BBCode to Write yours About Me..."
             className="min-h-[60vh] h-full"
           />
         </div>
 
-        {/* 底部按钮 */}
+        {/* Bottom button */}
         <div className="flex items-center justify-end gap-3 p-4 md:p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
           <button
             onClick={handleCancel}
             disabled={isSaving}
             className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors disabled:opacity-50"
           >
-            取消
+            Cancel
           </button>
           <button
             onClick={handleSave}
@@ -207,12 +207,12 @@ const UserPageEditModal: React.FC<UserPageEditModalProps> = ({
             {isSaving ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                保存中...
+                Saving...
               </>
             ) : (
               <>
                 <FaSave className="w-4 h-4" />
-                保存
+                save
               </>
             )}
           </button>

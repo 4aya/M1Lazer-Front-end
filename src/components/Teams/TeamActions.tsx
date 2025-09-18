@@ -21,14 +21,14 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
   const isLeader = user?.id === team.leader_id;
   const isMember = members.some(member => member.id === user?.id);
 
-  // 请求加入战队
+  // Request to join the battle team
   const handleJoinRequest = async () => {
     if (!user) return;
 
     setIsSubmitting(true);
     try {
       await teamsAPI.requestJoinTeam(team.id);
-      toast.success('加入请求已发送，请等待队长审核');
+      toast.success('The joining request has been sent, please wait for the captain to review');
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -36,14 +36,14 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
     }
   };
 
-  // 退出战队
+  // Exit the team
   const handleLeaveTeam = async () => {
-    if (!user || !confirm('确定要退出这个战队吗？')) return;
+    if (!user || !confirm('Are you sure you want to quit this team?')) return;
 
     setIsSubmitting(true);
     try {
       await teamsAPI.removeMember(team.id, user.id);
-      toast.success('已退出战队');
+      toast.success('alreadyExit the team');
       onTeamUpdate?.();
     } catch (error) {
       handleApiError(error);
@@ -52,14 +52,14 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
     }
   };
 
-  // 删除战队
+  // Delete the team
   const handleDeleteTeam = async () => {
-    if (!confirm('确定要删除这个战队吗？此操作不可撤销！')) return;
+    if (!confirm('Are you sure you want to delete this team? This operation is pernament!')) return;
 
     setIsSubmitting(true);
     try {
       await teamsAPI.deleteTeam(team.id);
-      toast.success('战队已删除');
+      toast.success('Team has been deleted.');
       navigate('/teams');
     } catch (error) {
       handleApiError(error);
@@ -72,9 +72,9 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
 
   return (
     <div className="relative">
-      {/* 主要操作按钮 */}
+      {/* Main operation buttons */}
       <div className="flex items-center gap-2">
-        {/* 加入战队按钮 */}
+        {/* Join Team Button */}
         {!isMember && (
           <button
             onClick={handleJoinRequest}
@@ -82,11 +82,11 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
             className="inline-flex items-center px-4 py-2 bg-osu-pink text-white rounded-lg hover:bg-osu-pink/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <FiUserPlus className="mr-2" />
-            {isSubmitting ? '请求中...' : '请求加入'}
+            {isSubmitting ? 'Requesting...' : 'Request to join'}
           </button>
         )}
 
-        {/* 退出战队按钮 */}
+        {/* Exit the teamButton */}
         {isMember && !isLeader && (
           <button
             onClick={handleLeaveTeam}
@@ -94,23 +94,23 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
             className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <FiLogOut className="mr-2" />
-            {isSubmitting ? '退出中...' : '退出战队'}
+            {isSubmitting ? 'Exiting...' : 'Exit the team'}
           </button>
         )}
 
-        {/* 队长操作菜单 */}
+        {/* Captain Operation Menu */}
         {isLeader && (
           <>
-            {/* 编辑按钮 */}
+            {/* Edit button */}
             <Link
               to={`/teams/${team.id}/edit`}
               className="inline-flex items-center px-4 py-2 bg-osu-pink text-white rounded-lg hover:bg-osu-pink/90 transition-colors"
             >
               <FiEdit className="mr-2" />
-              编辑战队
+              Editorial Team
             </Link>
 
-            {/* 更多操作按钮 */}
+            {/* More operation buttons */}
             <div className="relative">
               <button
                 onClick={() => setShowActions(!showActions)}
@@ -119,7 +119,7 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
                 <FiMoreHorizontal className="w-5 h-5" />
               </button>
 
-              {/* 下拉菜单 */}
+              {/* Pull-down menu */}
               {showActions && (
                 <div className="absolute left-auto right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[9999]">
                   <div className="py-1">
@@ -132,7 +132,7 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
                       className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50"
                     >
                       <FiTrash2 className="mr-3 w-4 h-4" />
-                      删除战队
+                      Delete the team
                     </button>
                   </div>
                 </div>
@@ -142,7 +142,7 @@ const TeamActions: React.FC<Props> = ({ team, members, onTeamUpdate }) => {
         )}
       </div>
 
-      {/* 点击外部关闭菜单 */}
+      {/* Click externally to close the menu */}
       {showActions && (
         <div
           className="fixed inset-0 z-[9998]"

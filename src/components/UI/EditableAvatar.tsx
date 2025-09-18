@@ -25,7 +25,7 @@ const EditableAvatar: React.FC<EditableAvatarProps> = ({
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState(avatarUrl);
 
-  // 当 avatarUrl prop 变化时，更新本地状态
+  // when avatarUrl prop Update local status when changes
   useEffect(() => {
     setCurrentAvatarUrl(avatarUrl);
   }, [avatarUrl]);

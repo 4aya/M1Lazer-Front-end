@@ -13,7 +13,6 @@ import TeamsPage from './pages/TeamsPage';
 import TeamDetailPage from './pages/TeamDetailPage';
 import CreateTeamPage from './pages/CreateTeamPage';
 import MessagesPage from './pages/MessagesPage';
-import HowToJoinPage from './pages/HowToJoinPage';
 import BBCodeTester from './components/BBCode/BBCodeTester';
 
 function App() {
@@ -34,13 +33,12 @@ function App() {
             <Route path="teams/:teamId" element={<TeamDetailPage />} />
             <Route path="teams/:teamId/edit" element={<CreateTeamPage />} />
             <Route path="messages" element={<MessagesPage />} />
-            <Route path="how-to-join" element={<HowToJoinPage />} />
             <Route path="bbcode-test" element={<BBCodeTester />} />
             <Route
               path="beatmaps"
               element={
                 <div className="flex items-center justify-center h-screen">
-                  <h1 className="text-2xl font-bold">谱面（即将推出）</h1>
+                  <h1 className="text-2xl font-bold">Beatmaps (to be released soon)</h1>
                 </div>
               }
             />
@@ -48,7 +46,7 @@ function App() {
               path="*"
               element={
                 <div className="flex items-center justify-center h-screen">
-                  <h1 className="text-2xl font-bold">404 - 页面未找到</h1>
+                  <h1 className="text-2xl font-bold">404 - Page not found!</h1>
                 </div>
               }
             />
