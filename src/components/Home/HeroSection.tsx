@@ -72,7 +72,7 @@ const HeroSection: React.FC = () => {
                   <span className="hidden sm:block h-4 w-px bg-pink-300/60 dark:bg-pink-200/40" />
 
                   <span className="text-sm sm:text-base whitespace-nowrap">
-                    Server is currently in early beta. Please report issues directly to us.
+                    This server is currently more of a prototype for now, use at your own risk!
                   </span>
                 </div>
               </div>
